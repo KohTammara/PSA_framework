@@ -1,26 +1,30 @@
 import xml.etree.ElementTree as ET
 
-def create_xml(input, template):
+def create_xml(input_file, template_file):
     # Parse the input and template XML files
-    input_tree = ET.parse(input)
-    template_tree = ET.parse(template)
+    input_tree = ET.parse(input_file)
+    template_tree = ET.parse(template_file)
 
-    # Get the root element of the template tree
+    # Find the root elements in both trees
+    input_root = input_tree.getroot()
     template_root = template_tree.getroot()
 
-    # Find the 'ROSETTASCRIPTS' element in the template tree
-    rosetta_scripts = template_root.find('ROSETTASCRIPTS')
+    # Remove existing MOVERS elements from the template
+    for movers_element in template_root.findall('.//MOVERS'):
+        template_root.remove(movers_element)
 
-    # Add the input tree to the 'ROSETTASCRIPTS' element
-    rosetta_scripts.append(input_tree.getroot())
+    # Iterate over the elements in the input root
+    for element in input_root:
+        # Append each element to the template root
+        template_root.append(element)
 
-    # Write the output to a file
+    # Write the output to a file with indentation
     output_file = 'output.xml'
-    template_tree.write(output_file)
+    ET.ElementTree(template_root).write(output_file, xml_declaration=True, encoding='utf-8', method="xml")
 
     print(f"XML file created successfully. Output file: {output_file}")
 
 # Example usage
-input_file = 'input.xml'
-template_file = 'template.xml'
+input_file = 'bin/input.xml'
+template_file = 'bin/template.xml'
 create_xml(input_file, template_file)
