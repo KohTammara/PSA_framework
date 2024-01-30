@@ -1,0 +1,19 @@
+{
+    "list_of_structs" : "/home/21616019/Documents/PSA_framework/work/test/*.pdb",
+    "resf" : "/home/21616019/Documents/PSA_framework/work/test/resfile.txt",
+
+    "sequence" : "/home/21616019/Documents/PSA_framework/work/test/Q53YK7.fasta",
+    "start_position" : 1,
+    "end_position" : 260,
+    "mutation" : "M205A",
+    "name" : "Threader",
+    "pack_neighbours" : "",
+    "neighbor_dis" : "",
+    "scorefxn" : "ref2015",
+    "skip_unknown_mutant" : "",
+    "pack_round" : "",
+    "sequence_mode" : ""
+
+
+
+}
