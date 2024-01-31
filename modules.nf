@@ -41,38 +41,41 @@ process CREATEXML {
 	input:
 	val name
 	path sequence
-	val seq_mode
 	val pack_round
+	val seq_mode
 	val skip_unknown_mutant
 	val scorefxn
 	val start_pos
-	val neighbour_dis
-	val pack_neighbours
+	val neighbor_dis
+	val pack_neighbors
+	val weight
+	path template
 
 	output:
 	path 'thread.xml'
 
-	script:
-	'''
-	'''
+	"""
+	sequence_content=\$(cat ${sequence})
+
+	XMLcreate.py -name ${name} -sequence "\${sequence_content}" -start_pos ${start_pos} -pack_neighbors ${pack_neighbors} -neighbor_dis ${neighbor_dis} -scorefxn ${scorefxn} -skip_unknown_mutant ${skip_unknown_mutant} -pack_rounds ${pack_round} -sequence_mode ${seq_mode} -weight ${weight} -template ${template}
+	"""
 }
 
 process ROSETTA_THREADER {
+	cpus 4
+	container "${simgDir}/rosetta_23_45_reduced.sif"
+
 	input:
-	path path_to_PDB
-	val sequence
-	val start_pos
+	path PDB
+	path xml_file
 
 	output:
-	path 'path_to_PDB_*.pdb'
-	path 'score_*.sc'
-	/*
-	Create script to create xml files for each rosetta threader instance (based on input [read from files might be the answer for both amny proteins for single template and mmany templates])
-	edit commands accordingly, may need conditionals and checks for list of templates for a single seq, list of seq for single template, and combinations.
-	*/
+	path "*.pdb"
+	path "*.sc"
+
 	script:
 	"""
-	rosetta_scripts.mpi.linuxgccrelease -s 1ubq.pdb -parser:protocol nothing.xml
+	rosetta_scripts.mpi.linuxgccrelease -s ${PDB} -parser:protocol ${xml_file}
 	"""
 }
 

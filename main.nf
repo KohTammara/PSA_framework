@@ -35,6 +35,7 @@ include {
     ROSETTA_FIXBB;
     ROSETTA_THREADER;
     CUTANDMUTATE;
+    CREATEXML;
     SPLITPDB 
 } from './modules.nf' 
 
@@ -55,6 +56,7 @@ workflow {
     ROSETTA_FIXBB(pdb, params.resf)
 
     //Rosetta threader execution
-    CUTANDMUTATE(params.sequence, params.start_position, params.end_position, params.mutation)
-
+    seq = CUTANDMUTATE(params.sequence, params.start_position, params.end_position, params.mutation)
+    xml = CREATEXML(params.name, seq, params.sequence_mode, params.pack_round, params.skip_unknown_mutant, params.scorefxn, params.start_position, params.neighbor_dis, params.pack_neighbors, params.weights, params.template)
+    ROSETTA_THREADER(pdb, xml)
 }

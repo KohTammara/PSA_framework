@@ -7,13 +7,14 @@
     "end_position" : 260,
     "mutation" : "M205A",
     "name" : "Threader",
-    "pack_neighbours" : "",
-    "neighbor_dis" : "",
-    "scorefxn" : "ref2015",
-    "skip_unknown_mutant" : "",
-    "pack_round" : "",
-    "sequence_mode" : ""
-
+    "pack_neighbors" : "NONE",
+    "neighbor_dis" : "NONE",
+    "scorefxn" : "r15_cart",
+    "skip_unknown_mutant" : "NONE",
+    "pack_round" : "NONE",
+    "sequence_mode" : "NONE",
+    "template" : "/home/21616019/Documents/PSA_framework/bin/template.xml",
+    "weights" : "ref2015"
 
 
 }
