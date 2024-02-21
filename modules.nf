@@ -1,5 +1,4 @@
-// r_fbb_PDB = params.list_of_structs
-// r_res_fbb = params.res_fbb
+
 
 // process STRUM {
 // 	/*
@@ -21,6 +20,73 @@
 //     """
 	
 // }
+
+// process ROSETTA_DDG_PREMINIMIZATION {
+// 	cpus 4
+// 	container "${simgDir}/rosetta_23_45_updated_03.sif"
+
+// 	input:
+// 	path PDB
+
+// 	output:
+// 	path "*.pdb"
+// 	path "*.cst"
+
+// 	shell:
+// 	"""
+// 	minimize_with_cst.mpi.linuxgccrelease -in:file:s ${PDB} -in:file:fullatom -ignore_unrecognized_res -ignore_zero_occupancy false -fa_max_dis 9.0 -database /rosetta/Rosetta/main/database -ddg::harmonic_ca_tether 0.5 -ddg::constraint_weight 1.0 -ddg::out_pdb_prefix min_cst_0.5 -ddg::sc_min_only false > mincst.log
+// 	grep 'c-alpha' mincst.log | awk '{print "AtomPair CA "\$8" CA "\$10" HARMONIC "\$12" "\$15""}' > input.cst
+// 	"""
+// }
+
+// process ROSETTA_DDG {
+// 	cpus 4
+// 	container "${simgDir}/rosetta_23_45_updated_03.sif"
+
+// 	input:
+// 	path min_pdb
+// 	path cst
+// 	path resf
+
+
+// 	output:
+// 	path "ddg_predictions.out"
+// 	path "*_wt.out"
+// 	path "*_mt.out"
+
+
+// 	"""
+// 	ddg_monomer.mpi.linuxgccrelease -ignore_zero_occupancy false -in:file:s ${min_pdb} -ddg::mut_file ${resf} -ddg:weight_file soft_rep_design -database /rosetta/Rosetta/main/database -ddg::iterations 50 -ddg::dump_pdbs true -ignore_unrecognized_res -ddg::local_opt_only false -ddg::min_cst true -constraints::cst_file ${cst} -in::file::fullatom -ddg::min true
+// 	"""
+// }
+
+
+process MAESTRO {
+	cpus 4
+	container "${simgDir}/maestro.sif"
+
+
+	input:
+	path effiles_dir
+	path council_dir
+	path pdb
+	val mutation
+	val chain
+	path xml
+
+	output:
+	path "*.csv"
+
+	script:
+	mut = mutation[-1]
+	mut_index = mutation.indexOf(mut)
+	mutation = mutation[0..mut_index-1]
+	new_mutation = mutation + '.' + chain + '{' + mut + '}'
+	"""
+	maestro ${xml} ${pdb} --evalmut=${new_mutation} > maestro_out_${pdb}.csv
+	"""
+
+}
 
 process CUTANDMUTATE {
     input:
@@ -63,7 +129,7 @@ process CREATEXML {
 
 process ROSETTA_THREADER {
 	cpus 4
-	container "${simgDir}/rosetta_23_45_reduced.sif"
+	container "${simgDir}/rosetta_23_45_updated_03.sif"
 
 	input:
 	path PDB
@@ -80,7 +146,6 @@ process ROSETTA_THREADER {
 }
 
 process SPLITPDB {
-
     input:
     path list_of_structs
 
@@ -101,8 +166,7 @@ process SPLITPDB {
 
 process ROSETTA_FIXBB {
 	cpus 4
-	container "${simgDir}/rosetta_23_45_reduced.sif"
-	
+	container "${simgDir}/rosetta_23_45_updated_03.sif"
 	input:
 	path pdb_file 
     path res_file 
@@ -111,9 +175,7 @@ process ROSETTA_FIXBB {
 	path "*.pdb"
 	path "*.sc"
 	path "*.txt"
-	/*
-	Create script to create xml files for each rosetta threader instance (based on input [read from files might be the answer])
-	*/
+
 	script:
 	"""
 	fixbb.mpi.linuxgccrelease -in:file:s $pdb_file -resfile $res_file -out:suffix _resout > log.txt 

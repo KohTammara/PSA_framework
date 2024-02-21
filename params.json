@@ -6,6 +6,7 @@
     "start_position" : 1,
     "end_position" : 260,
     "mutation" : "M205A",
+    "chain" : "A",
     "name" : "Threader",
     "pack_neighbors" : "NONE",
     "neighbor_dis" : "NONE",
@@ -14,7 +15,10 @@
     "pack_round" : "NONE",
     "sequence_mode" : "NONE",
     "template" : "/home/21616019/Documents/PSA_framework/bin/template.xml",
-    "weights" : "ref2015"
+    "weights" : "ref2015",
 
+    "maestro_xml" : "/home/21616019/Documents/PSA_framework/work/maestro/maestro_template.xml",
+    "effiles" : "/home/21616019/Documents/PSA_framework/work/maestro/effiles",
+    "council" : "/home/21616019/Documents/PSA_framework/work/maestro/council"
 
 }

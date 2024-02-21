@@ -6,3 +6,4 @@ output.xml
 work/*
 .nextflow*
 .nexxtflow/
+bin/contraints.py
