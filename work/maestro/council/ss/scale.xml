@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scale>
+  <columns n="12" type="default">
+    <column i="0">
+      <mean>0.0340249</mean>
+      <sdev>0.143222</sdev>
+      <min>-0.406925</min>
+      <max>0.758184</max>
+    </column>
+    <column i="1">
+      <mean>0.0138642</mean>
+      <sdev>0.194777</sdev>
+      <min>-0.646555</min>
+      <max>1.01383</max>
+    </column>
+    <column i="2">
+      <mean>0.00620987</mean>
+      <sdev>0.11619</sdev>
+      <min>-0.452839</min>
+      <max>0.440539</max>
+    </column>
+    <column i="3">
+      <mean>121.624</mean>
+      <sdev>41.9801</sdev>
+      <min>52</min>
+      <max>370</max>
+    </column>
+    <column i="4">
+      <mean>52.9478</mean>
+      <sdev>46.9324</sdev>
+      <min>0</min>
+      <max>208.86</max>
+    </column>
+    <column i="5">
+      <mean>9.7879</mean>
+      <sdev>35.4961</sdev>
+      <min>-115.14</min>
+      <max>106.12</max>
+    </column>
+    <column i="6">
+      <mean>-115.293</mean>
+      <sdev>29.2693</sdev>
+      <min>-200.52</min>
+      <max>-68.04</max>
+    </column>
+    <column i="7">
+      <mean>-0.0363377</mean>
+      <sdev>2.13866</sdev>
+      <min>-8.38</min>
+      <max>7.93</max>
+    </column>
+    <column i="8">
+      <mean>5.41857</mean>
+      <sdev>2.03147</sdev>
+      <min>1.2</min>
+      <max>11</max>
+    </column>
+    <column i="9">
+      <mean>1</mean>
+      <sdev>0</sdev>
+      <min>1</min>
+      <max>1</max>
+    </column>
+    <column i="10">
+      <mean>0.460779</mean>
+      <sdev>0.498459</sdev>
+      <min>0</min>
+      <max>1</max>
+    </column>
+    <column i="11">
+      <mean>0.183896</mean>
+      <sdev>0.387399</sdev>
+      <min>0</min>
+      <max>1</max>
+    </column>
+  </columns>
+  <columns n="1" type="combined">
+    <column i="0">
+      <mean>0.0312341</mean>
+      <sdev>0.181572</sdev>
+      <min>-0.586248</min>
+      <max>0.930215</max>
+    </column>
+  </columns>
+</scale>

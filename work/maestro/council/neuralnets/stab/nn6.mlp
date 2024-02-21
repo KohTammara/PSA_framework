@@ -1,0 +1,85 @@
+<?xml version="1.0" ?>
+<NeuralNetwork Version="4">
+    <InputsOutputsInformation Version="4">
+        <InputsName>
+            <InputName Index="1">i0</InputName>
+            <InputName Index="2">i1</InputName>
+            <InputName Index="3">i2</InputName>
+            <InputName Index="4">i3</InputName>
+            <InputName Index="5">i4</InputName>
+            <InputName Index="6">i5</InputName>
+            <InputName Index="7">i6</InputName>
+            <InputName Index="8">i7</InputName>
+            <InputName Index="9">i8</InputName>
+            <InputName Index="10">i9</InputName>
+            <InputName Index="11">i10</InputName>
+            <InputName Index="12">i11</InputName>
+        </InputsName>
+        <InputsUnits>
+            <InputUnits Index="1"></InputUnits>
+            <InputUnits Index="2"></InputUnits>
+            <InputUnits Index="3"></InputUnits>
+            <InputUnits Index="4"></InputUnits>
+            <InputUnits Index="5"></InputUnits>
+            <InputUnits Index="6"></InputUnits>
+            <InputUnits Index="7"></InputUnits>
+            <InputUnits Index="8"></InputUnits>
+            <InputUnits Index="9"></InputUnits>
+            <InputUnits Index="10"></InputUnits>
+            <InputUnits Index="11"></InputUnits>
+            <InputUnits Index="12"></InputUnits>
+        </InputsUnits>
+        <InputsDescription>
+            <InputDescription Index="1"></InputDescription>
+            <InputDescription Index="2"></InputDescription>
+            <InputDescription Index="3"></InputDescription>
+            <InputDescription Index="4"></InputDescription>
+            <InputDescription Index="5"></InputDescription>
+            <InputDescription Index="6"></InputDescription>
+            <InputDescription Index="7"></InputDescription>
+            <InputDescription Index="8"></InputDescription>
+            <InputDescription Index="9"></InputDescription>
+            <InputDescription Index="10"></InputDescription>
+            <InputDescription Index="11"></InputDescription>
+            <InputDescription Index="12"></InputDescription>
+        </InputsDescription>
+        <OutputsName>
+            <OutputName Index="1">o1</OutputName>
+        </OutputsName>
+        <OutputsUnits>
+            <OutputUnits Index="1"></OutputUnits>
+        </OutputsUnits>
+        <OutputsDescription>
+            <OutputDescription Index="1"></OutputDescription>
+        </OutputsDescription>
+        <Display>1</Display>
+    </InputsOutputsInformation>
+    <MultilayerPerceptron Version="4">
+        <Architecture>12 28 1</Architecture>
+        <LayersActivationFunction>HyperbolicTangent Linear</LayersActivationFunction>
+        <Parameters>339520 -183482 249459 -28601.7 133679 114183 -56494.7 190696 224982 -68375.4 0.423138 117950 209553 434244 138504 293666 207153 57381 -38822.5 76812.4 231166 -115212 181548 -0.0551926 -254666 -414230 -545549 111757 169847 130337 95743.7 -113294 41449.2 -180410 -94790 -325550 -0.188454 333307 54764.6 5432.62 -1303.55 11444 70913.6 50531.7 6037.2 21342.5 14584.4 -2451.93 2245.15 0.327855 -11039.2 -6785.61 166132 133682 110718 102811 -309979 -242961 19673.1 -35394.3 164204 88120 1.21161 97269.8 122613 -126428 81134.6 -53899.3 18725 -97769.1 45783.7 123725 -119329 -90857.2 4872.43 -0.827097 94691.8 -266452 -206863 -144834 246497 12812.8 -11743.6 35125.4 -57472.3 -66096.6 125391 -8344.03 0.29015 143419 -273049 -197929 71814.1 51600.2 89358.2 398469 547969 -268553 377631 -30878.1 -139505 -1.61692 -143419 -193978 -340871 150915 -110040 143322 -360276 295593 107334 327944 -297916 13385.5 0.128572 340466 -21480.8 -105859 33294.8 20399.3 -687352 76555.4 80381.1 -418563 195678 186197 -34593.4 1.14487 -3854.25 143121 290965 -55353.7 -76405.5 -123086 46742.5 22333.3 -223682 226102 -417744 191051 1.67835 -299251 176304 1872.89 1546.78 -7355.39 -12900.6 9293.08 6856 9495.52 -16179.2 -3048.4 -9540.51 -0.889278 9044.34 -22465.1 -121774 52294.2 5809.91 -381935 20046.9 -87464 91941.5 348563 93675.2 173901 0.194375 -117472 9810.45 394136 19727.5 324387 -25794 327318 48449.5 -194016 -55368.7 247706 -54176.3 0.28329 82646.8 224027 462134 -229410 130572 24288.3 261245 -106880 164189 14161.5 435612 326915 -0.494698 -272623 -395658 8006.5 -18930 63254.8 2704.1 152840 320393 -166014 -62988.9 105828 -126057 -0.562078 -59630.2 -169769 -325914 182162 -171027 74072.9 42433.9 -79254.5 -36673.1 5987.93 248903 103013 1.02686 -111594 -174006 -131260 7636.38 -92183.5 -405765 -67993 39327.7 -155201 88229.2 -86652.8 159569 0.287236 5781.55 -33030.9 84555.9 303204 -1163.44 224040 -83536.1 -19661.7 15883.9 -228393 129924 -244217 -0.424042 -44098.2 207145 -57475.8 172696 42125.1 -127019 -113898 40018.6 -167030 -7188.57 -262529 -194362 1.20322 -206237 -100544 170096 -97217.4 245584 97545.7 88303.3 -118349 -23213.9 10562 -103668 199609 0.24679 420800 222537 -139469 36462.8 -391942 -53500.4 -248452 -69278.3 295708 -341519 -118656 133491 -0.939256 -155463 22068.6 106438 -292010 8480.31 116560 -24055.2 -64727 174446 -99872.7 173150 77281.7 -0.117233 -204064 -101633 -194221 90151.4 213642 89039.7 171381 -55959.3 120591 -40947.1 95390.1 111401 0.880572 -183141 -43176.6 165217 -227147 360868 -185447 -189434 339284 -151468 -33074.9 -496566 407432 0.626378 20022.4 263846 73375 332349 72043.8 -139487 -21459 -89691.2 -9370.45 -206874 -30206.8 -295029 1.12269 -216941 37686.1 803384 101611 -48652.6 105296 476017 -58658.1 1734.34 146317 -45519.2 -38342.2 1.13085 326334 98530.2 71127.7 272712 -314558 -157789 -4173.55 71591.8 -211407 534380 -304213 -64589.2 0.459979 -226019 22743.8 -0.749922 0.274784 0.280726 0.367923 -0.275167 0.232768 -0.284247 -0.158615 0.299368 0.218759 -0.206988 0.229062 0.302726 0.210626 0.264058 0.29722 -0.370048 0.214133 -0.287454 0.24869 0.286189 -0.187321 0.189107 -0.287692 -0.171607 0.295219 -0.26567 0.658939 -0.2268</Parameters>
+        <Display>1</Display>
+    </MultilayerPerceptron>
+    <ScalingLayer Version="4">
+        <Minimums>-5.67351 -5.98156 -5.3299 -1.17471 -1.02042 -6.55171 -11.7209 -15.1962 -2.98092 0 -0.860407 -0.586705</Minimums>
+        <Maximums>4.65176 4.84629 8.00414 15.7561 4.04082 9.08608 0.7008 7.1209 2.79763 0 1.16224 1.70443</Maximums>
+        <Means>-0.189467 -0.202069 -0.0127956 0.00364481 0.234219 -0.0734183 0.0215086 0.00409529 -0.0543913 0 0.0340361 -0.0836017</Means>
+        <StandardDeviations>0.850485 0.860023 1.0895 1.06033 1.04033 0.961689 0.908128 1.07398 1.05691 0 1.0047 0.948599</StandardDeviations>
+        <ScalingMethod>MinimumMaximum</ScalingMethod>
+        <Display>1</Display>
+    </ScalingLayer>
+    <UnscalingLayer Version="4">
+        <Minimums>-8</Minimums>
+        <Maximums>1.58</Maximums>
+        <Means>0.104435</Means>
+        <StandardDeviations>1.06032</StandardDeviations>
+        <UnscalingMethod>MinimumMaximum</UnscalingMethod>
+        <Display>1</Display>
+    </UnscalingLayer>
+    <ScalingLayerFlag>0</ScalingLayerFlag>
+    <UnscalingLayerFlag>0</UnscalingLayerFlag>
+    <ProbabilisticLayerFlag>0</ProbabilisticLayerFlag>
+    <BoundingLayerFlag>0</BoundingLayerFlag>
+    <ConditionsLayerFlag>0</ConditionsLayerFlag>
+    <Display>1</Display>
+</NeuralNetwork>

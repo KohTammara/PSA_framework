@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<member_adjustment>
+  <ddg>
+    <mean>1.33899</mean>
+    <sdev>1.83603</sdev>
+    <min>-8</min>
+    <max>12.23</max>
+  </ddg>
+  <ddg_stab>
+    <mean>0.30747</mean>
+    <sdev>1.14964</sdev>
+    <min>-8</min>
+    <max>1.83</max>
+  </ddg_stab>
+  <ddg_destab>
+    <mean>2.47087</mean>
+    <sdev>1.3728</sdev>
+    <min>0.84</min>
+    <max>12.23</max>
+  </ddg_destab>
+  <council>
+    <mean>1.00525</mean>
+    <sdev>1.10359</sdev>
+    <min>-3.51206</min>
+    <max>5.16602</max>
+    <slope>0.474357</slope>
+    <intercept>0.370088</intercept>
+  </council>
+  <member file="[CONFIG_ROOT]/council/neural_nets.xml">
+    <mean>1.33899</mean>
+    <sdev>1.5143</sdev>
+    <min>-4.17912</min>
+    <max>6.24359</max>
+    <slope>0.596528</slope>
+    <intercept>0.540247</intercept>
+  </member>
+  <member file="[CONFIG_ROOT]/council/stab_neural_nets.xml">
+    <mean>2.71507</mean>
+    <sdev>1.89952</sdev>
+    <min>-5.71888</min>
+    <max>3.67747</max>
+    <slope>0.627708</slope>
+    <intercept>1.17131</intercept>
+  </member>
+  <member file="[CONFIG_ROOT]/council/destab_neural_nets.xml">
+    <mean>0.1053</mean>
+    <sdev>1.982</sdev>
+    <min>-1.34138</min>
+    <max>6.9029</max>
+    <slope>0.681614</slope>
+    <intercept>-0.382806</intercept>
+  </member>
+  <member file="[CONFIG_ROOT]/council/svm.model">
+    <mean>1.32985</mean>
+    <sdev>1.45691</sdev>
+    <min>-6.19991</min>
+    <max>9.20016</max>
+    <slope>0.670885</slope>
+    <intercept>0.431539</intercept>
+  </member>
+  <member file="[CONFIG_ROOT]/council/stab_svm.model">
+    <mean>1.16699</mean>
+    <sdev>1.24422</sdev>
+    <min>-3.6721</min>
+    <max>1.44866</max>
+    <slope>0.403073</slope>
+    <intercept>0.0656257</intercept>
+  </member>
+  <member file="[CONFIG_ROOT]/council/destab_svm.model">
+    <mean>0.686652</mean>
+    <sdev>1.85255</sdev>
+    <min>0.296513</min>
+    <max>6.34474</max>
+    <slope>0.471651</slope>
+    <intercept>0.97152</intercept>
+  </member>
+  <member file="[CONFIG_ROOT]/council/regression.xml">
+    <mean>-3.27635e-15</mean>
+    <sdev>0.843229</sdev>
+    <min>-4.24734</min>
+    <max>3.61777</max>
+    <slope>0.210928</slope>
+    <intercept>-0.282431</intercept>
+  </member>
+</member_adjustment>

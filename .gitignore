@@ -3,7 +3,7 @@ images/*
 test.txt
 Q53YK7.txt
 output.xml
-work/*
+# work/*
 .nextflow*
 .nexxtflow/
 bin/contraints.py

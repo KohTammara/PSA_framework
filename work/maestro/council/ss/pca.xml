@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pca>
+  <ncol>10</ncol>
+  <nrow>10</nrow>
+  <nincluded>10</nincluded>
+  <min_values>
+    <min_value column="0">-0.406925</min_value>
+    <min_value column="1">-0.646555</min_value>
+    <min_value column="2">-0.452839</min_value>
+    <min_value column="3">52</min_value>
+    <min_value column="4">0</min_value>
+    <min_value column="5">-115.14</min_value>
+    <min_value column="6">-200.52</min_value>
+    <min_value column="7">-8.38</min_value>
+    <min_value column="8">1.2</min_value>
+    <min_value column="9">1</min_value>
+  </min_values>
+  <max_values>
+    <max_value column="0">0.758184</max_value>
+    <max_value column="1">1.01383</max_value>
+    <max_value column="2">0.440539</max_value>
+    <max_value column="3">370</max_value>
+    <max_value column="4">208.86</max_value>
+    <max_value column="5">106.12</max_value>
+    <max_value column="6">2.22507e-308</max_value>
+    <max_value column="7">7.93</max_value>
+    <max_value column="8">11</max_value>
+    <max_value column="9">1</max_value>
+  </max_values>
+  <adjust_mean_values>
+    <mean_value column="0">-0.243075</mean_value>
+    <mean_value column="1">-0.2045</mean_value>
+    <mean_value column="2">0.0276704</mean_value>
+    <mean_value column="3">-0.562111</mean_value>
+    <mean_value column="4">-0.492982</mean_value>
+    <mean_value column="5">0.129241</mean_value>
+    <mean_value column="6">-0.149945</mean_value>
+    <mean_value column="7">0.0231346</mean_value>
+    <mean_value column="8">-0.139067</mean_value>
+    <mean_value column="9">0</mean_value>
+  </adjust_mean_values>
+  <rotation_matrix>
+    <element c="0" v="0">-0.146328</element>
+    <element c="1" v="0">-0.0628983</element>
+    <element c="2" v="0">0.144656</element>
+    <element c="3" v="0">0.572109</element>
+    <element c="4" v="0">0.318064</element>
+    <element c="5" v="0">-0.108012</element>
+    <element c="6" v="0">-0.232953</element>
+    <element c="7" v="0">0.227548</element>
+    <element c="8" v="0">-0.638374</element>
+    <element c="9" v="0">0</element>
+    <element c="0" v="1">-0.119199</element>
+    <element c="1" v="1">-0.0548419</element>
+    <element c="2" v="1">0.114714</element>
+    <element c="3" v="1">0.575509</element>
+    <element c="4" v="1">0.188274</element>
+    <element c="5" v="1">-0.151649</element>
+    <element c="6" v="1">-0.207439</element>
+    <element c="7" v="1">-0.343784</element>
+    <element c="8" v="1">0.647111</element>
+    <element c="9" v="1">0</element>
+    <element c="0" v="2">0.00894923</element>
+    <element c="1" v="2">-0.100995</element>
+    <element c="2" v="2">0.0146606</element>
+    <element c="3" v="2">-0.343732</element>
+    <element c="4" v="2">0.618741</element>
+    <element c="5" v="2">0.517577</element>
+    <element c="6" v="2">-0.459888</element>
+    <element c="7" v="2">0.00948867</element>
+    <element c="8" v="2">0.0950806</element>
+    <element c="9" v="2">0</element>
+    <element c="0" v="3">-0.186773</element>
+    <element c="1" v="3">0.166702</element>
+    <element c="2" v="3">-0.012475</element>
+    <element c="3" v="3">0.048107</element>
+    <element c="4" v="3">-0.638199</element>
+    <element c="5" v="3">0.220686</element>
+    <element c="6" v="3">-0.6902</element>
+    <element c="7" v="3">0.0453297</element>
+    <element c="8" v="3">-0.0206201</element>
+    <element c="9" v="3">0</element>
+    <element c="0" v="4">0.87255</element>
+    <element c="1" v="4">0.393456</element>
+    <element c="2" v="4">0.102312</element>
+    <element c="3" v="4">0.107841</element>
+    <element c="4" v="4">0.0415122</element>
+    <element c="5" v="4">-0.105139</element>
+    <element c="6" v="4">-0.202496</element>
+    <element c="7" v="4">0.0859647</element>
+    <element c="8" v="4">0.0240657</element>
+    <element c="9" v="4">0</element>
+    <element c="0" v="5">0.123256</element>
+    <element c="1" v="5">-0.252385</element>
+    <element c="2" v="5">0.674251</element>
+    <element c="3" v="5">-0.155308</element>
+    <element c="4" v="5">-0.129371</element>
+    <element c="5" v="5">0.0199646</element>
+    <element c="6" v="5">-0.0226767</element>
+    <element c="7" v="5">-0.596706</element>
+    <element c="8" v="5">-0.262043</element>
+    <element c="9" v="5">0</element>
+    <element c="0" v="6">-0.0452159</element>
+    <element c="1" v="6">-0.218904</element>
+    <element c="2" v="6">0.610807</element>
+    <element c="3" v="6">-0.099536</element>
+    <element c="4" v="6">-0.066906</element>
+    <element c="5" v="6">-0.111548</element>
+    <element c="6" v="6">0.00279169</element>
+    <element c="7" v="6">0.675444</element>
+    <element c="8" v="6">0.306419</element>
+    <element c="9" v="6">0</element>
+    <element c="0" v="7">0.100853</element>
+    <element c="1" v="7">0.0485377</element>
+    <element c="2" v="7">0.126618</element>
+    <element c="3" v="7">0.401664</element>
+    <element c="4" v="7">-0.143869</element>
+    <element c="5" v="7">0.79024</element>
+    <element c="6" v="7">0.399217</element>
+    <element c="7" v="7">0.0666089</element>
+    <element c="8" v="7">0.0334345</element>
+    <element c="9" v="7">0</element>
+    <element c="0" v="8">0.375052</element>
+    <element c="1" v="8">-0.828411</element>
+    <element c="2" v="8">-0.333685</element>
+    <element c="3" v="8">0.118421</element>
+    <element c="4" v="8">-0.172091</element>
+    <element c="5" v="8">0.0193077</element>
+    <element c="6" v="8">-0.118016</element>
+    <element c="7" v="8">0.0614891</element>
+    <element c="8" v="8">0.00214226</element>
+    <element c="9" v="8">0</element>
+    <element c="0" v="9">0</element>
+    <element c="1" v="9">0</element>
+    <element c="2" v="9">0</element>
+    <element c="3" v="9">0</element>
+    <element c="4" v="9">0</element>
+    <element c="5" v="9">0</element>
+    <element c="6" v="9">0</element>
+    <element c="7" v="9">0</element>
+    <element c="8" v="9">0</element>
+    <element c="9" v="9">1</element>
+  </rotation_matrix>
+  <standard_deviations>
+    <sdev component="0">0.471808</sdev>
+    <sdev component="1">0.414593</sdev>
+    <sdev component="2">0.40696</sdev>
+    <sdev component="3">0.307249</sdev>
+    <sdev component="4">0.265172</sdev>
+    <sdev component="5">0.247376</sdev>
+    <sdev component="6">0.230373</sdev>
+    <sdev component="7">0.153605</sdev>
+    <sdev component="8">0.146402</sdev>
+    <sdev component="9">0</sdev>
+  </standard_deviations>
+</pca>
