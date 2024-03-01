@@ -1,0 +1,275 @@
+[forcefield]
+process GROMACS_BOX_AND_SOLVATE requires the selection of the forcefield, the prompt is as follows:
+################################################################################################
+Select the Force Field:
+
+From '/usr/local/gromacs/share/gromacs/top':
+
+ 1: AMBER03 protein, nucleic AMBER94 (Duan et al., J. Comp. Chem. 24, 1999-2012, 2003)
+
+ 2: AMBER94 force field (Cornell et al., JACS 117, 5179-5197, 1995)
+
+ 3: AMBER96 protein, nucleic AMBER94 (Kollman et al., Acc. Chem. Res. 29, 461-469, 1996)
+
+ 4: AMBER99 protein, nucleic AMBER94 (Wang et al., J. Comp. Chem. 21, 1049-1074, 2000)
+
+ 5: AMBER99SB protein, nucleic AMBER94 (Hornak et al., Proteins 65, 712-725, 2006)
+
+ 6: AMBER99SB-ILDN protein, nucleic AMBER94 (Lindorff-Larsen et al., Proteins 78, 1950-58, 2010)
+
+ 7: AMBERGS force field (Garcia & Sanbonmatsu, PNAS 99, 2782-2787, 2002)
+
+ 8: CHARMM all-atom force field
+
+ 9: CHARMM27 all-atom force field (CHARM22 plus CMAP for proteins)
+
+10: GROMOS96 43a1 force field
+
+11: GROMOS96 43a2 force field (improved alkane dihedrals)
+
+12: GROMOS96 45a3 force field (Schuler JCC 2001 22 1205)
+
+13: GROMOS96 53a5 force field (JCC 2004 vol 25 pag 1656)
+
+14: GROMOS96 53a6 force field (JCC 2004 vol 25 pag 1656)
+
+15: GROMOS96 54a7 force field (Eur. Biophys. J. (2011), 40,, 843-856, DOI: 10.1007/s00249-011-0700-9)
+
+16: OPLS-AA/L all-atom force field (2001 aminoacid dihedrals)
+################################################################################################
+> Populate the parameter "G1" in params.json with the number associated with the forcefield of your choice.
+________________________________________________________________________________________________
+[gmx genion]
+process GROMACS_BOX_AND_SOLVATE requires the selection of the group, the prompt is as follows:
+################################################################################################
+Group     0 (         System) has 24650 elements
+Group     1 (        Protein) has  1694 elements
+Group     2 (      Protein-H) has   878 elements
+Group     3 (        C-alpha) has   104 elements
+Group     4 (       Backbone) has   312 elements
+Group     5 (      MainChain) has   415 elements
+Group     6 (   MainChain+Cb) has   514 elements
+Group     7 (    MainChain+H) has   518 elements
+Group     8 (      SideChain) has  1176 elements
+Group     9 (    SideChain-H) has   463 elements
+Group    10 (    Prot-Masses) has  1694 elements
+Group    11 (    non-Protein) has 22956 elements
+Group    12 (          Water) has 22956 elements
+Group    13 (            SOL) has 22956 elements
+Group    14 (      non-Water) has  1694 elements
+Select a group: 
+###############################################################################################
+> Populate the parameter "G2" in params.json with the number associated with the group of your choice.
+_______________________________________________________________________________________________
+[gmx energy]
+process GROMACS_BOX_AND_SOLVATE requires the selection of the terms, the prompt is as follows:
+###############################################################################################
+Select the terms you want from the following list by
+selecting either (part of) the name or the number or a combination.
+End your selection with an empty line or a zero.
+-------------------------------------------------------------------
+  1  Bond             2  U-B              3  Proper-Dih.      4  Improper-Dih. 
+  5  CMAP-Dih.        6  LJ-14            7  Coulomb-14       8  LJ-(SR)       
+  9  Coulomb-(SR)    10  Coul.-recip.    11  Potential       12  Pressure      
+ 13  Vir-XX          14  Vir-XY          15  Vir-XZ          16  Vir-YX        
+ 17  Vir-YY          18  Vir-YZ          19  Vir-ZX          20  Vir-ZY        
+ 21  Vir-ZZ          22  Pres-XX         23  Pres-XY         24  Pres-XZ       
+ 25  Pres-YX         26  Pres-YY         27  Pres-YZ         28  Pres-ZX       
+ 29  Pres-ZY         30  Pres-ZZ         31  #Surf*SurfTen   32  T-rest        
+################################################################################################
+> Populate the parameter "G3" in params.json with the number associated with the term/s of your choice.
+_______________________________________________________________________________________________
+[gmx energy]
+process GROMACS_BOX_AND_SOLVATE requires the selection of the terms, the prompt is as follows:
+################################################################################################
+Select the terms you want from the following list by
+selecting either (part of) the name or the number or a combination.
+End your selection with an empty line or a zero.
+-------------------------------------------------------------------
+  1  Bond             2  U-B              3  Proper-Dih.      4  Improper-Dih. 
+  5  CMAP-Dih.        6  LJ-14            7  Coulomb-14       8  LJ-(SR)       
+  9  Disper.-corr.   10  Coulomb-(SR)    11  Coul.-recip.    12  Position-Rest.
+ 13  Potential       14  Kinetic-En.     15  Total-Energy    16  Conserved-En. 
+ 17  Temperature     18  Pres.-DC        19  Pressure        20  Constr.-rmsd  
+ 21  Vir-XX          22  Vir-XY          23  Vir-XZ          24  Vir-YX        
+ 25  Vir-YY          26  Vir-YZ          27  Vir-ZX          28  Vir-ZY        
+ 29  Vir-ZZ          30  Pres-XX         31  Pres-XY         32  Pres-XZ       
+ 33  Pres-YX         34  Pres-YY         35  Pres-YZ         36  Pres-ZX       
+ 37  Pres-ZY         38  Pres-ZZ         39  #Surf*SurfTen   40  T-Protein     
+ 41  T-non-Protein                       42  Lamb-Protein                      
+ 43  Lamb-non-Protein   
+###############################################################################################
+> Populate the parameter "G4" in params.json with the number associated with the term/s of your choice.
+_______________________________________________________________________________________________
+[gmx energy]
+process GROMACS_BOX_AND_SOLVATE requires the selection of the terms, the prompt is as follows:
+###############################################################################################
+Select the terms you want from the following list by
+selecting either (part of) the name or the number or a combination.
+End your selection with an empty line or a zero.
+-------------------------------------------------------------------
+  1  Bond             2  U-B              3  Proper-Dih.      4  Improper-Dih. 
+  5  CMAP-Dih.        6  LJ-14            7  Coulomb-14       8  LJ-(SR)       
+  9  Coulomb-(SR)    10  Position-Rest.  11  Potential       12  Kinetic-En.   
+ 13  Total-Energy    14  Temperature     15  Pressure        16  Constr.-rmsd  
+ 17  Vir-XX          18  Vir-XY          19  Vir-XZ          20  Vir-YX        
+ 21  Vir-YY          22  Vir-YZ          23  Vir-ZX          24  Vir-ZY        
+ 25  Vir-ZZ          26  Pres-XX         27  Pres-XY         28  Pres-XZ       
+ 29  Pres-YX         30  Pres-YY         31  Pres-YZ         32  Pres-ZX       
+ 33  Pres-ZY         34  Pres-ZZ         35  #Surf*SurfTen   36  T-rest        
+###############################################################################################
+> Populate the parameter "G5" in params.json with the number associated with the term/s of your choice.
+_______________________________________________________________________________________________
+[gmx trjconv]
+process GROMACS_BOX_AND_SOLVATE requires the selection of the terms, the prompt is as follows:
+###############################################################################################
+Group     0 (         System) has 24644 elements
+Group     1 (        Protein) has  1694 elements
+Group     2 (      Protein-H) has   878 elements
+Group     3 (        C-alpha) has   104 elements
+Group     4 (       Backbone) has   312 elements
+Group     5 (      MainChain) has   415 elements
+Group     6 (   MainChain+Cb) has   514 elements
+Group     7 (    MainChain+H) has   518 elements
+Group     8 (      SideChain) has  1176 elements
+Group     9 (    SideChain-H) has   463 elements
+Group    10 (    Prot-Masses) has  1694 elements
+Group    11 (    non-Protein) has 22950 elements
+Group    12 (          Water) has 22947 elements
+Group    13 (            SOL) has 22947 elements
+Group    14 (      non-Water) has  1697 elements
+Group    15 (          Other) has     3 elements
+Group    16 (            SOD) has     3 elements
+Select a group:
+Group     0 (         System) has 24644 elements
+Group     1 (        Protein) has  1694 elements
+Group     2 (      Protein-H) has   878 elements
+Group     3 (        C-alpha) has   104 elements
+Group     4 (       Backbone) has   312 elements
+Group     5 (      MainChain) has   415 elements
+Group     6 (   MainChain+Cb) has   514 elements
+Group     7 (    MainChain+H) has   518 elements
+Group     8 (      SideChain) has  1176 elements
+Group     9 (    SideChain-H) has   463 elements
+Group    10 (    Prot-Masses) has  1694 elements
+Group    11 (    non-Protein) has 22950 elements
+Group    12 (          Water) has 22947 elements
+Group    13 (            SOL) has 22947 elements
+Group    14 (      non-Water) has  1697 elements
+Group    15 (          Other) has     3 elements
+Group    16 (            SOD) has     3 elements
+Select a group: 
+###############################################################################################
+> Populate the parameter "G6" in params.json with the number associated with the term/s of your choice.
+_______________________________________________________________________________________________
+[gmx rms]
+process GROMACS_BOX_AND_SOLVATE requires the selection of the terms, the prompt is as follows:
+###############################################################################################
+Select group for least squares fit
+Group     0 (         System) has 24644 elements
+Group     1 (        Protein) has  1694 elements
+Group     2 (      Protein-H) has   878 elements
+Group     3 (        C-alpha) has   104 elements
+Group     4 (       Backbone) has   312 elements
+Group     5 (      MainChain) has   415 elements
+Group     6 (   MainChain+Cb) has   514 elements
+Group     7 (    MainChain+H) has   518 elements
+Group     8 (      SideChain) has  1176 elements
+Group     9 (    SideChain-H) has   463 elements
+Group    10 (    Prot-Masses) has  1694 elements
+Group    11 (    non-Protein) has 22950 elements
+Group    12 (          Water) has 22947 elements
+Group    13 (            SOL) has 22947 elements
+Group    14 (      non-Water) has  1697 elements
+Group    15 (          Other) has     3 elements
+Group    16 (            SOD) has     3 elements
+Select a group: 
+Select group for RMSD calculation
+Group     0 (         System) has 24644 elements
+Group     1 (        Protein) has  1694 elements
+Group     2 (      Protein-H) has   878 elements
+Group     3 (        C-alpha) has   104 elements
+Group     4 (       Backbone) has   312 elements
+Group     5 (      MainChain) has   415 elements
+Group     6 (   MainChain+Cb) has   514 elements
+Group     7 (    MainChain+H) has   518 elements
+Group     8 (      SideChain) has  1176 elements
+Group     9 (    SideChain-H) has   463 elements
+Group    10 (    Prot-Masses) has  1694 elements
+Group    11 (    non-Protein) has 22950 elements
+Group    12 (          Water) has 22947 elements
+Group    13 (            SOL) has 22947 elements
+Group    14 (      non-Water) has  1697 elements
+Group    15 (          Other) has     3 elements
+Group    16 (            SOD) has     3 elements
+Select a group:
+###############################################################################################
+> Populate the parameter "G7" in params.json with the number associated with the term/s of your choice.
+_______________________________________________________________________________________________
+[gmx rms]
+process GROMACS_BOX_AND_SOLVATE requires the selection of the terms, the prompt is as follows:
+###############################################################################################
+Select group for least squares fit
+Group     0 (         System) has 24644 elements
+Group     1 (        Protein) has  1694 elements
+Group     2 (      Protein-H) has   878 elements
+Group     3 (        C-alpha) has   104 elements
+Group     4 (       Backbone) has   312 elements
+Group     5 (      MainChain) has   415 elements
+Group     6 (   MainChain+Cb) has   514 elements
+Group     7 (    MainChain+H) has   518 elements
+Group     8 (      SideChain) has  1176 elements
+Group     9 (    SideChain-H) has   463 elements
+Group    10 (    Prot-Masses) has  1694 elements
+Group    11 (    non-Protein) has 22950 elements
+Group    12 (          Water) has 22947 elements
+Group    13 (            SOL) has 22947 elements
+Group    14 (      non-Water) has  1697 elements
+Group    15 (          Other) has     3 elements
+Group    16 (            SOD) has     3 elements
+Select a group: 
+Select group for RMSD calculation
+Group     0 (         System) has 24644 elements
+Group     1 (        Protein) has  1694 elements
+Group     2 (      Protein-H) has   878 elements
+Group     3 (        C-alpha) has   104 elements
+Group     4 (       Backbone) has   312 elements
+Group     5 (      MainChain) has   415 elements
+Group     6 (   MainChain+Cb) has   514 elements
+Group     7 (    MainChain+H) has   518 elements
+Group     8 (      SideChain) has  1176 elements
+Group     9 (    SideChain-H) has   463 elements
+Group    10 (    Prot-Masses) has  1694 elements
+Group    11 (    non-Protein) has 22950 elements
+Group    12 (          Water) has 22947 elements
+Group    13 (            SOL) has 22947 elements
+Group    14 (      non-Water) has  1697 elements
+Group    15 (          Other) has     3 elements
+Group    16 (            SOD) has     3 elements
+Select a group: 
+###############################################################################################
+> Populate the parameter "G8" in params.json with the number associated with the term/s of your choice.
+______________________________________________________________________________________________
+[gmx gyrate]
+process GROMACS_BOX_AND_SOLVATE requires the selection of the terms, the prompt is as follows:
+###############################################################################################
+Group     0 (         System) has 24644 elements
+Group     1 (        Protein) has  1694 elements
+Group     2 (      Protein-H) has   878 elements
+Group     3 (        C-alpha) has   104 elements
+Group     4 (       Backbone) has   312 elements
+Group     5 (      MainChain) has   415 elements
+Group     6 (   MainChain+Cb) has   514 elements
+Group     7 (    MainChain+H) has   518 elements
+Group     8 (      SideChain) has  1176 elements
+Group     9 (    SideChain-H) has   463 elements
+Group    10 (    Prot-Masses) has  1694 elements
+Group    11 (    non-Protein) has 22950 elements
+Group    12 (          Water) has 22947 elements
+Group    13 (            SOL) has 22947 elements
+Group    14 (      non-Water) has  1697 elements
+Group    15 (          Other) has     3 elements
+Group    16 (            SOD) has     3 elements
+Select a group:
+###############################################################################################
+> Populate the parameter "G9" in params.json with the number associated with the term/s of your choice.

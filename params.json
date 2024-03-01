@@ -1,6 +1,6 @@
 {
     "list_of_structs" : "/home/21616019/Documents/PSA_framework/work/test/*.pdb",
-    "resf" : "/home/21616019/Documents/PSA_framework/work/test/resfile.txt",
+    "resf" : "/home/21616019/Documents/PSA_framework/work/test/resfile_*.txt",
 
     "sequence" : "/home/21616019/Documents/PSA_framework/work/test/Q53YK7.fasta",
     "start_position" : 1,
@@ -18,7 +18,18 @@
     "weights" : "ref2015",
 
     "maestro_xml" : "/home/21616019/Documents/PSA_framework/work/maestro/maestro_template.xml",
-    "effiles" : "/home/21616019/Documents/PSA_framework/work/maestro/effiles",
-    "council" : "/home/21616019/Documents/PSA_framework/work/maestro/council"
+    "path_to_pdb" : "/home/21616019/Documents/PSA_framework/work/test",
+    "effiles" : "/home/21616019/Documents/nf_test/effiles",
+    "prefix_maestro_out" : "pdb",
+    "postfix_maestro_out" : ".ent.gz",
+    "to_lower_maestro_out" : "true",
+    "bu_maestro" : "false",
+
+    "ions_mdp" : "/home/21616019/Documents/Backup/Gromacs/hpc_working_files_gromacs/prion_1qlx/in/ions.mdp",
+    "em_mdp" : "/home/21616019/Documents/Backup/Gromacs/hpc_working_files_gromacs/prion_1qlx/in/em.mdp",
+    "nvt_mdp" : "/home/21616019/Documents/Backup/Gromacs/hpc_working_files_gromacs/prion_1qlx/in/nvt.mdp",
+    "npt_mdp" : "/home/21616019/Documents/Backup/Gromacs/hpc_working_files_gromacs/prion_1qlx/in/npt.mdp",
+    "md_mdp" : "/home/21616019/Documents/Backup/Gromacs/hpc_working_files_gromacs/prion_1qlx/in/md.mdp"
+
 
 }
