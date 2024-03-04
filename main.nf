@@ -72,13 +72,12 @@ workflow.onComplete {
 
 workflow {
     //Rosetta fbb execution
-    pdb = Channel.fromPath( params.list_of_structs )
-    // ROSETTA_FIXBB(pdb, params.resf)
-
+    pdb = Channel.fromPath(params.list_of_structs)
+    rosy = ROSETTA_FIXBB(pdb, params.resf)
     //Rosetta threader execution
-    // seq = CUTANDMUTATE(params.sequence, params.start_position, params.end_position, params.mutation)
-    // xml = CREATEXML(params.name, seq, params.sequence_mode, params.pack_round, params.skip_unknown_mutant, params.scorefxn, params.start_position, params.neighbor_dis, params.pack_neighbors, params.weights, params.template)
-    // ROSETTA_THREADER(pdb, xml)
+    seq = CUTANDMUTATE(params.sequence, params.start_position, params.end_position, params.mutation)
+    xml = CREATEXML(params.name, seq, params.sequence_mode, params.pack_round, params.skip_unknown_mutant, params.scorefxn, params.start_position, params.neighbor_dis, params.pack_neighbors, params.weights, params.template)
+    ROSETTA_THREADER(pdb, xml)
 
     // ddg monomer Rosetta [NO LONGER IN USE]
     // ROSETTA_DDG_PREMINIMIZATION(pdb)
@@ -89,6 +88,6 @@ workflow {
     // MAESTRO(params.effiles, pdb, params.mutation, params.chain, maestro_xml)
 
     //GROMACS execution
-    GROMACS_BOX_AND_SOLVATE(pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp)
+    GROMACS_BOX_AND_SOLVATE(rosy, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
 
 }

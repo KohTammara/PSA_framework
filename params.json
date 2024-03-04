@@ -1,6 +1,6 @@
 {
     "list_of_structs" : "/home/21616019/Documents/PSA_framework/work/test/*.pdb",
-    "resf" : "/home/21616019/Documents/PSA_framework/work/test/resfile_*.txt",
+    "resf" : "/home/21616019/Documents/PSA_framework/work/test/resfile.txt",
 
     "sequence" : "/home/21616019/Documents/PSA_framework/work/test/Q53YK7.fasta",
     "start_position" : 1,
@@ -29,7 +29,15 @@
     "em_mdp" : "/home/21616019/Documents/Backup/Gromacs/hpc_working_files_gromacs/prion_1qlx/in/em.mdp",
     "nvt_mdp" : "/home/21616019/Documents/Backup/Gromacs/hpc_working_files_gromacs/prion_1qlx/in/nvt.mdp",
     "npt_mdp" : "/home/21616019/Documents/Backup/Gromacs/hpc_working_files_gromacs/prion_1qlx/in/npt.mdp",
-    "md_mdp" : "/home/21616019/Documents/Backup/Gromacs/hpc_working_files_gromacs/prion_1qlx/in/md.mdp"
-
+    "md_mdp" : "/home/21616019/Documents/Backup/Gromacs/hpc_working_files_gromacs/prion_1qlx/in/md.mdp",
+    "G1"    : "8",
+    "G2"    : "13",
+    "G3"    : "11",
+    "G4"    : "17",
+    "G5"    : "24",
+    "G6"    : "1 0",
+    "G7"    : "4 4",
+    "G8"    : "4 4",
+    "G9"    : "1"
 
 }
