@@ -1,0 +1,121 @@
+<!--
+  ~ Copyright 2013-2023, Seqera Labs
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html>
+<head>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+</head>
+<body>
+<pre class="mermaid" style="text-align: center;">
+flowchart TB
+    subgraph " "
+    v0["Channel.fromPath"]
+    v1["res_file"]
+    v3["sequence"]
+    v4["start_pos"]
+    v5["end_pos"]
+    v6["mutation"]
+    v8["name"]
+    v9["pack_round"]
+    v10["seq_mode"]
+    v11["skip_unknown_mutant"]
+    v12["scorefxn"]
+    v13["start_pos"]
+    v14["neighbor_dis"]
+    v15["pack_neighbors"]
+    v16["weight"]
+    v17["template"]
+    v22["ions_mdp"]
+    v23["em_mdp"]
+    v24["nvt_mdp"]
+    v25["npt_mdp"]
+    v26["md_mdp"]
+    v27["G1"]
+    v28["G2"]
+    v29["G3"]
+    v30["G4"]
+    v31["G5"]
+    v32["G6"]
+    v33["G7"]
+    v34["G8"]
+    v35["G9"]
+    end
+    v2([ROSETTA_FIXBB])
+    v7([CUTANDMUTATE])
+    v18([CREATEXML])
+    v19([ROSETTA_THREADER])
+    subgraph " "
+    v20[" "]
+    v21[" "]
+    v37[" "]
+    v38[" "]
+    v39[" "]
+    v40[" "]
+    v41[" "]
+    v42[" "]
+    v43[" "]
+    end
+    v36([GROMACS_BOX_AND_SOLVATE])
+    v0 --> v2
+    v0 --> v19
+    v1 --> v2
+    v2 --> v36
+    v3 --> v7
+    v4 --> v7
+    v5 --> v7
+    v6 --> v7
+    v7 --> v18
+    v8 --> v18
+    v9 --> v18
+    v10 --> v18
+    v11 --> v18
+    v12 --> v18
+    v13 --> v18
+    v14 --> v18
+    v15 --> v18
+    v16 --> v18
+    v17 --> v18
+    v18 --> v19
+    v19 --> v21
+    v19 --> v20
+    v22 --> v36
+    v23 --> v36
+    v24 --> v36
+    v25 --> v36
+    v26 --> v36
+    v27 --> v36
+    v28 --> v36
+    v29 --> v36
+    v30 --> v36
+    v31 --> v36
+    v32 --> v36
+    v33 --> v36
+    v34 --> v36
+    v35 --> v36
+    v36 --> v43
+    v36 --> v42
+    v36 --> v41
+    v36 --> v40
+    v36 --> v39
+    v36 --> v38
+    v36 --> v37
+
+</pre>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true });
+</script>
+</body>
+</html>
