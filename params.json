@@ -20,6 +20,7 @@
     "maestro_xml" : "/home/21616019/Documents/PSA_framework/work/maestro/maestro_template.xml",
     "path_to_pdb" : "/home/21616019/Documents/PSA_framework/work/test",
     "effiles" : "/home/21616019/Documents/nf_test/effiles",
+    "council" : "/home/21616019/Documents/maestro/MAESTRO_linux_x64/council",
     "prefix_maestro_out" : "pdb",
     "postfix_maestro_out" : ".ent.gz",
     "to_lower_maestro_out" : "true",

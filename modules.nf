@@ -245,6 +245,7 @@ process GROMACS_WT {
 process MAESTRO_XML {
 	input:
 	path effiles_dir
+	path council_dir
 	path path_to_pdb
 	val prefix
 	val postfix
@@ -267,6 +268,7 @@ process MAESTRO {
 
 	input:
 	path effiles_dir
+	path council_dir
 	path pdb
 	val mutation
 	val chain
