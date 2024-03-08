@@ -75,7 +75,9 @@ workflow.onComplete {
 workflow {
     //Rosetta fbb execution
     pdb = Channel.fromPath(params.list_of_structs)
+    //Channel.fromPath( ['/some/path/*.fq', '/other/path/*.fastq'] )
     rosy_fbb_pdb = ROSETTA_FIXBB(pdb, params.resf)
+
     //Rosetta threader execution
     seq = CUTANDMUTATE(params.sequence, params.start_position, params.end_position, params.mutation)
     xml = CREATEXML(params.name, seq, params.sequence_mode, params.pack_round, params.skip_unknown_mutant, params.scorefxn, params.start_position, params.neighbor_dis, params.pack_neighbors, params.weights, params.template)
