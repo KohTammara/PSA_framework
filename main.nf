@@ -73,15 +73,17 @@ workflow.onComplete {
 }
 
 workflow {
-    //Rosetta fbb execution
+    // Rosetta fbb execution
     pdb = Channel.fromPath(params.list_of_structs)
-    //Channel.fromPath( ['/some/path/*.fq', '/other/path/*.fastq'] )
-    rosy_fbb_pdb = ROSETTA_FIXBB(pdb, params.resf)
+    resf = Channel.fromPath(params.resf)
+    // input = Channel.fromPath(params.file_pairs)
+    // input.view()
+    rosy_fbb_pdb = ROSETTA_FIXBB(pdb, resf)
 
     //Rosetta threader execution
-    seq = CUTANDMUTATE(params.sequence, params.start_position, params.end_position, params.mutation)
-    xml = CREATEXML(params.name, seq, params.sequence_mode, params.pack_round, params.skip_unknown_mutant, params.scorefxn, params.start_position, params.neighbor_dis, params.pack_neighbors, params.weights, params.template)
-    rosy_threader_pdb = ROSETTA_THREADER(pdb, xml)
+    // seq = CUTANDMUTATE(params.sequence, params.start_position, params.end_position, params.mutation)
+    // xml = CREATEXML(params.name, seq, params.sequence_mode, params.pack_round, params.skip_unknown_mutant, params.scorefxn, params.start_position, params.neighbor_dis, params.pack_neighbors, params.weights, params.template)
+    // rosy_threader_pdb = ROSETTA_THREADER(pdb, xml)
 
     // ddg monomer Rosetta [NO LONGER IN USE]
     // ROSETTA_DDG_PREMINIMIZATION(pdb)

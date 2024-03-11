@@ -368,8 +368,11 @@ process ROSETTA_FIXBB {
 	cpus 4
 	container "${simgDir}/rosetta_23_45_updated_03.sif"
 	input:
-	path pdb_file 
-    path res_file 
+	// file(path pdb_file), file(path res_file) from pairFiles
+	// tuple (path pdb_file ,path res_file)
+	path pdb_file
+	path res_file
+
 
 	output:
 	path "*.pdb"

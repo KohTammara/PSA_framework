@@ -1,6 +1,6 @@
 {
     "list_of_structs" : "/home/21616019/Documents/PSA_framework/work/test/*.pdb",
-    "resf" : "/home/21616019/Documents/PSA_framework/work/test/resfile.txt",
+    "resf" : "/home/21616019/Documents/PSA_framework/work/test/*_resfile.txt",
 
     "sequence" : "/home/21616019/Documents/PSA_framework/work/test/Q53YK7.fasta",
     "start_position" : 1,
