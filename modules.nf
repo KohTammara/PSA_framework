@@ -65,7 +65,7 @@
 //create a collective gromacs process or see if it can be created otherwise split it at points where collective breaks
 //process for native and a process for mutant
 process GROMACS_MT_FBB {
-	cpus 4
+
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 
 	//clean PDB of HOH, create .gro file, create box and solvate 
@@ -124,7 +124,7 @@ process GROMACS_MT_FBB {
 }
 
 process GROMACS_MT_THREADER {
-	cpus 4
+	
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 
 	//clean PDB of HOH, create .gro file, create box and solvate 
@@ -183,7 +183,7 @@ process GROMACS_MT_THREADER {
 }
 
 process GROMACS_WT {
-	cpus 4
+
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 
 	//clean PDB of HOH, create .gro file, create box and solvate 
@@ -262,7 +262,7 @@ process MAESTRO_XML {
 }
 
 process MAESTRO {
-	cpus 4
+	cpus 6
 	container "${simgDir}/maestro.sif"
 
 
@@ -304,6 +304,8 @@ process CUTANDMUTATE {
 }
 
 process CREATEXML {
+	conda 'env.yaml'
+
 	input:
 	val name
 	path sequence
@@ -328,7 +330,7 @@ process CREATEXML {
 }
 
 process ROSETTA_THREADER {
-	cpus 4
+
 	container "${simgDir}/rosetta_23_45_updated_03.sif"
 
 	input:
@@ -365,7 +367,7 @@ process SPLITPDB {
 }
 
 process ROSETTA_FIXBB {
-	cpus 4
+
 	container "${simgDir}/rosetta_23_45_updated_03.sif"
 	input:
 	// file(path pdb_file), file(path res_file) from pairFiles
