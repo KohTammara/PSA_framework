@@ -31,12 +31,10 @@ def mutate_and_cut(file_path, mutant_with_position, start_pos=1, end_pos=False):
 	else:
 		end_pos = int(end_pos)
 	if existing_residue == fasta_seq[position-1]:
-		# print(f'{existing_residue} and then {position} {fasta_seq[position-1]}')
 		seq = list(fasta_seq)
 		seq[position-1] = mutant_residue
 		mutated_seq = ''.join(seq)
 		cut_seq = ''
-		#Cut the sequence according to the given positions
 		if end_pos is not False:
 			cut_seq = mutated_seq[start_pos-1:end_pos]
 		else:

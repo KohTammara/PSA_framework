@@ -1,4 +1,0 @@
-task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
-3	9f/1aec07	997635	CUTANDMUTATE	COMPLETED	0	2024-03-11 19:14:52.401	92ms	34ms	87.3%	3.4 MB	7.3 MB	960.8 KB	702 B
-2	68/5b8098	997738	GROMACS_WT (1)	FAILED	1	2024-03-11 19:14:52.511	5m 25s	5m 25s	-	-	-	-	-
-1	9f/6f7f98	1001723	MAESTRO_XML	ABORTED	-	2024-03-11 19:20:17.643	-	-	-	-	-	-	-
