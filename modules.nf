@@ -291,15 +291,14 @@ process MAESTRO {
 process CUTANDMUTATE {
     input:
     path sequence
-	val start_pos
-	val end_pos
-	val mutation
+	path mutation_info
  
     output:
     path 'new_seq.fasta'
+	val 'start_position.txt'
  
     """
-    mutateAndCut.py -seq "${sequence}" -mutation "${mutation}" -start_position ${start_pos} -end_position ${end_pos} 
+    mutateAndCut.py -seq "${sequence}" -mutation "${mutation_info}" > start_position.txt
     """
 }
 
@@ -339,7 +338,7 @@ process ROSETTA_THREADER {
 
 	output:
 	path "*.pdb"
-	// path "*.sc"
+	path "*.sc"
 
 	script:
 	"""
@@ -377,9 +376,9 @@ process ROSETTA_FIXBB {
 
 
 	output:
-	path "*.pdb"
-	// path "*.sc"
-	// path "*.txt"
+	path "*.pdb" 
+	path "*.sc" 
+	path "*.txt"
 
 	script:
 	"""
