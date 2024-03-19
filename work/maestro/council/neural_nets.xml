@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sef_nn_master ninput="12" pca="false" specialist="no">
+  <neuralnet file="[CONFIG_ROOT]/council/neuralnets/nn1.mlp"></neuralnet>
+  <neuralnet file="[CONFIG_ROOT]/council/neuralnets/nn2.mlp"></neuralnet>
+  <neuralnet file="[CONFIG_ROOT]/council/neuralnets/nn3.mlp"></neuralnet>
+  <neuralnet file="[CONFIG_ROOT]/council/neuralnets/nn4.mlp"></neuralnet>
+  <neuralnet file="[CONFIG_ROOT]/council/neuralnets/nn5.mlp"></neuralnet>
+  <neuralnet file="[CONFIG_ROOT]/council/neuralnets/nn6.mlp"></neuralnet>
+  <neuralnet file="[CONFIG_ROOT]/council/neuralnets/nn7.mlp"></neuralnet>
+  <neuralnet file="[CONFIG_ROOT]/council/neuralnets/nn8.mlp"></neuralnet>
+  <neuralnet file="[CONFIG_ROOT]/council/neuralnets/nn9.mlp"></neuralnet>
+  <neuralnet file="[CONFIG_ROOT]/council/neuralnets/nn10.mlp"></neuralnet>
+  <member_adjustment>
+    <member file="[CONFIG_ROOT]/council/neuralnets/nn2.mlp">
+      <mean>1.34117</mean>
+      <sdev>0.866508</sdev>
+      <min>0.323328</min>
+      <max>3.79353</max>
+      <slope>0.228745</slope>
+      <intercept>1.03438</intercept>
+    </member>
+    <member file="[CONFIG_ROOT]/council/neuralnets/nn5.mlp">
+      <mean>1.34118</mean>
+      <sdev>0.866513</sdev>
+      <min>0.32334</min>
+      <max>3.79354</max>
+      <slope>0.228746</slope>
+      <intercept>1.03439</intercept>
+    </member>
+    <member file="[CONFIG_ROOT]/council/neuralnets/nn10.mlp">
+      <mean>1.34119</mean>
+      <sdev>0.866506</sdev>
+      <min>0.323436</min>
+      <max>3.79352</max>
+      <slope>0.228744</slope>
+      <intercept>1.0344</intercept>
+    </member>
+    <member file="[CONFIG_ROOT]/council/neuralnets/nn8.mlp">
+      <mean>1.34118</mean>
+      <sdev>0.866513</sdev>
+      <min>0.323341</min>
+      <max>3.79353</max>
+      <slope>0.228746</slope>
+      <intercept>1.03439</intercept>
+    </member>
+    <member file="[CONFIG_ROOT]/council/neuralnets/nn1.mlp">
+      <mean>1.3411</mean>
+      <sdev>0.866463</sdev>
+      <min>0.32331</min>
+      <max>3.79313</max>
+      <slope>0.228733</slope>
+      <intercept>1.03432</intercept>
+    </member>
+    <member file="[CONFIG_ROOT]/council/neuralnets/nn4.mlp">
+      <mean>1.34118</mean>
+      <sdev>0.86651</sdev>
+      <min>0.323345</min>
+      <max>3.79354</max>
+      <slope>0.228745</slope>
+      <intercept>1.03439</intercept>
+    </member>
+    <member file="[CONFIG_ROOT]/council/neuralnets/nn7.mlp">
+      <mean>1.34118</mean>
+      <sdev>0.86651</sdev>
+      <min>0.323349</min>
+      <max>3.79351</max>
+      <slope>0.228745</slope>
+      <intercept>1.03439</intercept>
+    </member>
+    <member file="[CONFIG_ROOT]/council/neuralnets/nn6.mlp">
+      <mean>1.34118</mean>
+      <sdev>0.866511</sdev>
+      <min>0.323341</min>
+      <max>3.79352</max>
+      <slope>0.228745</slope>
+      <intercept>1.03439</intercept>
+    </member>
+    <member file="[CONFIG_ROOT]/council/neuralnets/nn3.mlp">
+      <mean>1.34118</mean>
+      <sdev>0.866515</sdev>
+      <min>0.323342</min>
+      <max>3.79354</max>
+      <slope>0.228747</slope>
+      <intercept>1.03439</intercept>
+    </member>
+    <member file="[CONFIG_ROOT]/council/neuralnets/nn9.mlp">
+      <mean>1.34117</mean>
+      <sdev>0.866508</sdev>
+      <min>0.323348</min>
+      <max>3.79354</max>
+      <slope>0.228745</slope>
+      <intercept>1.03438</intercept>
+    </member>
+    <target>
+      <mean>1.34118</mean>
+      <sdev>1.81175</sdev>
+      <min>-6.3</min>
+      <max>12.23</max>
+      <slope>0</slope>
+      <intercept>0</intercept>
+    </target>
+  </member_adjustment>
+</sef_nn_master>

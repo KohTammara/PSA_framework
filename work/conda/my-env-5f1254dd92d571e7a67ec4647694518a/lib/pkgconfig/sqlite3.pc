@@ -1,0 +1,13 @@
+# Package Information for pkg-config
+
+prefix=/home/tammara/Documents/PSA_framework/work/conda/my-env-5f1254dd92d571e7a67ec4647694518a
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: SQLite
+Description: SQL database engine
+Version: 3.41.2
+Libs: -L${libdir} -lsqlite3
+Libs.private: -lz -lm -ldl -lpthread 
+Cflags: -I${includedir}

@@ -1,0 +1,20 @@
+#
+# Author: Lasse Collin
+#
+# This file has been put into the public domain.
+# You can do whatever you want with this file.
+#
+
+prefix=/home/tammara/Documents/PSA_framework/work/conda/my-env-5f1254dd92d571e7a67ec4647694518a
+exec_prefix=/home/tammara/Documents/PSA_framework/work/conda/my-env-5f1254dd92d571e7a67ec4647694518a
+libdir=/home/tammara/Documents/PSA_framework/work/conda/my-env-5f1254dd92d571e7a67ec4647694518a/lib
+includedir=/home/tammara/Documents/PSA_framework/work/conda/my-env-5f1254dd92d571e7a67ec4647694518a/include
+
+Name: liblzma
+Description: General purpose data compression library
+URL: https://xz.tukaani.org/xz-utils/
+Version: 5.4.6
+Cflags: -I${includedir}
+Cflags.private: -DLZMA_API_STATIC
+Libs: -L${libdir} -llzma
+Libs.private: -pthread -lpthread

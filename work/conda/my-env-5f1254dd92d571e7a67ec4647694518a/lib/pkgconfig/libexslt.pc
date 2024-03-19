@@ -1,0 +1,13 @@
+prefix=/home/tammara/Documents/PSA_framework/work/conda/my-env-5f1254dd92d571e7a67ec4647694518a
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+
+Name: libexslt
+Version: 0.8.20
+Description: EXSLT Extension library
+Requires: libxml-2.0, libxslt
+Cflags: -I${includedir}
+Libs: -L${libdir} -lexslt
+Libs.private: -lm 

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<member_adjustment>
+  <ddg>
+    <mean>0.93987</mean>
+    <sdev>1.80948</sdev>
+    <min>-6.8</min>
+    <max>12</max>
+  </ddg>
+  <ddg_stab>
+    <mean>-0.00891622</mean>
+    <sdev>1.02807</sdev>
+    <min>-6.8</min>
+    <max>1.43</max>
+  </ddg_stab>
+  <ddg_destab>
+    <mean>2.06795</mean>
+    <sdev>1.49373</sdev>
+    <min>0.44</min>
+    <max>12</max>
+  </ddg_destab>
+  <council>
+    <mean>0.749617</mean>
+    <sdev>1.43544</sdev>
+    <min>-3.81981</min>
+    <max>7.95648</max>
+    <slope>0.734742</slope>
+    <intercept>0.0590548</intercept>
+  </council>
+  <member file="[CONFIG_ROOT]/council/ss/neural_nets.xml">
+    <mean>0.93987</mean>
+    <sdev>1.58237</sdev>
+    <min>-3.31816</min>
+    <max>8.04872</max>
+    <slope>0.74817</slope>
+    <intercept>0.236688</intercept>
+  </member>
+  <member file="[CONFIG_ROOT]/council/ss/stab_neural_nets.xml">
+    <mean>0.93987</mean>
+    <sdev>1.39105</sdev>
+    <min>-3.68838</min>
+    <max>1.34343</max>
+    <slope>0.676131</slope>
+    <intercept>-0.0525395</intercept>
+  </member>
+  <member file="[CONFIG_ROOT]/council/ss/destab_neural_nets.xml">
+    <mean>0.93987</mean>
+    <sdev>1.95857</sdev>
+    <min>0.547165</min>
+    <max>6.96635</max>
+    <slope>0.670915</slope>
+    <intercept>0.877474</intercept>
+  </member>
+  <member file="[CONFIG_ROOT]/council/ss/svm.model">
+    <mean>0.944008</mean>
+    <sdev>1.70142</sdev>
+    <min>-6.12549</min>
+    <max>11.9</max>
+    <slope>0.916099</slope>
+    <intercept>0.0829939</intercept>
+  </member>
+  <member file="[CONFIG_ROOT]/council/ss/stab_svm.model">
+    <mean>1.02965</mean>
+    <sdev>1.51151</sdev>
+    <min>-5.35383</min>
+    <max>1.02965</max>
+    <slope>0.833862</slope>
+    <intercept>-0.00200351</intercept>
+  </member>
+  <member file="[CONFIG_ROOT]/council/ss/destab_svm.model">
+    <mean>0.839872</mean>
+    <sdev>2.12809</sdev>
+    <min>0.825563</min>
+    <max>11.9001</max>
+    <slope>0.934207</slope>
+    <intercept>0.144247</intercept>
+  </member>
+  <member file="[CONFIG_ROOT]/council/ss/regression.xml">
+    <mean>-1.42408e-15</mean>
+    <sdev>1.0288</sdev>
+    <min>-2.4749</min>
+    <max>4.36611</max>
+    <slope>0.32326</slope>
+    <intercept>-0.303823</intercept>
+  </member>
+</member_adjustment>

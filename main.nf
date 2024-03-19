@@ -99,35 +99,74 @@ workflow rosy_threader {
     score = ROSETTA_THREADER.out[1]
 }
 
+workflow maestro {
+    take:
+    pdb
+
+    main:
+    xml = MAESTRO_XML(params.effiles, params.council, params.path_to_pdb, params.prefix_maestro_out, params.postfix_maestro_out, params.to_lower_maestro_out, params.bu_maestro) 
+    MAESTRO(params.effiles, params.council, pdb, params.mutation, params.chain, xml)
+
+    emit:
+    results_csv = MAESTRO.out[0]
+}
+
 
 
 workflow {
+
+    if (params.rosetta_fbb == true) {
+        pdb = Channel.fromPath(params.list_of_structs)
+        resf = Channel.fromPath(params.resf)
+        rosy_fbb(pdb, resf)
+    }
+
+    if (params.rosetta_threader == true) {
+        pdb = Channel.fromPath(params.list_of_structs)
+        sequence = Channel.fromPath(params.sequence)
+        mutation = Channel.fromPath(params.mutation_info)
+        rosy_threader_input(sequence, mutation)
+        rosy_threader(pdb,rosy_threader_input.out.cut_seq,rosy_threader_input.out.start_position)
+    }
+
+    if (params.maestro == true) {
+        pdb = Channel.fromPath(params.list_of_structs)
+        maestro(pdb)
+    }
+
+    if (params.gromacs == true) {
+        if (params.rosetta_fbb == true) {
+            GROMACS_MT_FBB(rosy_fbb_pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
+            GROMACS_WT(pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
+        }
+        if (params.rosetta_threader == true) {
+            GROMACS_MT_THREADER(rosy_fbb_pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
+            GROMACS_WT(pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
+        }
+        GROMACS_WT(pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
+    }
     // Rosetta fbb execution
-    pdb = Channel.fromPath(params.list_of_structs)
-    resf = Channel.fromPath(params.resf)
-    rosy_fbb(pdb, resf)
-    // rosy_fbb.out.pdb.view()
-    // rosy_fbb.out.score.view()
-    // rosy_fbb.out.log_file.view()
+    // pdb = Channel.fromPath(params.list_of_structs)
+    // resf = Channel.fromPath(params.resf)
+    // rosy_fbb(pdb, resf)
+    // // rosy_fbb.out.pdb.view()
+    // // rosy_fbb.out.score.view()
+    // // rosy_fbb.out.log_file.view()
     
 
     //Rosetta threader execution
-    sequence = Channel.fromPath(params.sequence)
-    mutation = Channel.fromPath(params.mutation_info)
-    // sequence.view()
-    // mutation.view()
-    rosy_threader_input(sequence, mutation)
-    // rosy_threader_input.out.cut_seq.view()
-    rosy_threader(pdb,rosy_threader_input.out.cut_seq,rosy_threader_input.out.start_position)
-
-
-    // ddg monomer Rosetta [NO LONGER IN USE]
-    // ROSETTA_DDG_PREMINIMIZATION(pdb)
-    // ROSETTA_DDG(ROSETTA_DDG_PREMINIMIZATION(pdb), params.resf)
+    // sequence = Channel.fromPath(params.sequence)
+    // mutation = Channel.fromPath(params.mutation_info)
+    // // sequence.view()
+    // // mutation.view()
+    // rosy_threader_input(sequence, mutation)
+    // // rosy_threader_input.out.cut_seq.view()
+    // rosy_threader(pdb,rosy_threader_input.out.cut_seq,rosy_threader_input.out.start_position)
 
     //MAESTRO execution
-    // maestro_xml = MAESTRO_XML(params.effiles, params.council, params.path_to_pdb, params.prefix_maestro_out, params.postfix_maestro_out, params.to_lower_maestro_out, params.bu_maestro) 
-    // MAESTRO(params.effiles, params.council, pdb, params.mutation, params.chain, maestro_xml)
+    // maestro(pdb)
+    // // maestro.out.results_csv.view()
+
 
     // GROMACS execution FBB
     // GROMACS_MT_FBB(rosy_fbb_pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
