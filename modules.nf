@@ -1,74 +1,8 @@
-
-
-// process STRUM {
-// 	/*
-// 	Adapt to read from file for multiple instances
-// 	*/
-// 	input:
-// 	val mutation
-// 	val input_type
-// 	path path_to_in
-	
-// 	output:
-//     path 'STRUM_Log_*.txt'
-    
-//     shell:
-// 	"""
-// 	path=$( echo ${path_to_in%/*} )
-// 	file=$( echo ${path_to_in##*/} )
-//     ./runSTRUM.pl -datadir $path -input_type $file -mutation !{mutation}
-//     """
-	
-// }
-
-// process ROSETTA_DDG_PREMINIMIZATION {
-// 	cpus 4
-// 	container "${simgDir}/rosetta_23_45_updated_03.sif"
-
-// 	input:
-// 	path PDB
-
-// 	output:
-// 	path "*.pdb"
-// 	path "*.cst"
-
-// 	shell:
-// 	"""
-// 	minimize_with_cst.mpi.linuxgccrelease -in:file:s ${PDB} -in:file:fullatom -ignore_unrecognized_res -ignore_zero_occupancy false -fa_max_dis 9.0 -database /rosetta/Rosetta/main/database -ddg::harmonic_ca_tether 0.5 -ddg::constraint_weight 1.0 -ddg::out_pdb_prefix min_cst_0.5 -ddg::sc_min_only false > mincst.log
-// 	grep 'c-alpha' mincst.log | awk '{print "AtomPair CA "\$8" CA "\$10" HARMONIC "\$12" "\$15""}' > input.cst
-// 	"""
-// }
-
-// process ROSETTA_DDG {
-// 	cpus 4
-// 	container "${simgDir}/rosetta_23_45_updated_03.sif"
-
-// 	input:
-// 	path min_pdb
-// 	path cst
-// 	path resf
-
-
-// 	output:
-// 	path "ddg_predictions.out"
-// 	path "*_wt.out"
-// 	path "*_mt.out"
-
-
-// 	"""
-// 	ddg_monomer.mpi.linuxgccrelease -ignore_zero_occupancy false -in:file:s ${min_pdb} -ddg::mut_file ${resf} -ddg:weight_file soft_rep_design -database /rosetta/Rosetta/main/database -ddg::iterations 50 -ddg::dump_pdbs true -ignore_unrecognized_res -ddg::local_opt_only false -ddg::min_cst true -constraints::cst_file ${cst} -in::file::fullatom -ddg::min true
-// 	"""
-// }
-
-
-
 //create a collective gromacs process or see if it can be created otherwise split it at points where collective breaks
 //process for native and a process for mutant
 process GROMACS_MT_FBB {
-
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 
-	//clean PDB of HOH, create .gro file, create box and solvate 
 	input:
 	path pdb_file
 	path ions_mdp
@@ -124,10 +58,8 @@ process GROMACS_MT_FBB {
 }
 
 process GROMACS_MT_THREADER {
-	
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 
-	//clean PDB of HOH, create .gro file, create box and solvate 
 	input:
 	path pdb_file
 	path ions_mdp
@@ -183,10 +115,8 @@ process GROMACS_MT_THREADER {
 }
 
 process GROMACS_WT {
-
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 
-	//clean PDB of HOH, create .gro file, create box and solvate 
 	input:
 	path pdb_file
 	path ions_mdp
@@ -329,7 +259,6 @@ process CREATEXML {
 }
 
 process ROSETTA_THREADER {
-
 	container "${simgDir}/rosetta_23_45_updated_03.sif"
 
 	input:
@@ -366,11 +295,8 @@ process SPLITPDB {
 }
 
 process ROSETTA_FIXBB {
-
 	container "${simgDir}/rosetta_23_45_updated_03.sif"
 	input:
-	// file(path pdb_file), file(path res_file) from pairFiles
-	// tuple (path pdb_file ,path res_file)
 	path pdb_file
 	path res_file
 
