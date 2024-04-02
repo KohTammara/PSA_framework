@@ -1,9 +1,9 @@
 {
-    "rosetta_fbb" : false,
+    "rosetta_fbb" : true,
     "list_of_structs" : "/home/tammara/Documents/PSA_framework/work/test/*.pdb",
     "resf" : "/home/tammara/Documents/PSA_framework/work/test/*_resfile.txt",
 
-    "rosetta_threader" : true,
+    "rosetta_threader" : false,
     "sequence" : "/home/tammara/Documents/PSA_framework/work/test/*.fasta",
     "mutation_info" : "/home/tammara/Documents/PSA_framework/work/test/*.json",
     "name" : "Threader",
@@ -28,7 +28,7 @@
     "to_lower_maestro_out" : "true",
     "bu_maestro" : "false",
 
-    "gromacs" : true,
+    "gromacs" : false,
     "ions_mdp" : "/home/tammara/Documents/gromacs_hpc_out/ions.mdp",
     "em_mdp" : "/home/tammara/Documents/gromacs_hpc_out/em.mdp",
     "nvt_mdp" : "/home/tammara/Documents/gromacs_hpc_out/nvt.mdp",
