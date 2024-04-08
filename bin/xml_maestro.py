@@ -20,7 +20,7 @@ bu = args.bu
 xml_template = '''<?xml version="1.0"?>
 <sef>
     <evaluate>
-        <pdbhome dir=${pdb_path} prefix=${prefix} postfix=${postfix} tolower=${tolower} bu=${bu}/>
+        <pdbhome dir="${pdb_path}" prefix="${prefix}" postfix="${postfix}" tolower="${tolower}" bu="${bu}"/>
         <!-- <pdbhome dir="/home/bill/biounits/" postfix=".pdb1.gz" tolower="true" bu="true"/> -->
     </evaluate>
     <!--  "Do not modify anything beyond this line unless you really know what you do"  -->

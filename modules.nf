@@ -1,6 +1,7 @@
 //create a collective gromacs process or see if it can be created otherwise split it at points where collective breaks
 //process for native and a process for mutant
 process GROMACS_MT_FBB {
+	publishDir '/GROMACS_FBB_mutant', mode: 'copy', overwrite: false
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 
 	input:
@@ -58,6 +59,7 @@ process GROMACS_MT_FBB {
 }
 
 process GROMACS_MT_THREADER {
+	publishDir '/GROMACS_THREADER_mutant', mode: 'copy', overwrite: false
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 
 	input:
@@ -115,6 +117,7 @@ process GROMACS_MT_THREADER {
 }
 
 process GROMACS_WT {
+	publishDir '/GROMACS_wildtype', mode: 'copy', overwrite: false
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 
 	input:
@@ -187,11 +190,12 @@ process MAESTRO_XML {
 
 
 	"""
-	xml_maestro.py -pdb_path ${path_to_pdb} -prefix ${prefix} -postfix ${postfix} -tolower ${to_lower} -bu ${bu} > config.xml
+	xml_maestro.py -pdb_path "${path_to_pdb}" -prefix "${prefix}" -postfix "${postfix}" -tolower "${to_lower}" -bu "${bu}" > config.xml
 	"""
 }
 
 process MAESTRO {
+	publishDir "${params.pub_dir}/Maestro/out", mode: 'copy', overwrite: true, enabled: true
 	cpus 6
 	container "${simgDir}/maestro.sif"
 
@@ -199,21 +203,15 @@ process MAESTRO {
 	input:
 	path effiles_dir
 	path council_dir
-	path pdb
-	val mutation
-	val chain
-	val xml
+	path mutation
+	path xml
 
 	output:
 	path "*.csv"
 
 	script:
-	mut = mutation[-1]
-	mut_index = mutation.indexOf(mut)
-	mutation = mutation[0..mut_index-1]
-	new_mutation = mutation + '.' + chain + '{' + mut + '}'
 	"""
-	maestro ${xml} ${pdb} --evalmut=${new_mutation} > maestro_out_${pdb}.csv
+	maestro ${xml} --evalmutlist=${mutation} --energy > maestro_out.csv
 	"""
 
 }
@@ -259,6 +257,7 @@ process CREATEXML {
 }
 
 process ROSETTA_THREADER {
+	publishDir "${params.pub_dir}/Rosetta_threader/${PDB}", mode: 'copy', overwrite: false
 	container "${simgDir}/rosetta_23_45_updated_03.sif"
 
 	input:
@@ -295,6 +294,7 @@ process SPLITPDB {
 }
 
 process ROSETTA_FIXBB {
+	publishDir "${params.pub_dir}/Rosetta_FixBB/${pdb_file}", mode: 'copy', overwrite: false
 	container "${simgDir}/rosetta_23_45_updated_03.sif"
 	input:
 	path pdb_file

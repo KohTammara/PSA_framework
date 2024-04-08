@@ -101,16 +101,15 @@ workflow rosy_threader {
 
 workflow maestro {
     take:
-    pdb
+    mut
+    xml
 
     main:
-    xml = MAESTRO_XML(params.effiles, params.council, params.path_to_pdb, params.prefix_maestro_out, params.postfix_maestro_out, params.to_lower_maestro_out, params.bu_maestro) 
-    MAESTRO(params.effiles, params.council, pdb, params.mutation, params.chain, xml)
+    MAESTRO(params.effiles, params.council, mut, xml)
 
     emit:
     results_csv = MAESTRO.out[0]
 }
-
 
 
 workflow {
@@ -130,8 +129,8 @@ workflow {
     }
 
     if (params.maestro == true) {
-        pdb = Channel.fromPath(params.list_of_structs)
-        maestro(pdb)
+        xml = MAESTRO_XML(params.effiles, params.council, params.path_to_pdb, params.prefix_maestro_out, params.postfix_maestro_out, params.to_lower_maestro_out, params.bu_maestro) 
+        maestro(params.mutationfile, xml)
     }
 
     if (params.gromacs == true) {
@@ -147,6 +146,7 @@ workflow {
             GROMACS_WT(pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
         }
     }
+    // publishDir '/results', mode: 'copy', overwrite: false
     // Rosetta fbb execution
     // pdb = Channel.fromPath(params.list_of_structs)
     // resf = Channel.fromPath(params.resf)
