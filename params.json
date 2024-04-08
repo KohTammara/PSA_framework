@@ -1,9 +1,9 @@
 {
-    "rosetta_fbb" : true,
+    "rosetta_fbb" : false,
     "list_of_structs" : "/home/tammara/Documents/PSA_framework/work/test/*.pdb",
     "resf" : "/home/tammara/Documents/PSA_framework/work/test/*_resfile.txt",
 
-    "rosetta_threader" : true,
+    "rosetta_threader" : false,
     "sequence" : "/home/tammara/Documents/PSA_framework/work/test/*.fasta",
     "mutation_info" : "/home/tammara/Documents/PSA_framework/work/test/*.json",
     "name" : "Threader",

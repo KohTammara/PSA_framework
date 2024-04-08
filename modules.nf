@@ -179,7 +179,7 @@ process MAESTRO_XML {
 	input:
 	path effiles_dir
 	path council_dir
-	path path_to_pdb
+	val path_to_pdb
 	val prefix
 	val postfix
 	val to_lower
