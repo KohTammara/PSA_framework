@@ -257,12 +257,13 @@ process CREATEXML {
 }
 
 process ROSETTA_THREADER {
-	publishDir "${params.pub_dir}/Rosetta_threader/${PDB}", mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/Rosetta_threader/${mutation}", mode: 'copy', overwrite: false
 	container "${simgDir}/rosetta_23_45_updated_03.sif"
 
 	input:
 	path PDB
 	path xml_file
+	val mutation
 
 	output:
 	path "*.pdb"
@@ -294,7 +295,7 @@ process SPLITPDB {
 }
 
 process ROSETTA_FIXBB {
-	publishDir "${params.pub_dir}/Rosetta_FixBB/${pdb_file}", mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/Rosetta_FixBB/${res_file}", mode: 'copy', overwrite: false
 	container "${simgDir}/rosetta_23_45_updated_03.sif"
 	input:
 	path pdb_file

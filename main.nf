@@ -89,10 +89,11 @@ workflow rosy_threader {
     pdb
     cut_sequence
     start_position
+    mutation
 
     main:
     xml = CREATEXML(params.name, cut_sequence, params.sequence_mode, params.pack_round, params.skip_unknown_mutant, params.scorefxn, start_position, params.neighbor_dis, params.pack_neighbors, params.weights, params.template)
-    ROSETTA_THREADER(pdb, xml)
+    ROSETTA_THREADER(pdb, xml, mutation)
 
     emit:
     pdb = ROSETTA_THREADER.out[0]
@@ -115,17 +116,18 @@ workflow maestro {
 workflow {
 
     if (params.rosetta_fbb == true) {
-        pdb = Channel.fromPath(params.list_of_structs)
+        // pdb = Channel.fromPath(params.list_of_structs)
         resf = Channel.fromPath(params.resf)
-        rosy_fbb(pdb, resf)
+        resf.view()
+        rosy_fbb(params.list_of_structs, resf)
     }
 
     if (params.rosetta_threader == true) {
-        pdb = Channel.fromPath(params.list_of_structs)
-        sequence = Channel.fromPath(params.sequence)
+        // pdb = Channel.fromPath(params.list_of_structs)
+        // sequence = Channel.fromPath(params.sequence)
         mutation = Channel.fromPath(params.mutation_info)
-        rosy_threader_input(sequence, mutation)
-        rosy_threader(pdb,rosy_threader_input.out.cut_seq,rosy_threader_input.out.start_position)
+        rosy_threader_input(params.sequence, mutation)
+        rosy_threader(params.list_of_structs,rosy_threader_input.out.cut_seq,rosy_threader_input.out.start_position, mutation)
     }
 
     if (params.maestro == true) {
