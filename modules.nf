@@ -59,7 +59,7 @@ process GROMACS_MT_FBB {
 }
 
 process GROMACS_MT_THREADER {
-	publishDir '/GROMACS_THREADER_mutant', mode: 'copy', overwrite: false
+	publishDir '${params.pub_dir}/GROMACS_THREADER_mutant', mode: 'copy', overwrite: false
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 
 	input:
@@ -117,7 +117,7 @@ process GROMACS_MT_THREADER {
 }
 
 process GROMACS_WT {
-	publishDir '/GROMACS_wildtype', mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/GROMACS_wildtype", mode: 'copy', overwrite: false
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 
 	input:
@@ -310,6 +310,27 @@ process ROSETTA_FIXBB {
 	script:
 	"""
 	fixbb.mpi.linuxgccrelease -in:file:s $pdb_file -resfile $res_file -out:suffix _resout > log.txt 
+	"""
+}
+
+process PMX_PREP {
+	publishDir "${params.pub_dir}/pmx_preparation/${params.pdb}/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
+	container "${simgDir}/gro_pmx.sif"
+
+	input:
+	path pdb
+	val res_number
+	val res_mutant
+	val forcefield
+
+	output:
+	path "mutant.pdb"
+	path "newtop.top"
+
+	script:
+	//redo as CLI and not py script, api weird.
+	"""
+	python3 ${params.bin_dir}/pmx_prep.py -pdb '${pdb}' -res_num ${res_number} -res_mut '${res_mutant}' -ff '${forcefield}'
 	"""
 }
 

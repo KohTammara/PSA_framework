@@ -1,6 +1,6 @@
 {
     "rosetta_fbb" : false,
-    "list_of_structs" : "/home/tammara/Documents/PSA_framework/work/test/*.pdb",
+    "list_of_structs" : "/home/tammara/Documents/PSA_framework/work/test/1qlx.pdb",
     "resf" : "/home/tammara/Documents/PSA_framework/work/test/*_resfile.txt",
 
     "rosetta_threader" : false,
@@ -16,7 +16,7 @@
     "template" : "/home/tammara/Documents/PSA_framework/bin/template.xml",
     "weights" : "ref2015",
 
-    "maestro" : true,
+    "maestro" : false,
     "maestro_xml" : "/home/tammara/Documents/PSA_framework/work/maestro/maestro_template.xml",
     "mutationfile" : "/home/tammara/Documents/PSA_framework/work/test/meastro_mutations.txt",
     "pdb_list_meastro" : "/home/tammara/Documents/PSA_framework/work/test/meastro_pdb.txt",
@@ -44,5 +44,13 @@
     "G8"    : "4 4",
     "G9"    : "1",
 
-    "pub_dir" :"/home/tammara/Documents/PSA_framework_results"
+    "pub_dir" :"/home/tammara/Documents/PSA_framework_results",
+    "bin_dir":"/home/tammara/Documents/PSA_framework/bin",
+
+    "pmx": true,
+    "pmx_forcefield":"charmm36mut",
+    "pdb":"/home/tammara/Documents/PSA_framework/work/test/1qlx.pdb",
+    "res_number":"80",
+    "mutant_res":"A"
+
 }

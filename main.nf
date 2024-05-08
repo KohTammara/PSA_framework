@@ -47,6 +47,7 @@ include {
     GROMACS_MT_FBB;
     GROMACS_MT_THREADER;
     GROMACS_WT;
+    PMX_PREP;
 } from './modules.nf' 
 
 workflow.onComplete {
@@ -114,6 +115,9 @@ workflow maestro {
 
 
 workflow {
+    if (params.pmx == true) {
+        PMX_PREP(params.pdb, params.res_number, params.mutant_res, params.pmx_forcefield)
+    }
 
     if (params.rosetta_fbb == true) {
         // pdb = Channel.fromPath(params.list_of_structs)
@@ -148,6 +152,7 @@ workflow {
             GROMACS_WT(pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
         }
     }
+
     // publishDir '/results', mode: 'copy', overwrite: false
     // Rosetta fbb execution
     // pdb = Channel.fromPath(params.list_of_structs)
