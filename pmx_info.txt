@@ -1,0 +1,38 @@
+pmx mutate -f /home/tammara/Documents/PSA_framework/work/test/1qlx.pdb -o mutant.pdb
+Choose a force field:
+
+  [i]    name                                    description
+  ---    ----                                    -----------
+  [1]    amber14sbmut                            MUT_Amber_ff14sb (ported by Man Hoang Viet, North Carolina State University)
+  [2]    amber99sb-star-ildn-bsc1-mut            [Protein, DNA] Amber99sb-star-ildn-bsc1 for DNA (Best & Hummer 2009, Lindorff-Larsen et al. 2010)
+  [3]    amber99sb-star-ildn-dna-mut             [Protein, DNA] Amber99sb-star-ildn (Best & Hummer 2009, Lindorff-Larsen et al. 2010)
+  [4]    amber99sb-star-ildn-mut                 [Protein] Amber99sb-star-ildn (Best & Hummer 2009, Lindorff-Larsen et al. 2010)
+  [5]    charmm22star-mut                        CHARMM22* all-atom force field
+  [6]    charmm36m-mut                           [Protein, DNA] Charmm36m all-atom force field (November 2016)
+
+Enter the index [i] of the chosen forcefield: ^CTraceback (most recent call last):
+
+Select residue to mutate:
+     1-LEU-A     2-GLY-A     3-GLY-A     4-TYR-A     5-MET-A     6-LEU-A
+     7-GLY-A     8-SER-A     9-ALA-A    10-MET-A    11-SER-A    12-ARG-A
+    13-PRO-A    14-ILE-A    15-ILE-A    16-HIS-A    17-PHE-A    18-GLY-A
+    19-SER-A    20-ASP-A    21-TYR-A    22-GLU-A    23-ASP-A    24-ARG-A
+    25-TYR-A    26-TYR-A    27-ARG-A    28-GLU-A    29-ASN-A    30-MET-A
+    31-HIS-A    32-ARG-A    33-TYR-A    34-PRO-A    35-ASN-A    36-GLN-A
+    37-VAL-A    38-TYR-A    39-TYR-A    40-ARG-A    41-PRO-A    42-MET-A
+    43-ASP-A    44-GLU-A    45-TYR-A    46-SER-A    47-ASN-A    48-GLN-A
+    49-ASN-A    50-ASN-A    51-PHE-A    52-VAL-A    53-HIS-A    54-ASP-A
+    55-CYS-A    56-VAL-A    57-ASN-A    58-ILE-A    59-THR-A    60-ILE-A
+    61-LYS-A    62-GLN-A    63-HIS-A    64-THR-A    65-VAL-A    66-THR-A
+    67-THR-A    68-THR-A    69-THR-A    70-LYS-A    71-GLY-A    72-GLU-A
+    73-ASN-A    74-PHE-A    75-THR-A    76-GLU-A    77-THR-A    78-ASP-A
+    79-VAL-A    80-LYS-A    81-MET-A    82-MET-A    83-GLU-A    84-ARG-A
+    85-VAL-A    86-VAL-A    87-GLU-A    88-GLN-A    89-MET-A    90-CYS-A
+    91-ILE-A    92-THR-A    93-GLN-A    94-TYR-A    95-GLU-A    96-ARG-A
+    97-GLU-A    98-SER-A    99-GLN-A   100-ALA-A   101-TYR-A   102-TYR-A
+   103-GLN-A   104-ARG-A
+Enter residue number: 81
+
+Select new amino acid for 81-MET: 
+Three- or one-letter code (or four-letter for ff specific residues): 
+nextflow -c nextflow.config run main.nf -params-file params.json

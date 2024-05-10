@@ -326,11 +326,16 @@ process PMX_PREP {
 	output:
 	path "mutant.pdb"
 	path "newtop.top"
+	path "conf.pdb"
 
 	script:
 	//redo as CLI and not py script, api weird.
+	//python3 ${params.bin_dir}/pmx_prep.py -pdb '${pdb}' -res_num ${res_number} -res_mut '${res_mutant}' -ff '${forcefield}
+	
 	"""
-	python3 ${params.bin_dir}/pmx_prep.py -pdb '${pdb}' -res_num ${res_number} -res_mut '${res_mutant}' -ff '${forcefield}'
+	echpmx mutate -f ${pdb} -o mutant.pdb
+	gmx_mpi pdb2gmx -f mutant.pdb -o conf.pdb -p topol.top -ff ${forcefield} -water tip3p
+	pmx gentop -p topol.top -o newtop.top
 	"""
 }
 
