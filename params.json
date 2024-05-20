@@ -29,11 +29,11 @@
     "bu_maestro" : "false",
 
     "gromacs" : false,
-    "ions_mdp" : "/home/tammara/Documents/gromacs_hpc_out/ions.mdp",
-    "em_mdp" : "/home/tammara/Documents/gromacs_hpc_out/em.mdp",
-    "nvt_mdp" : "/home/tammara/Documents/gromacs_hpc_out/nvt.mdp",
-    "npt_mdp" : "/home/tammara/Documents/gromacs_hpc_out/npt.mdp",
-    "md_mdp" : "/home/tammara/Documents/gromacs_hpc_out/md.mdp",
+    "ions_mdp" : "/home/tammara/Documents/PSA_framework/preprocessed_input/genion.mdp",
+    "em_mdp" : "/home/tammara/Downloads/protein_mut_input (1)/em.mdp",
+    "nvt_mdp" : "/home/tammara/Downloads/protein_mut_input (1)/nvt.mdp",
+    "npt_mdp" : "/home/tammara/Downloads/protein_mut_input (1)/npt.mdp",
+    "md_mdp" : "/home/tammara/Downloads/protein_mut_input (1)/md.mdp",
     "G1"    : "8",
     "G2"    : "13",
     "G3"    : "11",
@@ -48,9 +48,10 @@
     "bin_dir":"/home/tammara/Documents/PSA_framework/bin",
 
     "pmx": true,
-    "pmx_forcefield":"charmm36mut",
-    "pdb":"/home/tammara/Documents/PSA_framework/work/test/1qlx.pdb",
-    "res_number":"80",
+    "pmx_forcefield":"6",
+    "ff_name":"charmm36m-mut",
+    "pdb":"/home/tammara/Documents/PSA_framework/preprocessed_input/1qlx_charmm.pdb",
+    "res_number":"81",
     "mutant_res":"A"
 
 }

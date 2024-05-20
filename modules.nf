@@ -315,7 +315,7 @@ process ROSETTA_FIXBB {
 
 process PMX_PREP {
 	publishDir "${params.pub_dir}/pmx_preparation/${params.pdb}/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
-	container "${simgDir}/gro_pmx.sif"
+	container "${simgDir}/gro_pmx_2023.sif"
 
 	input:
 	path pdb
@@ -329,13 +329,15 @@ process PMX_PREP {
 	path "conf.pdb"
 
 	script:
-	//redo as CLI and not py script, api weird.
-	//python3 ${params.bin_dir}/pmx_prep.py -pdb '${pdb}' -res_num ${res_number} -res_mut '${res_mutant}' -ff '${forcefield}
-	
 	"""
-	echpmx mutate -f ${pdb} -o mutant.pdb
-	gmx_mpi pdb2gmx -f mutant.pdb -o conf.pdb -p topol.top -ff ${forcefield} -water tip3p
+	echo -e "${forcefield}\n${res_number}\n${res_mutant}\nn\n" | pmx mutate -f ${pdb} -o mutant.pdb
+	gmx_mpi pdb2gmx -f mutant.pdb -o conf.pdb -p topol.top -ff ${params.ff_name} -water tip3p
+	sed -i 's#/usr/local/lib/python3.10/dist-packages/pmx/data/mutff/##g' topol.top
 	pmx gentop -p topol.top -o newtop.top
+	gmx_mpi editconf -f conf.pdb -o box.pdb -bt dodecahedron -d 1.0
+	gmx_mpi solvate -cp box -cs spc216 -p newtop -o water.pdb
+	gmx_mpi grompp -f ${params.ions_mdp} -c water.pdb -p newtop.top -o genion.tpr
+	echo "SOL" | gmx_mpi genion -s genion.tpr -p newtop.top -neutral -conc 0.15 -o ions.pdb
 	"""
 }
 
