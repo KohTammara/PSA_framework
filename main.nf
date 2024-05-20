@@ -47,7 +47,8 @@ include {
     GROMACS_MT_FBB;
     GROMACS_MT_THREADER;
     GROMACS_WT;
-    PMX_PREP;
+    PMX_PREP_MUTANT;
+    GRO_PREP_WT;
 } from './modules.nf' 
 
 workflow.onComplete {
@@ -116,7 +117,7 @@ workflow maestro {
 
 workflow {
     if (params.pmx == true) {
-        PMX_PREP(params.pdb, params.res_number, params.mutant_res, params.pmx_forcefield)
+        GRO_PREP_WT(params.pdb, params.res_number, params.mutant_res, params.pmx_forcefield)
     }
 
     if (params.rosetta_fbb == true) {

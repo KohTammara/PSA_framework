@@ -313,8 +313,8 @@ process ROSETTA_FIXBB {
 	"""
 }
 
-process PMX_PREP {
-	publishDir "${params.pub_dir}/pmx_preparation/${params.pdb}/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
+process PMX_PREP_MUTANT {
+	publishDir "${params.pub_dir}/pmx_preparation/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 
 	input:
@@ -327,6 +327,10 @@ process PMX_PREP {
 	path "mutant.pdb"
 	path "newtop.top"
 	path "conf.pdb"
+	path "box.pdb"
+	path "water.pdb"
+	path "genion.tpr"
+	path "ions.pdb"
 
 	script:
 	"""
@@ -341,3 +345,75 @@ process PMX_PREP {
 	"""
 }
 
+process GRO_PREP_WT {
+	publishDir "${params.pub_dir}/gro_preparation/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
+	container "${simgDir}/gro_pmx_2023.sif"
+
+	input:
+	path pdb
+	val res_number
+	val res_mutant
+	val forcefield
+
+	output:
+	path "topol.top"
+	path "conf.pdb"
+	path "box.pdb"
+	path "water.pdb"
+	path "genion.tpr"
+	path "ions.pdb"
+
+	script:
+	"""
+	gmx_mpi pdb2gmx -f ${pdb} -o conf.pdb -p topol.top -ff ${params.ff_name} -water tip3p
+	gmx_mpi editconf -f conf.pdb -o box.pdb -bt dodecahedron -d 1.0
+	gmx_mpi solvate -cp box -cs spc216 -p topol -o water.pdb
+	gmx_mpi grompp -f ${params.ions_mdp} -c water.pdb -p topol.top -o genion.tpr
+	echo "SOL" | gmx_mpi genion -s genion.tpr -p topol.top -neutral -conc 0.15 -o ions.pdb
+	"""
+}
+
+process GRO_EQUILIBRIUM_F {
+	publishDir "${params.pub_dir}/gro_preparation/forward/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
+	container "${simgDir}/gro_pmx_2023.sif"
+
+	input:
+
+
+	output:
+
+	script:
+	"""
+	//Minimistion
+	gmx grompp -f f_enmin.mdp -c ions.pdb -p newtop.top -o enmin.tpr
+	gmx mdrun -s enmin.tpr -deffnm enmin -v
+	"""
+
+}
+
+process GRO_EQUILIBRIUM_R {
+	publishDir "${params.pub_dir}/gro_preparation/reverse/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
+	container "${simgDir}/gro_pmx_2023.sif"
+
+	input:
+
+
+	output:
+
+	script:
+	"""
+	//Minimistion
+	gmx grompp -f f_enmin.mdp -c ions.pdb -p newtop.top -o enmin.tpr
+	gmx mdrun -s enmin.tpr -deffnm enmin -v
+	"""
+
+}
+
+process GRO_NON_EQUILIBRIUM_F {
+	input:
+
+
+	output:
+
+
+}
