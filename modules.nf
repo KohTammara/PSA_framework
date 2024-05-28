@@ -408,11 +408,11 @@ process GRO_EQUILIBRIUM{
 	path posre_itp
 
 	output:
-	// path "equil.trr"
-	// path "equil.tpr"
+	path "equil.trr"
+	path "equil.tpr"
 	path "enmin.tpr"
 	path "npt.tpr"
-	// path "topol.top"
+	path "topol.top"
 
 	script:
 	"""
@@ -423,12 +423,6 @@ process GRO_EQUILIBRIUM{
 	gmx_mpi grompp -f ${params.f_equil_mdp} -c npt.gro -p ${topol} -o equil.tpr -maxwarn 1
 	gmx_mpi mdrun -s equil.tpr -deffnm equil -v
 	"""
-	// gmx_mpi grompp -f ${params.f_npt_mdp} -c enmin.gro -p ${topol} -o npt.tpr -maxwarn 1
-	// gmx_mpi mdrun -s npt.tpr -deffnm npt -v
-	// gmx_mpi grompp -f ${params.f_equil_mdp} -c npt.gro -p ${topol} -o equil.tpr -maxwarn 1
-	// gmx_mpi mdrun -s equil.tpr -deffnm equil -v
-	
-
 }
 
 // process GRO_NON_EQUILIBRIUM {
