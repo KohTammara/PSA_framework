@@ -314,7 +314,7 @@ process ROSETTA_FIXBB {
 }
 
 process PMX_PREP_MUTANT {
-	publishDir "${params.pub_dir}/pmx_preparation/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/pmx/preparation/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 
 	input:
@@ -331,6 +331,7 @@ process PMX_PREP_MUTANT {
 	path "water.pdb"
 	path "genion.tpr"
 	path "ions.pdb"
+	path "posre.itp"
 
 	script:
 	"""
@@ -340,9 +341,36 @@ process PMX_PREP_MUTANT {
 	pmx gentop -p topol.top -o newtop.top
 	gmx_mpi editconf -f conf.pdb -o box.pdb -bt dodecahedron -d 1.0
 	gmx_mpi solvate -cp box -cs spc216 -p newtop -o water.pdb
-	gmx_mpi grompp -f ${params.ions_mdp} -c water.pdb -p newtop.top -o genion.tpr
+	gmx_mpi grompp -f ${params.genion_mdp} -c water.pdb -p newtop.top -o genion.tpr
 	echo "SOL" | gmx_mpi genion -s genion.tpr -p newtop.top -neutral -conc 0.15 -o ions.pdb
 	"""
+}
+
+process GRO_PREP_MUTANT {
+	publishDir "${params.pub_dir}/gro_preparation_rosetta/${type}", mode: 'copy', overwrite: false
+	container "${simgDir}/gro_pmx_2023.sif"
+
+	input:
+	path pdb
+	val type
+
+	output:
+	path "topol.top" 
+	path "conf.pdb"
+	path "box.pdb"
+	path "water.pdb"
+	path "genion.tpr"
+	path "ions.pdb"
+
+	script:
+	"""
+	gmx_mpi pdb2gmx -f ${pdb} -o conf.pdb -p topol.top -ff ${params.ff_name} -water tip3p
+	gmx_mpi editconf -f conf.pdb -o box.pdb -bt dodecahedron -d 1.0
+	gmx_mpi solvate -cp box -cs spc216 -p topol -o water.pdb
+	gmx_mpi grompp -f ${params.genion_mdp} -c water.pdb -p topol.top -o genion.tpr
+	echo "SOL" | gmx_mpi genion -s genion.tpr -p topol.top -neutral -conc 0.15 -o ions.pdb
+	"""
+
 }
 
 process GRO_PREP_WT {
@@ -351,9 +379,6 @@ process GRO_PREP_WT {
 
 	input:
 	path pdb
-	val res_number
-	val res_mutant
-	val forcefield
 
 	output:
 	path "topol.top"
@@ -368,52 +393,74 @@ process GRO_PREP_WT {
 	gmx_mpi pdb2gmx -f ${pdb} -o conf.pdb -p topol.top -ff ${params.ff_name} -water tip3p
 	gmx_mpi editconf -f conf.pdb -o box.pdb -bt dodecahedron -d 1.0
 	gmx_mpi solvate -cp box -cs spc216 -p topol -o water.pdb
-	gmx_mpi grompp -f ${params.ions_mdp} -c water.pdb -p topol.top -o genion.tpr
+	gmx_mpi grompp -f ${params.genion_mdp} -c water.pdb -p topol.top -o genion.tpr
 	echo "SOL" | gmx_mpi genion -s genion.tpr -p topol.top -neutral -conc 0.15 -o ions.pdb
 	"""
 }
 
-process GRO_EQUILIBRIUM_F {
+process GRO_EQUILIBRIUM{
 	publishDir "${params.pub_dir}/gro_preparation/forward/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 
 	input:
-
+	path ions_pdb
+	path topol
+	path posre_itp
 
 	output:
+	// path "equil.trr"
+	// path "equil.tpr"
+	path "enmin.tpr"
+	path "npt.tpr"
+	// path "topol.top"
 
 	script:
 	"""
-	//Minimistion
-	gmx grompp -f f_enmin.mdp -c ions.pdb -p newtop.top -o enmin.tpr
-	gmx mdrun -s enmin.tpr -deffnm enmin -v
+	gmx_mpi grompp -f ${params.f_enmin_mdp} -c ${ions_pdb} -p ${topol} -o enmin.tpr
+	gmx_mpi mdrun -s enmin.tpr -deffnm enmin -v
+	gmx_mpi grompp -f ${params.f_npt_mdp} -c enmin.gro -r enmin.gro -p ${topol} -o npt.tpr -maxwarn 2
+	gmx_mpi mdrun -s npt.tpr -deffnm npt -v
+	gmx_mpi grompp -f ${params.f_equil_mdp} -c npt.gro -p ${topol} -o equil.tpr -maxwarn 1
+	gmx_mpi mdrun -s equil.tpr -deffnm equil -v
 	"""
+	// gmx_mpi grompp -f ${params.f_npt_mdp} -c enmin.gro -p ${topol} -o npt.tpr -maxwarn 1
+	// gmx_mpi mdrun -s npt.tpr -deffnm npt -v
+	// gmx_mpi grompp -f ${params.f_equil_mdp} -c npt.gro -p ${topol} -o equil.tpr -maxwarn 1
+	// gmx_mpi mdrun -s equil.tpr -deffnm equil -v
+	
 
 }
 
-process GRO_EQUILIBRIUM_R {
-	publishDir "${params.pub_dir}/gro_preparation/reverse/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
-	container "${simgDir}/gro_pmx_2023.sif"
+// process GRO_NON_EQUILIBRIUM {
+// 	publishDir "${params.pub_dir}/gro_preparation/reverse/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
+// 	container "${simgDir}/gro_pmx_2023.sif"
+// 	scratch true
 
-	input:
+// 	input:
+// 	path equil_trr
+// 	path equil_tpr
+//	path topol
+
+// 	output:
+
+// 	script:
+// 	"""
+// 	//extract 50 snapshots from the 5ns equilibrium sim (1 per 100ps starting at 100ps)
+// 	echo "System" | gmx trjconv -f ${equil_trr} -s ${equil_tpr} -sep -b 100 -o frame_.gro
+// 	for i in \$( seq 0 49 ); do
+// 		n=$((i+1));
+// 		mkdir frame\$n;
+// 		mv frame_\$i.gro frame\$n/frame.gro;
+// 	done
+
+// 	for i in\ $( seq 1 50 ); do
+// 		cd frame\$i;
+// 		gmx grompp -f ${params.f_nonequil_mdp} -c frame.gro -p ${topol} -o nonequil.tpr -maxwarn 1;
+// 		gmx mdrun -s nonequil.tpr -deffnm nonequil -dhdl dgdl.xvg -v;
+// 		cd ../;
+// 	done
+// 	"""
+
+// }
 
 
-	output:
-
-	script:
-	"""
-	//Minimistion
-	gmx grompp -f f_enmin.mdp -c ions.pdb -p newtop.top -o enmin.tpr
-	gmx mdrun -s enmin.tpr -deffnm enmin -v
-	"""
-
-}
-
-process GRO_NON_EQUILIBRIUM_F {
-	input:
-
-
-	output:
-
-
-}

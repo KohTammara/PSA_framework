@@ -29,11 +29,11 @@
     "bu_maestro" : "false",
 
     "gromacs" : false,
-    "ions_mdp" : "/home/tammara/Documents/PSA_framework/preprocessed_input/genion.mdp",
-    "em_mdp" : "/home/tammara/Downloads/protein_mut_input (1)/em.mdp",
-    "nvt_mdp" : "/home/tammara/Downloads/protein_mut_input (1)/nvt.mdp",
-    "npt_mdp" : "/home/tammara/Downloads/protein_mut_input (1)/npt.mdp",
-    "md_mdp" : "/home/tammara/Downloads/protein_mut_input (1)/md.mdp",
+    "ions_mdp" : "/home/tammara/Downloads/protein_mut_input_(1)/ions.mdp",
+    "em_mdp" : "/home/tammara/Downloads/protein_mut_input_(1)/em.mdp",
+    "nvt_mdp" : "/home/tammara/Downloads/protein_mut_input_(1)/nvt.mdp",
+    "npt_mdp" : "/home/tammara/Downloads/protein_mut_input_(1)/npt.mdp",
+    "md_mdp" : "/home/tammara/Downloads/protein_mut_input_(1)/md.mdp",
     "G1"    : "8",
     "G2"    : "13",
     "G3"    : "11",
@@ -52,6 +52,15 @@
     "ff_name":"charmm36m-mut",
     "pdb":"/home/tammara/Documents/PSA_framework/preprocessed_input/1qlx_charmm.pdb",
     "res_number":"81",
-    "mutant_res":"A"
+    "mutant_res":"A",
+    "genion_mdp":"/home/tammara/Documents/PSA_framework/preprocessed_input/genion.mdp",
+    "f_enmin_mdp":"/home/tammara/Documents/PSA_framework/preprocessed_input/forward/equil_md/f_enmin.mdp",
+    "f_equil_mdp":"/home/tammara/Documents/PSA_framework/preprocessed_input/forward/equil_md/f_equil.mdp",
+    "f_npt_mdp":"/home/tammara/Documents/PSA_framework/preprocessed_input/forward/equil_md/f_npt.mdp",
+    "f_nonequil_mdp":"/home/tammara/Documents/PSA_framework/preprocessed_input/forward/nonequil_md/f_nonequil.mdp",
+    "r_enmin_mdp":"/home/tammara/Documents/PSA_framework/preprocessed_input/reverse/equil_md/r_enmin.mdp",
+    "r_equil_mdp":"/home/tammara/Documents/PSA_framework/preprocessed_input/reverse/equil_md/r_equil.mdp",
+    "r_npt_mdp":"/home/tammara/Documents/PSA_framework/preprocessed_input/reverse/equil_md/r_npt.mdp",
+    "r_nonequil_mdp":"/home/tammara/Documents/PSA_framework/preprocessed_input/reverse/nonequil_md/r_nonequil.mdp"
 
 }

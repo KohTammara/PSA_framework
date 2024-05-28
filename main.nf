@@ -48,7 +48,9 @@ include {
     GROMACS_MT_THREADER;
     GROMACS_WT;
     PMX_PREP_MUTANT;
-    GRO_PREP_WT;
+    GRO_PREP_MUTANT;
+    GRO_EQUILIBRIUM;
+    // GRO_NON_EQUILIBRIUM;
 } from './modules.nf' 
 
 workflow.onComplete {
@@ -117,7 +119,11 @@ workflow maestro {
 
 workflow {
     if (params.pmx == true) {
-        GRO_PREP_WT(params.pdb, params.res_number, params.mutant_res, params.pmx_forcefield)
+        PMX_PREP_MUTANT(params.pdb, params.res_number, params.mutant_res, params.pmx_forcefield)
+        newtop = PMX_PREP_MUTANT.output[1]
+        ions_pdb = PMX_PREP_MUTANT.output[6]
+        posre_itp = PMX_PREP_MUTANT.output[7]
+        GRO_EQUILIBRIUM(ions_pdb, newtop, posre_itp)
     }
 
     if (params.rosetta_fbb == true) {
