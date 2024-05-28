@@ -425,36 +425,37 @@ process GRO_EQUILIBRIUM{
 	"""
 }
 
-// process GRO_NON_EQUILIBRIUM {
-// 	publishDir "${params.pub_dir}/gro_preparation/reverse/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
-// 	container "${simgDir}/gro_pmx_2023.sif"
-// 	scratch true
+process GRO_NON_EQUILIBRIUM {
+	publishDir "${params.pub_dir}/gro_preparation/reverse/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
+	container "${simgDir}/gro_pmx_2023.sif"
+	scratch true
 
-// 	input:
-// 	path equil_trr
-// 	path equil_tpr
-//	path topol
+	input:
+	path equil_trr
+	path equil_tpr
+	path topol
 
-// 	output:
+	output:
+	path "dgdl*.xvg"
 
-// 	script:
-// 	"""
-// 	//extract 50 snapshots from the 5ns equilibrium sim (1 per 100ps starting at 100ps)
-// 	echo "System" | gmx trjconv -f ${equil_trr} -s ${equil_tpr} -sep -b 100 -o frame_.gro
-// 	for i in \$( seq 0 49 ); do
-// 		n=$((i+1));
-// 		mkdir frame\$n;
-// 		mv frame_\$i.gro frame\$n/frame.gro;
-// 	done
+	script:
+	"""
+	//extract 50 snapshots from the 5ns equilibrium sim (1 per 100ps starting at 100ps)
+	echo "System" | gmx trjconv -f ${equil_trr} -s ${equil_tpr} -sep -b 100 -o frame_.gro
+	for i in \$( seq 0 49 ); do
+		n=$((i+1));
+		mkdir frame\$n;
+		mv frame_\$i.gro frame\$n/frame.gro;
+	done
 
-// 	for i in\ $( seq 1 50 ); do
-// 		cd frame\$i;
-// 		gmx grompp -f ${params.f_nonequil_mdp} -c frame.gro -p ${topol} -o nonequil.tpr -maxwarn 1;
-// 		gmx mdrun -s nonequil.tpr -deffnm nonequil -dhdl dgdl.xvg -v;
-// 		cd ../;
-// 	done
-// 	"""
+	for i in\ $( seq 1 50 ); do
+		cd frame\$i;
+		gmx grompp -f ${params.f_nonequil_mdp} -c frame.gro -p ${topol} -o nonequil.tpr -maxwarn 1;
+		gmx mdrun -s nonequil.tpr -deffnm nonequil -dhdl dgdl\$i.xvg -v;
+		cd ../;
+	done
+	"""
 
-// }
+}
 
 
