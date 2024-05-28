@@ -443,12 +443,12 @@ process GRO_NON_EQUILIBRIUM {
 	//extract 50 snapshots from the 5ns equilibrium sim (1 per 100ps starting at 100ps)
 	echo "System" | gmx trjconv -f ${equil_trr} -s ${equil_tpr} -sep -b 100 -o frame_.gro
 	for i in \$( seq 0 49 ); do
-		n=$((i+1));
+		n=\$((i+1));
 		mkdir frame\$n;
 		mv frame_\$i.gro frame\$n/frame.gro;
 	done
 
-	for i in\ $( seq 1 50 ); do
+	for i in \$( seq 1 50 ); do
 		cd frame\$i;
 		gmx grompp -f ${params.f_nonequil_mdp} -c frame.gro -p ${topol} -o nonequil.tpr -maxwarn 1;
 		gmx mdrun -s nonequil.tpr -deffnm nonequil -dhdl dgdl\$i.xvg -v;

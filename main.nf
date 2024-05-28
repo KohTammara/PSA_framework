@@ -50,7 +50,7 @@ include {
     PMX_PREP_MUTANT;
     GRO_PREP_MUTANT;
     GRO_EQUILIBRIUM;
-    // GRO_NON_EQUILIBRIUM;
+    GRO_NON_EQUILIBRIUM;
 } from './modules.nf' 
 
 workflow.onComplete {
@@ -126,7 +126,7 @@ workflow {
         GRO_EQUILIBRIUM(ions_pdb, newtop, posre_itp)
         equi_trr = GRO_EQUILIBRIUM.output[0]
         equi_tpr = GRO_EQUILIBRIUM.output[1]
-        newtop = GRO_EQUILIBRIUM.outPUT[4]
+        newtop = GRO_EQUILIBRIUM.output[4]
         GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop)
     }
 
