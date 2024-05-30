@@ -412,7 +412,7 @@ process GRO_EQUILIBRIUM{
 	path "equil.tpr"
 	path "enmin.tpr"
 	path "npt.tpr"
-	path "topol.top"
+	// path "topol.top"
 
 	script:
 	"""
