@@ -126,7 +126,7 @@ workflow {
         GRO_EQUILIBRIUM(ions_pdb, newtop, posre_itp)
         equi_trr = GRO_EQUILIBRIUM.output[0]
         equi_tpr = GRO_EQUILIBRIUM.output[1]
-        newtop = GRO_EQUILIBRIUM.output[4]
+        // newtop = GRO_EQUILIBRIUM.output[4]
         GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop)
     }
 
