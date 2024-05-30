@@ -433,7 +433,7 @@ process GRO_NON_EQUILIBRIUM {
 	input:
 	path equil_trr
 	path equil_tpr
-	// path topol
+	path topol
 
 	output:
 	path "dgdl*.xvg"
