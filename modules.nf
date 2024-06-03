@@ -439,8 +439,8 @@ process GRO_NON_EQUILIBRIUM {
 	path "dgdl*.xvg"
 
 	script:
-	"""
 	//extract 50 snapshots from the 5ns equilibrium sim (1 per 100ps starting at 100ps)
+	"""
 	echo "System" | gmx trjconv -f ${equil_trr} -s ${equil_tpr} -sep -b 100 -o frame_.gro
 	for i in \$( seq 0 49 ); do
 		n=\$((i+1));
