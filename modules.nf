@@ -429,6 +429,7 @@ process GRO_NON_EQUILIBRIUM {
 	publishDir "${params.pub_dir}/gro_preparation/reverse/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	scratch true
+	stageInMode 'copy'
 
 	input:
 	path equil_trr
