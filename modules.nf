@@ -451,7 +451,7 @@ process GRO_NON_EQUILIBRIUM {
 
 	for i in \$( seq 1 50 ); do
 		cd frame\$i;
-		gmx_mpi grompp -f ${params.f_nonequil_mdp} -c frame.gro -p ${topol} -o nonequil.tpr -maxwarn 1;
+		gmx_mpi grompp -f ${params.f_nonequil_mdp} -c frame.gro -p ../${topol} -o nonequil.tpr -maxwarn 1;
 		gmx_mpi mdrun -s nonequil.tpr -deffnm nonequil -dhdl dgdl\$i.xvg -v;
 		cd ../;
 	done
