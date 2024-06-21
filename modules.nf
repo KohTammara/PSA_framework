@@ -322,6 +322,7 @@ process PMX_PREP_MUTANT {
 	val res_number
 	val res_mutant
 	val forcefield
+	path genion
 
 	output:
 	path "mutant.pdb"
@@ -334,14 +335,35 @@ process PMX_PREP_MUTANT {
 	path "posre.itp"
 
 	script:
+	def forcefield_number
+	switch(forcefield) {
+		case 'amber14sbmut':
+			forcefield_number = '1'
+			break
+		case 'amber99sb-star-ildn-bsc1-mut':
+			forcefield_number = '2'
+			break
+		case 'amber99sb-star-ildn-dna-mut':
+			forcefield_number = '3'
+			break
+		case 'amber99sb-star-ildn-mut':
+			forcefield_number = '4'
+			break
+		case 'charmm22star-mut ':
+			forcefield_number = '5'
+			break
+		case 'charmm36m-mut':
+			forcefield_number = '6'
+			break
+	}
 	"""
-	echo -e "${forcefield}\n${res_number}\n${res_mutant}\nn\n" | pmx mutate -f ${pdb} -o mutant.pdb
+	echo -e "${forcefield_number}\n${res_number}\n${res_mutant}\nn\n" | pmx mutate -f ${pdb} -o mutant.pdb
 	gmx_mpi pdb2gmx -f mutant.pdb -o conf.pdb -p topol.top -ff ${params.ff_name} -water tip3p
 	sed -i 's#/usr/local/lib/python3.10/dist-packages/pmx/data/mutff/##g' topol.top
 	pmx gentop -p topol.top -o newtop.top
 	gmx_mpi editconf -f conf.pdb -o box.pdb -bt dodecahedron -d 1.0
 	gmx_mpi solvate -cp box -cs spc216 -p newtop -o water.pdb
-	gmx_mpi grompp -f ${params.genion_mdp} -c water.pdb -p newtop.top -o genion.tpr
+	gmx_mpi grompp -f ${genion} -c water.pdb -p newtop.top -o genion.tpr
 	echo "SOL" | gmx_mpi genion -s genion.tpr -p newtop.top -neutral -conc 0.15 -o ions.pdb
 	"""
 }
@@ -373,32 +395,32 @@ process GRO_PREP_MUTANT {
 
 }
 
-process GRO_PREP_WT {
-	publishDir "${params.pub_dir}/gro_preparation/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
-	container "${simgDir}/gro_pmx_2023.sif"
+// process GRO_PREP_WT {
+// 	publishDir "${params.pub_dir}/gro_preparation/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
+// 	container "${simgDir}/gro_pmx_2023.sif"
 
-	input:
-	path pdb
+// 	input:
+// 	path pdb
 
-	output:
-	path "topol.top"
-	path "conf.pdb"
-	path "box.pdb"
-	path "water.pdb"
-	path "genion.tpr"
-	path "ions.pdb"
+// 	output:
+// 	path "topol.top"
+// 	path "conf.pdb"
+// 	path "box.pdb"
+// 	path "water.pdb"
+// 	path "genion.tpr"
+// 	path "ions.pdb"
 
-	script:
-	"""
-	gmx_mpi pdb2gmx -f ${pdb} -o conf.pdb -p topol.top -ff ${params.ff_name} -water tip3p
-	gmx_mpi editconf -f conf.pdb -o box.pdb -bt dodecahedron -d 1.0
-	gmx_mpi solvate -cp box -cs spc216 -p topol -o water.pdb
-	gmx_mpi grompp -f ${params.genion_mdp} -c water.pdb -p topol.top -o genion.tpr
-	echo "SOL" | gmx_mpi genion -s genion.tpr -p topol.top -neutral -conc 0.15 -o ions.pdb
-	"""
-}
+// 	script:
+// 	"""
+// 	gmx_mpi pdb2gmx -f ${pdb} -o conf.pdb -p topol.top -ff ${params.ff_name} -water tip3p
+// 	gmx_mpi editconf -f conf.pdb -o box.pdb -bt dodecahedron -d 1.0
+// 	gmx_mpi solvate -cp box -cs spc216 -p topol -o water.pdb
+// 	gmx_mpi grompp -f ${params.genion_mdp} -c water.pdb -p topol.top -o genion.tpr
+// 	echo "SOL" | gmx_mpi genion -s genion.tpr -p topol.top -neutral -conc 0.15 -o ions.pdb
+// 	"""
+// }
 
-process GRO_EQUILIBRIUM{
+process GRO_EQUILIBRIUM {
 	publishDir "${params.pub_dir}/gro_preparation/forward/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 
@@ -406,21 +428,23 @@ process GRO_EQUILIBRIUM{
 	path ions_pdb
 	path topol
 	path posre_itp
+	path enmin
+	path equil
+	path npt
 
 	output:
 	path "equil.trr"
 	path "equil.tpr"
 	path "enmin.tpr"
 	path "npt.tpr"
-	// path "topol.top"
 
 	script:
 	"""
-	gmx_mpi grompp -f ${params.f_enmin_mdp} -c ${ions_pdb} -p ${topol} -o enmin.tpr
+	gmx_mpi grompp -f ${enmin} -c ${ions_pdb} -p ${topol} -o enmin.tpr
 	gmx_mpi mdrun -s enmin.tpr -deffnm enmin -v
-	gmx_mpi grompp -f ${params.f_npt_mdp} -c enmin.gro -r enmin.gro -p ${topol} -o npt.tpr -maxwarn 2
+	gmx_mpi grompp -f ${npt} -c enmin.gro -r enmin.gro -p ${topol} -o npt.tpr -maxwarn 2
 	gmx_mpi mdrun -s npt.tpr -deffnm npt -v
-	gmx_mpi grompp -f ${params.f_equil_mdp} -c npt.gro -p ${topol} -o equil.tpr -maxwarn 1
+	gmx_mpi grompp -f ${equil} -c npt.gro -p ${topol} -o equil.tpr -maxwarn 1
 	gmx_mpi mdrun -s equil.tpr -deffnm equil -v
 	"""
 }
@@ -435,9 +459,10 @@ process GRO_NON_EQUILIBRIUM {
 	path equil_trr
 	path equil_tpr
 	path topol
+	path non_equil
 
 	output:
-	path "dgdl*.xvg"
+	path "dgdl*", emit: dgdlFiles
 
 	script:
 	//extract 50 snapshots from the 5ns equilibrium sim (1 per 100ps starting at 100ps)
@@ -451,10 +476,30 @@ process GRO_NON_EQUILIBRIUM {
 
 	for i in \$( seq 1 50 ); do
 		cd frame\$i;
-		gmx_mpi grompp -f ${params.f_nonequil_mdp} -c frame.gro -p ../${topol} -o nonequil.tpr -maxwarn 1;
+		gmx_mpi grompp -f ${non_equil} -c frame.gro -p ../${topol} -o nonequil.tpr -maxwarn 1;
 		gmx_mpi mdrun -s nonequil.tpr -deffnm nonequil -dhdl dgdl\$i.xvg -v;
+		mv dgdl\$i.xvg ../;
 		cd ../;
 	done
+	"""
+
+}
+
+process FREE_ENERGY_EST {
+	publishDir "${params.pub_dir}/free_energy/${some name}", mode: 'copy', overwrite: false
+	container "${simgDir}/gro_pmx_2023.sif"
+
+	input:
+	path forward
+	path reverse
+	val type
+
+	output:
+	path "*.txt"
+
+	script:
+	"""
+	pmx analyse -fA forward-fB reverse -t 298.15 -m bar -o ${type}_free_energy_est.txt
 	"""
 
 }

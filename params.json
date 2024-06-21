@@ -48,7 +48,6 @@
     "bin_dir":"/home/tammara/Documents/PSA_framework/bin",
 
     "pmx": true,
-    "pmx_forcefield":"6",
     "ff_name":"charmm36m-mut",
     "pdb":"/home/tammara/Documents/PSA_framework/preprocessed_input/1qlx_charmm.pdb",
     "res_number":"81",

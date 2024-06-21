@@ -51,6 +51,7 @@ include {
     GRO_PREP_MUTANT;
     GRO_EQUILIBRIUM;
     GRO_NON_EQUILIBRIUM;
+    FREE_ENERGY_EST;
 } from './modules.nf' 
 
 workflow.onComplete {
@@ -116,30 +117,148 @@ workflow maestro {
     results_csv = MAESTRO.out[0]
 }
 
+workflow pmx_free_energy_forward_folded {
+    take:
+    pdb
+    res_number
+    mutant_res
+    forcefield
+    genion
+    enmin
+    equil
+    npt
+    nonequil
+
+    main:
+    PMX_PREP_MUTANT(pdb, res_number, mutant_res, forcefield, genion)
+    newtop = PMX_PREP_MUTANT.output[1]
+    ions_pdb = PMX_PREP_MUTANT.output[6]
+    posre_itp = PMX_PREP_MUTANT.output[7]
+    GRO_EQUILIBRIUM(ions_pdb, newtop, posre_itp, enmin, equil, npt)
+    equi_trr = GRO_EQUILIBRIUM.output[0]
+    equi_tpr = GRO_EQUILIBRIUM.output[1]
+    forward_folded = GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop, nonequil)
+
+    emit:
+    forward_folded
+}
+
+workflow pmx_free_energy_reverse_folded {
+    take:
+    pdb
+    res_number
+    mutant_res
+    forcefield
+    genion
+    enmin
+    equil
+    npt
+    nonequil
+
+    main:
+    PMX_PREP_MUTANT(pdb, res_number, mutant_res, forcefield, genion)
+    newtop = PMX_PREP_MUTANT.output[1]
+    ions_pdb = PMX_PREP_MUTANT.output[6]
+    posre_itp = PMX_PREP_MUTANT.output[7]
+    GRO_EQUILIBRIUM(ions_pdb, newtop, posre_itp, enmin, equil, npt)
+    equi_trr = GRO_EQUILIBRIUM.output[0]
+    equi_tpr = GRO_EQUILIBRIUM.output[1]
+    reverse_folded = GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop, nonequil)
+
+    emit:
+    reverse_folded
+}
+
+workflow pmx_free_energy_forward_unfolded {
+    take:
+    pdb
+    res_number
+    mutant_res
+    forcefield
+    genion
+    enmin
+    equil
+    npt
+    nonequil
+
+    main:
+    PMX_PREP_MUTANT(pdb, res_number, mutant_res, forcefield, genion)
+    newtop = PMX_PREP_MUTANT.output[1]
+    ions_pdb = PMX_PREP_MUTANT.output[6]
+    posre_itp = PMX_PREP_MUTANT.output[7]
+    GRO_EQUILIBRIUM(ions_pdb, newtop, posre_itp, enmin, equil, npt)
+    equi_trr = GRO_EQUILIBRIUM.output[0]
+    equi_tpr = GRO_EQUILIBRIUM.output[1]
+    forward_unfolded = GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop, nonequil)
+
+    emit:
+    forward_unfolded.collect()
+}
+
+workflow pmx_free_energy_reverse_unfolded {
+    take:
+    pdb
+    res_number
+    mutant_res
+    forcefield
+    genion
+    enmin
+    equil
+    npt
+    nonequil
+
+    main:
+    PMX_PREP_MUTANT(pdb, res_number, mutant_res, forcefield, genion)
+    newtop = PMX_PREP_MUTANT.output[1]
+    ions_pdb = PMX_PREP_MUTANT.output[6]
+    posre_itp = PMX_PREP_MUTANT.output[7]
+    GRO_EQUILIBRIUM(ions_pdb, newtop, posre_itp, enmin, equil, npt)
+    equi_trr = GRO_EQUILIBRIUM.output[0]
+    equi_tpr = GRO_EQUILIBRIUM.output[1]
+    reverse_unfolded = GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop, nonequil)
+
+    emit:
+    reverse_unfolded.collect()
+}
+workflowfree_energy_folded {
+    take:
+    reverse
+    forward
+
+    main:
+    out = FREE_ENERGY_EST(forward, reverse, "folded")
+
+    emit:
+    out
+
+}
+workflow free_energy_forward_unfolded {
+    take:
+    reverse
+    forward
+
+    main:
+    out = FREE_ENERGY_EST(forward, reverse, "folded")
+
+    emit:
+    out
+}
+
 
 workflow {
     if (params.pmx == true) {
-        PMX_PREP_MUTANT(params.pdb, params.res_number, params.mutant_res, params.pmx_forcefield)
-        newtop = PMX_PREP_MUTANT.output[1]
-        ions_pdb = PMX_PREP_MUTANT.output[6]
-        posre_itp = PMX_PREP_MUTANT.output[7]
-        GRO_EQUILIBRIUM(ions_pdb, newtop, posre_itp)
-        equi_trr = GRO_EQUILIBRIUM.output[0]
-        equi_tpr = GRO_EQUILIBRIUM.output[1]
-        // newtop = GRO_EQUILIBRIUM.output[4]
-        GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop)
+        pmx_free_energy_forward_folded(params.pdb, params.res_number, params.mutant_res, params.ff_name, params.genion_mdp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp)
+        pmx_free_energy_reverse_folded(params.pdb, params.res_number, params.mutant_res, params.ff_name, params.genion_mdp, params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
+        free_energy_folded(pmx_free_energy_forward_folded.out, pmx_free_energy_reverse_folded.out)
     }
 
     if (params.rosetta_fbb == true) {
-        // pdb = Channel.fromPath(params.list_of_structs)
         resf = Channel.fromPath(params.resf)
         resf.view()
         rosy_fbb(params.list_of_structs, resf)
     }
 
     if (params.rosetta_threader == true) {
-        // pdb = Channel.fromPath(params.list_of_structs)
-        // sequence = Channel.fromPath(params.sequence)
         mutation = Channel.fromPath(params.mutation_info)
         rosy_threader_input(params.sequence, mutation)
         rosy_threader(params.list_of_structs,rosy_threader_input.out.cut_seq,rosy_threader_input.out.start_position, mutation)
