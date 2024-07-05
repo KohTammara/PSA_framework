@@ -1,7 +1,66 @@
 //create a collective gromacs process or see if it can be created otherwise split it at points where collective breaks
 //process for native and a process for mutant
+//check out generic gro processes for ff selection
+process GROMACS_MT_PMX {
+	publishDir "${params.pub_dir}/GROMACS_FBB_mutant", mode: 'copy', overwrite: false
+	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
+
+	input:
+	path pdb_file
+	path ions_mdp
+	path em_mdp
+	path nvt_mdp
+	path npt_mdp
+	path md_mdp
+	val G1
+	val G2
+	val G3
+	val G4
+	val G5
+	val G6
+	val G7
+	val G8
+	val G9
+
+	output:
+	path '*_processed.gro'
+	path '*.top'
+	path '*_box.gro'
+	path '*_solve.gro'
+	path '*_ions.tpr'
+	path '*_em.tpr'
+	path '*_nvt.tpr'
+
+	script:
+	"""
+	grep -v HOH ${pdb_file} > ${pdb_file}_clean.pdb
+	echo ${G1} | gmx_mpi pdb2gmx -f ${pdb_file}_clean.pdb -o ${pdb_file}_processed.gro -water spce -ignh
+	gmx_mpi editconf -f ${pdb_file}_processed.gro -o ${pdb_file}_box.gro -c -d 1.0 -bt dodecahedron
+	gmx_mpi solvate -cp ${pdb_file}_box.gro -cs spc216.gro -o  ${pdb_file}_solve.gro -p topol.top
+	gmx_mpi grompp -f ${ions_mdp} -c ${pdb_file}_solve.gro -p topol.top -o ${pdb_file}_ions.tpr -maxwarn 1
+	echo ${G2} |gmx_mpi genion -s ${pdb_file}_ions.tpr -o ${pdb_file}_solve_ions.gro -p topol.top -pname NA -nname CL -neutral
+	gmx_mpi grompp -f ${em_mdp} -c ${pdb_file}_solve_ions.gro -p topol.top -o ${pdb_file}_em.tpr
+	gmx_mpi mdrun -v -deffnm ${pdb_file}_em
+	echo ${G3}|gmx_mpi energy -f ${pdb_file}_em.edr -o ${pdb_file}_potential.xvg
+	gmx_mpi grompp -f ${nvt_mdp} -c ${pdb_file}_em.gro -r ${pdb_file}_em.gro -p topol.top -o ${pdb_file}_nvt.tpr
+	gmx_mpi mdrun -deffnm ${pdb_file}_nvt
+	echo ${G4}|gmx_mpi energy -f ${pdb_file}_nvt.edr -o ${pdb_file}_temperature.xvg
+	gmx_mpi grompp -f ${npt_mdp} -c ${pdb_file}_nvt.gro -r ${pdb_file}_nvt.gro -t ${pdb_file}_nvt.cpt -p topol.top -o ${pdb_file}_npt.tpr
+	gmx_mpi mdrun -deffnm ${pdb_file}_npt
+	echo ${G5}|gmx_mpi energy -f ${pdb_file}_npt.edr -o ${pdb_file}_density.xvg
+	gmx_mpi grompp -f ${md_mdp} -c ${pdb_file}_npt.gro -t ${pdb_file}_npt.cpt -p topol.top -o ${pdb_file}_md_0_1.tpr
+	gmx_mpi mdrun -deffnm ${pdb_file}_md_0_1
+	echo ${G6} |gmx_mpi trjconv -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1.xtc -o ${pdb_file}_md_0_1_noPBC.xtc -pbc mol -center
+	echo ${G7} |gmx_mpi rms -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_rmsd.xvg -tu ns
+	echo ${G8} |gmx_mpi rms -s ${pdb_file}_em.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_rmsd_xtal.xvg -tu ns
+	echo ${G9} |gmx_mpi gyrate -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_gyrate.xvg
+	"""
+
+
+}
+
 process GROMACS_MT_FBB {
-	publishDir '/GROMACS_FBB_mutant', mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/GROMACS_FBB_mutant", mode: 'copy', overwrite: false
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 
 	input:
@@ -59,7 +118,7 @@ process GROMACS_MT_FBB {
 }
 
 process GROMACS_MT_THREADER {
-	publishDir '${params.pub_dir}/GROMACS_THREADER_mutant', mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/GROMACS_THREADER_mutant", mode: 'copy', overwrite: false
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 
 	input:
@@ -117,7 +176,7 @@ process GROMACS_MT_THREADER {
 }
 
 process GROMACS_WT {
-	publishDir "${params.pub_dir}/GROMACS_wildtype", mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/GROMACS_wildtype/${pdb_file.baseName}", mode: 'copy', overwrite: false
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 
 	input:
@@ -153,7 +212,7 @@ process GROMACS_WT {
 	gmx_mpi editconf -f ${pdb_file}_processed.gro -o ${pdb_file}_box.gro -c -d 1.0 -bt dodecahedron
 	gmx_mpi solvate -cp ${pdb_file}_box.gro -cs spc216.gro -o  ${pdb_file}_solve.gro -p topol.top
 	gmx_mpi grompp -f ${ions_mdp} -c ${pdb_file}_solve.gro -p topol.top -o ${pdb_file}_ions.tpr -maxwarn 1
-	echo ${G2} |gmx_mpi genion -s ${pdb_file}_ions.tpr -o ${pdb_file}_solve_ions.gro -p topol.top -pname SOD -nname CLA -neutral
+	echo ${G2} |gmx_mpi genion -s ${pdb_file}_ions.tpr -o ${pdb_file}_solve_ions.gro -p topol.top -pname NA -nname CL -neutral
 	gmx_mpi grompp -f ${em_mdp} -c ${pdb_file}_solve_ions.gro -p topol.top -o ${pdb_file}_em.tpr
 	gmx_mpi mdrun -v -deffnm ${pdb_file}_em
 	echo ${G3}|gmx_mpi energy -f ${pdb_file}_em.edr -o ${pdb_file}_potential.xvg
@@ -198,6 +257,7 @@ process MAESTRO {
 	publishDir "${params.pub_dir}/Maestro/out", mode: 'copy', overwrite: true, enabled: true
 	cpus 6
 	container "${simgDir}/maestro.sif"
+	tag "${mutation}"
 
 
 	input:
@@ -217,6 +277,8 @@ process MAESTRO {
 }
 
 process CUTANDMUTATE {
+	tag "${mutation_info}"
+
     input:
     path sequence
 	path mutation_info
@@ -257,17 +319,19 @@ process CREATEXML {
 }
 
 process ROSETTA_THREADER {
-	publishDir "${params.pub_dir}/Rosetta_threader/${mutation}", mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/Rosetta_threader/${mutation.baseName}", mode: 'copy', overwrite: false
 	container "${simgDir}/rosetta_23_45_updated_03.sif"
+	tag "${mutation.baseName}"
 
 	input:
 	path PDB
 	path xml_file
-	val mutation
+	path mutation
 
 	output:
 	path "*.pdb"
 	path "*.sc"
+	val "${mutation.baseName}"
 
 	script:
 	"""
@@ -295,8 +359,10 @@ process SPLITPDB {
 }
 
 process ROSETTA_FIXBB {
-	publishDir "${params.pub_dir}/Rosetta_FixBB/${res_file}", mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/Rosetta_FixBB/${res_file.baseName}", mode: 'copy', overwrite: false
 	container "${simgDir}/rosetta_23_45_updated_03.sif"
+	tag "${res_file.baseName}"
+	
 	input:
 	path pdb_file
 	path res_file
@@ -306,6 +372,7 @@ process ROSETTA_FIXBB {
 	path "*.pdb" 
 	path "*.sc" 
 	path "*.txt"
+	val "${res_file.baseName}"
 
 	script:
 	"""
@@ -314,13 +381,13 @@ process ROSETTA_FIXBB {
 }
 
 process PMX_PREP_MUTANT {
-	publishDir "${params.pub_dir}/pmx/preparation/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/pmx/preparation/${index}_${mutant}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
+	tag "${index}_${mutant}"
 
 	input:
 	path pdb
-	val res_number
-	val res_mutant
+	tuple val(index), val(mutant)
 	val forcefield
 	path genion
 
@@ -333,6 +400,7 @@ process PMX_PREP_MUTANT {
 	path "genion.tpr"
 	path "ions.pdb"
 	path "posre.itp"
+	val "${index}_${mutant}"
 
 	script:
 	def forcefield_number
@@ -356,9 +424,10 @@ process PMX_PREP_MUTANT {
 			forcefield_number = '6'
 			break
 	}
+	index = index-124
 	"""
-	echo -e "${forcefield_number}\n${res_number}\n${res_mutant}\nn\n" | pmx mutate -f ${pdb} -o mutant.pdb
-	gmx_mpi pdb2gmx -f mutant.pdb -o conf.pdb -p topol.top -ff ${params.ff_name} -water tip3p
+	echo -e "${forcefield_number}\n${index}\n${mutant}\nn\n" | pmx mutate -f ${pdb} -o mutant.pdb
+	gmx_mpi pdb2gmx -f mutant.pdb -o conf.pdb -p topol.top -ff ${forcefield} -water tip3p
 	sed -i 's#/usr/local/lib/python3.10/dist-packages/pmx/data/mutff/##g' topol.top
 	pmx gentop -p topol.top -o newtop.top
 	gmx_mpi editconf -f conf.pdb -o box.pdb -bt dodecahedron -d 1.0
@@ -368,13 +437,18 @@ process PMX_PREP_MUTANT {
 	"""
 }
 
+//inficate in pubdir what rosetta process
 process GRO_PREP_MUTANT {
-	publishDir "${params.pub_dir}/gro_preparation_rosetta/${type}", mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/gro_preparation_rosetta/${index}_${mutant}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
+	tag "${index}_${mutant}"
+
 
 	input:
 	path pdb
-	val type
+	tuple val(index), val(mutant)
+	val ff_name
+	path genion
 
 	output:
 	path "topol.top" 
@@ -383,46 +457,93 @@ process GRO_PREP_MUTANT {
 	path "water.pdb"
 	path "genion.tpr"
 	path "ions.pdb"
+	path "posre.itp"
+	val "${index}_${mutant}"
 
 	script:
 	"""
-	gmx_mpi pdb2gmx -f ${pdb} -o conf.pdb -p topol.top -ff ${params.ff_name} -water tip3p
+	gmx_mpi pdb2gmx -f ${pdb} -o conf.pdb -p topol.top -ff ${ff_name} -water tip3p
 	gmx_mpi editconf -f conf.pdb -o box.pdb -bt dodecahedron -d 1.0
 	gmx_mpi solvate -cp box -cs spc216 -p topol -o water.pdb
-	gmx_mpi grompp -f ${params.genion_mdp} -c water.pdb -p topol.top -o genion.tpr
+	gmx_mpi grompp -f ${genion} -c water.pdb -p topol.top -o genion.tpr
 	echo "SOL" | gmx_mpi genion -s genion.tpr -p topol.top -neutral -conc 0.15 -o ions.pdb
 	"""
 
 }
 
-// process GRO_PREP_WT {
-// 	publishDir "${params.pub_dir}/gro_preparation/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
-// 	container "${simgDir}/gro_pmx_2023.sif"
+process GRO_PREP_TRIPEPTIDE {
+	publishDir "${params.pub_dir}/gro_preparation/tripeptide/${name}", mode: 'copy', overwrite: false
+	container "${simgDir}/gro_pmx_2023.sif"
+	tag "${name}"
 
-// 	input:
-// 	path pdb
+	input:
+	tuple path(posre_itp),	path(top), path(pdb), val(name), path(itp)
+	path genion
+	val ff_name
+	
 
-// 	output:
-// 	path "topol.top"
-// 	path "conf.pdb"
-// 	path "box.pdb"
-// 	path "water.pdb"
-// 	path "genion.tpr"
-// 	path "ions.pdb"
+	output:
+	path "${top}"
+	path "${pdb}"
+	path "box.pdb"
+	path "water.pdb"
+	path "genion.tpr"
+	path "ions.pdb"
+	path "${posre_itp}"
+	path "${itp}"
+	val name
 
-// 	script:
-// 	"""
-// 	gmx_mpi pdb2gmx -f ${pdb} -o conf.pdb -p topol.top -ff ${params.ff_name} -water tip3p
-// 	gmx_mpi editconf -f conf.pdb -o box.pdb -bt dodecahedron -d 1.0
-// 	gmx_mpi solvate -cp box -cs spc216 -p topol -o water.pdb
-// 	gmx_mpi grompp -f ${params.genion_mdp} -c water.pdb -p topol.top -o genion.tpr
-// 	echo "SOL" | gmx_mpi genion -s genion.tpr -p topol.top -neutral -conc 0.15 -o ions.pdb
-// 	"""
-// }
+	script:
+	"""
+	sed -i 's/charmm36mut.ff/charmm36m-mut.ff/g' ${top}
+    sed -i 's/tips3p.itp/tip3p.itp/g' ${top}
+	gmx_mpi editconf -f ${pdb} -o box.pdb -bt dodecahedron -d 1.0
+	gmx_mpi solvate -cp box -cs spc216 -p ${top} -o water.pdb
+	gmx_mpi grompp -f ${genion} -c water.pdb -p ${top} -o genion.tpr -maxwarn 1
+	echo "SOL" | gmx_mpi genion -s genion.tpr -p ${top} -neutral -conc 0.15 -o ions.pdb
+	"""
+}
+
+process READ_TRIPEPTIDE_FILES {
+	tag "${tripep_dir.baseName}"
+
+	input:
+	path tripep_dir
+
+	output:
+	tuple path("${tripep_dir}/posre*.itp"),	path("${tripep_dir}/*.top"), path("${tripep_dir}/*.pdb"), val("$tripep_dir.baseName"), path("${tripep_dir}/${tripep_dir.baseName}.itp")
+
+	script:
+	"""
+    itp_file1=''
+    itp_file2=''
+    top_file=''
+    pdb_file=''
+    
+    for file in ${tripep_dir}/*; do
+        case \$file in
+            ${tripep_dir}/posre*.itp) itp_file1=\$file ;;
+            ${tripep_dir}/*.itp) [[ -z "\$itp_file2" && "\$file" != "\$itp_file1" ]] && itp_file2=\$file ;;
+            ${tripep_dir}/*.top) top_file=\$file ;;
+            ${tripep_dir}/*.pdb) pdb_file=\$file ;;
+        esac
+    done
+
+	# Create symbolic links for the output files
+    ln -s "\$itp_file1" itp_file1
+    ln -s "\$itp_file2" itp_file2
+    ln -s "\$top_file" top_file
+    ln -s "\$pdb_file" pdb_file
+	""" 
+
+
+
+}
 
 process GRO_EQUILIBRIUM {
-	publishDir "${params.pub_dir}/gro_preparation/forward/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/gro_preparation/equilibrium/${name}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
+	tag "${name}"
 
 	input:
 	path ions_pdb
@@ -431,16 +552,18 @@ process GRO_EQUILIBRIUM {
 	path enmin
 	path equil
 	path npt
+	val name
 
 	output:
 	path "equil.trr"
 	path "equil.tpr"
 	path "enmin.tpr"
 	path "npt.tpr"
+	val "${name}"
 
 	script:
 	"""
-	gmx_mpi grompp -f ${enmin} -c ${ions_pdb} -p ${topol} -o enmin.tpr
+	gmx_mpi grompp -f ${enmin} -c ${ions_pdb} -p ${topol} -o enmin.tpr -maxwarn 1
 	gmx_mpi mdrun -s enmin.tpr -deffnm enmin -v
 	gmx_mpi grompp -f ${npt} -c enmin.gro -r enmin.gro -p ${topol} -o npt.tpr -maxwarn 2
 	gmx_mpi mdrun -s npt.tpr -deffnm npt -v
@@ -449,17 +572,52 @@ process GRO_EQUILIBRIUM {
 	"""
 }
 
+process GRO_EQUILIBRIUM_UNFOLDED {
+	publishDir "${params.pub_dir}/gro_preparation/equilibrium_unfolded/${name}", mode: 'copy', overwrite: false
+	container "${simgDir}/gro_pmx_2023.sif"
+	tag "${name}"
+
+	input:
+	path ions_pdb
+	path topol
+	path posre_itp
+	path itp
+	path enmin
+	path equil
+	path npt
+	val name
+
+	output:
+	path "equil.trr"
+	path "equil.tpr"
+	path "enmin.tpr"
+	path "npt.tpr"
+	val "${name}"
+
+	script:
+	"""
+	gmx_mpi grompp -f ${enmin} -c ${ions_pdb} -p ${topol} -o enmin.tpr -maxwarn 2
+	gmx_mpi mdrun -s enmin.tpr -deffnm enmin -v
+	gmx_mpi grompp -f ${npt} -c enmin.gro -r enmin.gro -p ${topol} -o npt.tpr -maxwarn 3
+	gmx_mpi mdrun -s npt.tpr -deffnm npt -v
+	gmx_mpi grompp -f ${equil} -c npt.gro -p ${topol} -o equil.tpr -maxwarn 3
+	gmx_mpi mdrun -s equil.tpr -deffnm equil -v
+	"""
+}
+
 process GRO_NON_EQUILIBRIUM {
-	publishDir "${params.pub_dir}/gro_preparation/reverse/${params.res_number}_${params.mutant_res}", mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/gro_preparation/non_equilibrium/${name}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	scratch 'scratch'
 	stageInMode 'copy'
+	tag "${name}"
 
 	input:
 	path equil_trr
 	path equil_tpr
 	path topol
 	path non_equil
+	val name
 
 	output:
 	path "dgdl*", emit: dgdlFiles
@@ -486,13 +644,15 @@ process GRO_NON_EQUILIBRIUM {
 }
 
 process FREE_ENERGY_EST {
-	publishDir "${params.pub_dir}/free_energy/${some name}", mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/free_energy/${type}/${name}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
+	tag "${name}"
 
 	input:
 	path forward
 	path reverse
 	val type
+	val name
 
 	output:
 	path "*.txt"
@@ -501,6 +661,25 @@ process FREE_ENERGY_EST {
 	"""
 	pmx analyse -fA forward-fB reverse -t 298.15 -m bar -o ${type}_free_energy_est.txt
 	"""
+
+}
+
+process CREATE_TRIPEPTIDE {
+	publishDir "${params.pub_dir}/created_tripeptides/${native_res}${native_res_index}${mutant}", mode: 'copy', overwrite: false
+	container "${simgDir}/gro_pmx_2023.sif"
+	tag "native: ${native_res}, mutant: ${mutant}, index: ${index}"
+
+	input:
+	tuple val(index), val(mutant), val(native_res)
+
+	output:
+	path "*_tripeptide.pdb"
+
+	script:
+	"""
+	python3 ${PWD}/bin/tripeptide.py -res_native ${native_res} -res_native_index ${index} -res_mutant ${mutant}
+	"""
+
 
 }
 

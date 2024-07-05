@@ -35,7 +35,7 @@ xml template (threader)                 : $params.template
 
 """
 /* 
- * Import modules 
+ * Import modules and alias for reuse
  */
 include { 
     ROSETTA_FIXBB;
@@ -46,12 +46,17 @@ include {
     CREATEXML;
     GROMACS_MT_FBB;
     GROMACS_MT_THREADER;
+    GROMACS_MT_PMX;
     GROMACS_WT;
     PMX_PREP_MUTANT;
     GRO_PREP_MUTANT;
     GRO_EQUILIBRIUM;
     GRO_NON_EQUILIBRIUM;
     FREE_ENERGY_EST;
+    CREATE_TRIPEPTIDE;
+    READ_TRIPEPTIDE_FILES;
+    GRO_PREP_TRIPEPTIDE;
+    GRO_EQUILIBRIUM_UNFOLDED;
 } from './modules.nf' 
 
 workflow.onComplete {
@@ -74,6 +79,7 @@ workflow rosy_fbb {
     pdb = ROSETTA_FIXBB.out[0]
     score = ROSETTA_FIXBB.out[1]
     log_file = ROSETTA_FIXBB.out[2]
+    mutation_name = ROSETTA_FIXBB.out[3]
 }
 
 workflow rosy_threader_input {
@@ -103,6 +109,7 @@ workflow rosy_threader {
     emit:
     pdb = ROSETTA_THREADER.out[0]
     score = ROSETTA_THREADER.out[1]
+    mutation_name = ROSETTA_THREADER.out[2]
 }
 
 workflow maestro {
@@ -117,151 +124,194 @@ workflow maestro {
     results_csv = MAESTRO.out[0]
 }
 
-workflow pmx_free_energy_forward_folded {
+workflow pmx_free_energy_forward {
     take:
-    pdb
-    res_number
-    mutant_res
-    forcefield
-    genion
+    ions_pdb
+    newtop
+    posre_itp
     enmin
     equil
     npt
     nonequil
+    name
 
     main:
-    PMX_PREP_MUTANT(pdb, res_number, mutant_res, forcefield, genion)
-    newtop = PMX_PREP_MUTANT.output[1]
-    ions_pdb = PMX_PREP_MUTANT.output[6]
-    posre_itp = PMX_PREP_MUTANT.output[7]
-    GRO_EQUILIBRIUM(ions_pdb, newtop, posre_itp, enmin, equil, npt)
+    GRO_EQUILIBRIUM(ions_pdb, newtop, posre_itp, enmin, equil, npt, name)
     equi_trr = GRO_EQUILIBRIUM.output[0]
     equi_tpr = GRO_EQUILIBRIUM.output[1]
-    forward_folded = GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop, nonequil)
+    name = GRO_EQUILIBRIUM.output[4]
+    GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop, nonequil, name)
 
     emit:
-    forward_folded
+    forward = GRO_NON_EQUILIBRIUM.out[0].collect()
+    name = GRO_NON_EQUILIBRIUM.out[1]
+
 }
-
-workflow pmx_free_energy_reverse_folded {
-    take:
-    pdb
-    res_number
-    mutant_res
-    forcefield
-    genion
-    enmin
-    equil
-    npt
-    nonequil
-
-    main:
-    PMX_PREP_MUTANT(pdb, res_number, mutant_res, forcefield, genion)
-    newtop = PMX_PREP_MUTANT.output[1]
-    ions_pdb = PMX_PREP_MUTANT.output[6]
-    posre_itp = PMX_PREP_MUTANT.output[7]
-    GRO_EQUILIBRIUM(ions_pdb, newtop, posre_itp, enmin, equil, npt)
-    equi_trr = GRO_EQUILIBRIUM.output[0]
-    equi_tpr = GRO_EQUILIBRIUM.output[1]
-    reverse_folded = GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop, nonequil)
-
-    emit:
-    reverse_folded
-}
-
+//free energy forward for unfolded state to take into account the additional ito files required
 workflow pmx_free_energy_forward_unfolded {
     take:
-    pdb
-    res_number
-    mutant_res
-    forcefield
-    genion
+    ions_pdb
+    newtop
+    posre_itp
+    itp
     enmin
     equil
     npt
     nonequil
+    name
 
     main:
-    PMX_PREP_MUTANT(pdb, res_number, mutant_res, forcefield, genion)
-    newtop = PMX_PREP_MUTANT.output[1]
-    ions_pdb = PMX_PREP_MUTANT.output[6]
-    posre_itp = PMX_PREP_MUTANT.output[7]
-    GRO_EQUILIBRIUM(ions_pdb, newtop, posre_itp, enmin, equil, npt)
-    equi_trr = GRO_EQUILIBRIUM.output[0]
-    equi_tpr = GRO_EQUILIBRIUM.output[1]
-    forward_unfolded = GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop, nonequil)
+    GRO_EQUILIBRIUM_UNFOLDED(ions_pdb, newtop, posre_itp, itp, enmin, equil, npt, name)
+    equi_trr = GRO_EQUILIBRIUM_UNFOLDED.output[0]
+    equi_tpr = GRO_EQUILIBRIUM_UNFOLDED.output[1]
+    name = GRO_EQUILIBRIUM_UNFOLDED.output[4]
+    GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop, nonequil, name)
 
     emit:
-    forward_unfolded.collect()
+    forward = GRO_NON_EQUILIBRIUM.out[0].collect()
+    name = GRO_NON_EQUILIBRIUM.out[1]
+
 }
 
+workflow pmx_free_energy_reverse {
+    take:
+    ions_pdb
+    newtop
+    posre_itp
+    enmin
+    equil
+    npt
+    nonequil
+    name
+
+    main:
+    GRO_EQUILIBRIUM(ions_pdb, newtop, posre_itp, enmin, equil, npt, name)
+    equi_trr = GRO_EQUILIBRIUM.output[0]
+    equi_tpr = GRO_EQUILIBRIUM.output[1]
+    GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop, nonequil, name)
+
+    emit:
+    reverse =  GRO_NON_EQUILIBRIUM.out[0].collect()
+    name = GRO_NON_EQUILIBRIUM.out[1]
+}
+
+//workflow for reverse transformation for unfolded state to take into account the additional itp file
 workflow pmx_free_energy_reverse_unfolded {
     take:
-    pdb
-    res_number
-    mutant_res
-    forcefield
-    genion
+    ions_pdb
+    newtop
+    posre_itp
+    itp
     enmin
     equil
     npt
     nonequil
+    name
 
     main:
-    PMX_PREP_MUTANT(pdb, res_number, mutant_res, forcefield, genion)
-    newtop = PMX_PREP_MUTANT.output[1]
-    ions_pdb = PMX_PREP_MUTANT.output[6]
-    posre_itp = PMX_PREP_MUTANT.output[7]
-    GRO_EQUILIBRIUM(ions_pdb, newtop, posre_itp, enmin, equil, npt)
-    equi_trr = GRO_EQUILIBRIUM.output[0]
-    equi_tpr = GRO_EQUILIBRIUM.output[1]
-    reverse_unfolded = GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop, nonequil)
+    GRO_EQUILIBRIUM_UNFOLDED(ions_pdb, newtop, posre_itp, itp, enmin, equil, npt, name)
+    equi_trr = GRO_EQUILIBRIUM_UNFOLDED.output[0]
+    equi_tpr = GRO_EQUILIBRIUM_UNFOLDED.output[1]
+    GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop, nonequil, name)
 
     emit:
-    reverse_unfolded.collect()
+    reverse =  GRO_NON_EQUILIBRIUM.out[0].collect()
+    name = GRO_NON_EQUILIBRIUM.out[1]
 }
-workflowfree_energy_folded {
+
+
+workflow free_energy_folded {
     take:
-    reverse
-    forward
+    ions_pdb
+    newtop
+    posre_itp
+    enmin
+    equil
+    npt
+    nonequil
+    name
 
     main:
-    out = FREE_ENERGY_EST(forward, reverse, "folded")
+    pmx_free_energy_forward(ions_pdb, newtop, posre_itp, enmin, equil, npt, nonequil,name)
+    pmx_free_energy_reverse(ions_pdb, newtop, posre_itp, enmin, equil, npt, nonequil, name)
+    FREE_ENERGY_EST(pmx_free_energy_forward.out.forward, pmx_free_energy_reverse.out.reverse, "folded", pmx_free_energy_forward.out.name)
 
     emit:
-    out
-
+    FREE_ENERGY_EST.out[0]
 }
-workflow free_energy_forward_unfolded {
+
+workflow free_energy_unfolded {
     take:
-    reverse
-    forward
+    ions_pdb
+    newtop
+    posre_itp
+    itp
+    enmin
+    equil
+    npt
+    nonequil
+    name
 
     main:
-    out = FREE_ENERGY_EST(forward, reverse, "folded")
+    pmx_free_energy_forward_unfolded(ions_pdb, newtop, posre_itp, itp, enmin, equil, npt, nonequil,name)
+    pmx_free_energy_reverse_unfolded(ions_pdb, newtop, posre_itp, itp, enmin, equil, npt, nonequil, name)
+    FREE_ENERGY_EST(pmx_free_energy_forward_unfolded.out.forward, pmx_free_energy_reverse_unfolded.out.reverse, "unfolded", pmx_free_energy_forward_unfolded.out.name)
 
     emit:
-    out
+    FREE_ENERGY_EST.out[0]
 }
 
 
 workflow {
     if (params.pmx == true) {
-        pmx_free_energy_forward_folded(params.pdb, params.res_number, params.mutant_res, params.ff_name, params.genion_mdp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp)
-        pmx_free_energy_reverse_folded(params.pdb, params.res_number, params.mutant_res, params.ff_name, params.genion_mdp, params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
-        free_energy_folded(pmx_free_energy_forward_folded.out, pmx_free_energy_reverse_folded.out)
+        //read tsv mutation data for pmx folded 
+        pmx_mutants_folded = Channel.fromPath(params.mutation_file_folded).splitCsv(header: true, sep: '\t').map { row -> tuple(row.index, row.mutant) }
+        PMX_PREP_MUTANT(params.pdb, pmx_mutants_folded, params.ff_name, params.genion_mdp)
+        newtop = PMX_PREP_MUTANT.output[1]
+        ions_pdb = PMX_PREP_MUTANT.output[6]
+        posre_itp = PMX_PREP_MUTANT.output[7]
+        mutation_name = PMX_PREP_MUTANT.output[8]
+        free_energy_folded(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp, mutation_name)
+        
+    }
+    if (params.existing_tripeptide_files == true) {
+        tripep_dir = Channel
+            .fromPath("${params.tripeptide_files}/tripep_*", type: 'dir')
+            .ifEmpty { error "No tripeptide folders found in ${params.tripeptide_files}" }
+            .map { folder -> 
+                folder 
+            }
+        files = READ_TRIPEPTIDE_FILES(tripep_dir)
+        // files.view()
+        prep_files = GRO_PREP_TRIPEPTIDE(files,params.genion_mdp,params.ff_name)
+        free_energy_unfolded(prep_files[5], prep_files[0], prep_files[6], prep_files[7], params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp, prep_files[8])
+
     }
 
     if (params.rosetta_fbb == true) {
-        resf = Channel.fromPath(params.resf)
-        resf.view()
-        rosy_fbb(params.list_of_structs, resf)
+        resf_folded = Channel.fromPath(params.resf_folded)
+        rosy_fbb(params.list_of_structs, resf_folded)
+        //free energy folded
+        GRO_PREP_MUTANT(rosy_fbb.out.pdb, rosy_fbb.out.mutation_name, params.ff_name, params.genion_mdp)
+        topol = GRO_PREP_MUTANT.output[0]
+        ions_pdb = GRO_PREP_MUTANT.output[5]
+        posre_itp = GRO_PREP_MUTANT.output[6]
+        mutation_name = GRO_PREP_MUTANT.output[7]
+        free_energy_folded(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp,mutation_name)
+        
     }
 
     if (params.rosetta_threader == true) {
         mutation = Channel.fromPath(params.mutation_info)
         rosy_threader_input(params.sequence, mutation)
         rosy_threader(params.list_of_structs,rosy_threader_input.out.cut_seq,rosy_threader_input.out.start_position, mutation)
+
+        GRO_PREP_MUTANT(rosy_threader.out.pdb, rosy_threader.out.mutation_name)
+        topol = GRO_PREP_MUTANT.output[0]
+        ions_pdb = GRO_PREP_MUTANT.output[5]
+        posre_itp = GRO_PREP_MUTANT.output[6]
+        mutation_name = GRO_PREP_MUTANT.output[7]
+        free_energy_folded(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp,mutation_name)
     }
 
     if (params.maestro == true) {
@@ -272,14 +322,17 @@ workflow {
     if (params.gromacs == true) {
         if (params.rosetta_fbb == true) {
             GROMACS_MT_FBB(rosy_fbb.out.pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
-            GROMACS_WT(pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
+            GROMACS_WT(params.pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
         }
         if (params.rosetta_threader == true) {
             GROMACS_MT_THREADER(rosy_threader.out.pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
-            GROMACS_WT(pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
+            GROMACS_WT(params.pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
         }
         if ((params.rosetta_threader == false && params.rosetta_threader == false)||(params.rosetta_threader == true || params.rosetta_threader == true)) {
-            GROMACS_WT(pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
+            GROMACS_WT(params.pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
+        }
+        if (params.pmx == true) {
+            GROMACS_MT_PMX(PMX_PREP_MUTANT.output[6], params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
         }
     }
 

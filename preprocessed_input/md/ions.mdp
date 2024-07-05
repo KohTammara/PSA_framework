@@ -1,0 +1,23 @@
+;; ions.mdp
+; run setup
+integrator		= steep		;steepest descent algorithm for energy minimization
+emtol			= 1000 		;(Max tolerance for integrator)Minimization converged when max force smaller than this value
+emstep			= 0.01		;(Max step size)Initial step size
+nsteps			= 2000		;Max number of steps to integrate or minimize
+
+; electrostatics and vdW
+coulombtype 		= PME		;Fast smooth Particle-Mesh Ewald (SPME) electrostatics
+rcoulomb 		= 1.2		;The distance for the coulomb cut off 
+rvdw 			= 1.2		;distance for the LJ or Buckingham cut-off
+rvdw-switch 		= 1.0		;where to start switching the LJ force and possibly the potential, only relevant when force or potential switching is used
+vdwtype 		= cutoff	;Plain cut-off with pair list radius rlist  and VdW cut-off rvdw, where rlist>= rvdw.
+vdw-modifier 		= force-switch	;Smoothly switches the forces to zero between rvdw-switch and rvdw.
+DispCorr 		= no		;do not apply correction
+
+; bonds
+constraints 		= h-bonds
+
+; neighbor searching
+cutoff-scheme 		= Verlet	;Generate a pair list with buffering.The buffer size is automatically set based on verlet-buffer-tolerance, unless this is set to -1, in which case rlist will be used.
+rlist 			= 1.2		;(1) [nm] Cut-off distance for the short-range neighbor list
+

@@ -1,0 +1,15 @@
+title                   = Charmm36m Prion NPT equilibration 
+define                  = -DPOSRES  ; position restrain the protein
+; Run parameters
+integrator              = md        ; leap-frog integrator
+nsteps                  = 1000000    ; 2 * 100000 = 200 ps
+dt                      = 0.0002     ; 2 fs
+; Output control
+nstxout                 = 5000      ; save coordinates every 1.0 ps
+nstvout                 = 5000      ; save velocities every 1.0 ps
+nstenergy               = 500       ; save energies every 1.0 ps
+nstlog                  = 500       ; update log file every 1.0 ps
+; Bond parameters
+constraint_algorithm    = lincs     ; holonomic constraints 
+constraints             = h-bonds   ; bonds involving H are constrained
+
