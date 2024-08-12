@@ -50,13 +50,18 @@ include {
     GROMACS_WT;
     PMX_PREP_MUTANT;
     GRO_PREP_MUTANT;
-    GRO_EQUILIBRIUM;
-    GRO_NON_EQUILIBRIUM;
+    GRO_EQUILIBRIUM as GRO_EQUILIBRIUM_FOR;
+    GRO_EQUILIBRIUM as GRO_EQUILIBRIUM_REV;
+    GRO_NON_EQUILIBRIUM as GRO_NON_EQUILIBRIUM_FOR;
+    GRO_NON_EQUILIBRIUM as GRO_NON_EQUILIBRIUM_FOR_UNF;
+    GRO_NON_EQUILIBRIUM as GRO_NON_EQUILIBRIUM_REV;
+    GRO_NON_EQUILIBRIUM as GRO_NON_EQUILIBRIUM_REV_UNF;
     FREE_ENERGY_EST;
     CREATE_TRIPEPTIDE;
     READ_TRIPEPTIDE_FILES;
     GRO_PREP_TRIPEPTIDE;
-    GRO_EQUILIBRIUM_UNFOLDED;
+    GRO_EQUILIBRIUM_UNFOLDED as GRO_EQUILIBRIUM_UNFOLDED_FOR;
+    GRO_EQUILIBRIUM_UNFOLDED as GRO_EQUILIBRIUM_UNFOLDED_REV;
 } from './modules.nf' 
 
 workflow.onComplete {
@@ -136,15 +141,15 @@ workflow pmx_free_energy_forward {
     name
 
     main:
-    GRO_EQUILIBRIUM(ions_pdb, newtop, posre_itp, enmin, equil, npt, name)
-    equi_trr = GRO_EQUILIBRIUM.output[0]
-    equi_tpr = GRO_EQUILIBRIUM.output[1]
-    name = GRO_EQUILIBRIUM.output[4]
-    GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop, nonequil, name)
+    GRO_EQUILIBRIUM_FOR(ions_pdb, newtop, posre_itp, enmin, equil, npt, name)
+    equi_trr = GRO_EQUILIBRIUM_FOR.output[0]
+    equi_tpr = GRO_EQUILIBRIUM_FOR.output[1]
+    name = GRO_EQUILIBRIUM_FOR.output[4]
+    GRO_NON_EQUILIBRIUM_FOR(equi_trr,equi_tpr,newtop, nonequil, name)
 
     emit:
-    forward = GRO_NON_EQUILIBRIUM.out[0].collect()
-    name = GRO_NON_EQUILIBRIUM.out[1]
+    forward = GRO_NON_EQUILIBRIUM_FOR.out[0].collect()
+    name = GRO_NON_EQUILIBRIUM_FOR.out[1]
 
 }
 //free energy forward for unfolded state to take into account the additional ito files required
@@ -161,15 +166,15 @@ workflow pmx_free_energy_forward_unfolded {
     name
 
     main:
-    GRO_EQUILIBRIUM_UNFOLDED(ions_pdb, newtop, posre_itp, itp, enmin, equil, npt, name)
-    equi_trr = GRO_EQUILIBRIUM_UNFOLDED.output[0]
-    equi_tpr = GRO_EQUILIBRIUM_UNFOLDED.output[1]
-    name = GRO_EQUILIBRIUM_UNFOLDED.output[4]
-    GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop, nonequil, name)
+    GRO_EQUILIBRIUM_UNFOLDED_FOR(ions_pdb, newtop, posre_itp, itp, enmin, equil, npt, name)
+    equi_trr = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[0]
+    equi_tpr = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[1]
+    name = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[4]
+    GRO_NON_EQUILIBRIUM_FOR_UNF(equi_trr,equi_tpr,newtop, nonequil, name)
 
     emit:
-    forward = GRO_NON_EQUILIBRIUM.out[0].collect()
-    name = GRO_NON_EQUILIBRIUM.out[1]
+    forward = GRO_NON_EQUILIBRIUM_FOR_UNF.out[0].collect()
+    name = GRO_NON_EQUILIBRIUM_FOR_UNF.out[1]
 
 }
 
@@ -185,14 +190,14 @@ workflow pmx_free_energy_reverse {
     name
 
     main:
-    GRO_EQUILIBRIUM(ions_pdb, newtop, posre_itp, enmin, equil, npt, name)
-    equi_trr = GRO_EQUILIBRIUM.output[0]
-    equi_tpr = GRO_EQUILIBRIUM.output[1]
-    GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop, nonequil, name)
+    GRO_EQUILIBRIUM_REV(ions_pdb, newtop, posre_itp, enmin, equil, npt, name)
+    equi_trr = GRO_EQUILIBRIUM_REV.output[0]
+    equi_tpr = GRO_EQUILIBRIUM_REV.output[1]
+    GRO_NON_EQUILIBRIUM_REV(equi_trr,equi_tpr,newtop, nonequil, name)
 
     emit:
-    reverse =  GRO_NON_EQUILIBRIUM.out[0].collect()
-    name = GRO_NON_EQUILIBRIUM.out[1]
+    reverse =  GRO_NON_EQUILIBRIUM_REV.out[0].collect()
+    name = GRO_NON_EQUILIBRIUM_REV.out[1]
 }
 
 //workflow for reverse transformation for unfolded state to take into account the additional itp file
@@ -209,14 +214,14 @@ workflow pmx_free_energy_reverse_unfolded {
     name
 
     main:
-    GRO_EQUILIBRIUM_UNFOLDED(ions_pdb, newtop, posre_itp, itp, enmin, equil, npt, name)
-    equi_trr = GRO_EQUILIBRIUM_UNFOLDED.output[0]
-    equi_tpr = GRO_EQUILIBRIUM_UNFOLDED.output[1]
-    GRO_NON_EQUILIBRIUM(equi_trr,equi_tpr,newtop, nonequil, name)
+    GRO_EQUILIBRIUM_UNFOLDED_REV(ions_pdb, newtop, posre_itp, itp, enmin, equil, npt, name)
+    equi_trr = GRO_EQUILIBRIUM_UNFOLDED_REV.output[0]
+    equi_tpr = GRO_EQUILIBRIUM_UNFOLDED_REV.output[1]
+    GRO_NON_EQUILIBRIUM_REV_UNF(equi_trr,equi_tpr,newtop, nonequil, name)
 
     emit:
-    reverse =  GRO_NON_EQUILIBRIUM.out[0].collect()
-    name = GRO_NON_EQUILIBRIUM.out[1]
+    reverse =  GRO_NON_EQUILIBRIUM_REV_UNF.out[0].collect()
+    name = GRO_NON_EQUILIBRIUM_REV_UNF.out[1]
 }
 
 

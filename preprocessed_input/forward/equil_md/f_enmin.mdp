@@ -27,7 +27,7 @@ nstcalcenergy          = 100
 ;----------------------------------------------------
 cutoff-scheme          = Verlet
 ns-type                = grid
-nstlist                = 1
+nstlist                = 10
 rlist                  = 1.0
 
 ; BONDS

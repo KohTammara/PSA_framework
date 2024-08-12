@@ -29,7 +29,7 @@
     "to_lower_maestro_out" : "true",
     "bu_maestro" : "false",
 
-    "gromacs" : true,
+    "gromacs" : false,
     "ions_mdp" : "/home/tammara/Documents/PSA_framework/preprocessed_input/md/ions.mdp",
     "em_mdp" : "/home/tammara/Documents/PSA_framework/preprocessed_input/md/em.mdp",
     "nvt_mdp" : "/home/tammara/Documents/PSA_framework/preprocessed_input/md/nvt.mdp",
@@ -66,5 +66,5 @@
     "tripeptide_input":"/home/tammara/Documents/mutation_distribution/ddg_bins_allaa/-0.836567_-0.21154399999999995/tripeptide/-0.836567_-0.21154399999999995_mutation_info_tripeptide.tsv",
     
     "existing_tripeptide_files":true,
-    "tripeptide_files":"/home/tammara/Documents/mutation_distribution/tripeptides"               
+    "tripeptide_files":"/home/tammara/Documents/mutation_distribution/tripep"               
 }

@@ -6,7 +6,7 @@
 ;----------------------------------------------------
 integrator   = sd            ; stochastic leap-frog integrator
 nsteps       = 2500000       ; 2 * 2,500,000 fs = 5 ns
-dt           = 0.002         ; 2 fs
+dt           = 0.0008         ; 2 fs
 comm-mode    = Linear        ; remove center of mass translation
 nstcomm      = 100           ; frequency for center of mass motion removal
 
@@ -24,7 +24,7 @@ nstcalcenergy          = 100       ; calculate energies every 100 steps (default
 ; BONDS
 ;----------------------------------------------------
 constraint_algorithm   = lincs      ; holonomic constraints
-constraints            = h-bonds    ; constrain H-bonds
+constraints            = all-bonds    ; constrain H-bonds
 lincs-iter             = 2          ; accuracy of LINCS (1 is default)
 lincs-order            = 6          ; also related to accuracy (4 is default)
 lincs-warnangle        = 30         ; maximum angle that a bond can rotate before LINCS will complain (30 is default)

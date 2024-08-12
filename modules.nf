@@ -500,7 +500,7 @@ process GRO_PREP_TRIPEPTIDE {
 	gmx_mpi editconf -f ${pdb} -o box.pdb -bt dodecahedron -d 1.0
 	gmx_mpi solvate -cp box -cs spc216 -p ${top} -o water.pdb
 	gmx_mpi grompp -f ${genion} -c water.pdb -p ${top} -o genion.tpr -maxwarn 1
-	echo "SOL" | gmx_mpi genion -s genion.tpr -p ${top} -neutral -conc 0.15 -o ions.pdb
+	echo "SOL" | gmx_mpi genion -s genion.tpr -o ions.pdb -p ${top} -pname NA -nname CL -neutral
 	"""
 }
 
@@ -634,7 +634,7 @@ process GRO_NON_EQUILIBRIUM {
 
 	for i in \$( seq 1 50 ); do
 		cd frame\$i;
-		gmx_mpi grompp -f ${non_equil} -c frame.gro -p ../${topol} -o nonequil.tpr -maxwarn 1;
+		gmx_mpi grompp -f ../${non_equil} -c frame.gro -p ../${topol} -o nonequil.tpr -maxwarn 1;
 		gmx_mpi mdrun -s nonequil.tpr -deffnm nonequil -dhdl dgdl\$i.xvg -v;
 		mv dgdl\$i.xvg ../;
 		cd ../;
