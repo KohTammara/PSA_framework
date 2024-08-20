@@ -6,7 +6,7 @@
 ;----------------------------------------------------
 integrator   = sd            ; stochastic leap-frog integrator
 nsteps       = 40000         ; 2 * 40000 fs = 80 ps
-dt           = 0.002         ; 2 fs
+dt           = 0.0008         ; 2 fs
 comm-mode    = Linear        ; remove center of mass translation
 nstcomm      = 1             ; frequency for center of mass motion removal
 

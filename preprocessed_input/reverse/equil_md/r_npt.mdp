@@ -25,7 +25,7 @@ nstcalcenergy          = 100       ; calculate energies every 100 steps (default
 ; BONDS
 ;----------------------------------------------------
 constraint_algorithm   = lincs      ; holonomic constraints
-constraints            = all-bonds    ; constrain H-bonds
+constraints            = h-bonds    ; constrain H-bonds
 lincs-iter             = 2          ; accuracy of LINCS (1 is default)
 lincs-order            = 6          ; also related to accuracy (4 is default)
 lincs-warnangle        = 30         ; maximum angle that a bond can rotate before LINCS will complain (30 is default)
