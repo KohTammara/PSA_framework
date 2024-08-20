@@ -230,15 +230,19 @@ workflow free_energy_folded {
     ions_pdb
     newtop
     posre_itp
-    enmin
-    equil
-    npt
-    nonequil
+    f_enmin
+    f_equil
+    f_npt
+    f_nonequil
     name
+    r_enmin
+    r_equil
+    r_npt
+    r_nonequil
 
     main:
-    pmx_free_energy_forward(ions_pdb, newtop, posre_itp, enmin, equil, npt, nonequil,name)
-    pmx_free_energy_reverse(ions_pdb, newtop, posre_itp, enmin, equil, npt, nonequil, name)
+    pmx_free_energy_forward(ions_pdb, newtop, posre_itp, f_enmin, f_equil, f_npt, f_nonequil, name)
+    pmx_free_energy_reverse(ions_pdb, newtop, posre_itp, r_enmin, r_equil, r_npt, r_nonequil, name)
     FREE_ENERGY_EST(pmx_free_energy_forward.out.forward, pmx_free_energy_reverse.out.reverse, "folded", pmx_free_energy_forward.out.name)
 
     emit:
@@ -251,15 +255,19 @@ workflow free_energy_unfolded {
     newtop
     posre_itp
     itp
-    enmin
-    equil
-    npt
-    nonequil
+    f_enmin
+    f_equil
+    f_npt
+    f_nonequil
     name
+    r_enmin
+    r_equil
+    r_npt
+    r_nonequil
 
     main:
-    pmx_free_energy_forward_unfolded(ions_pdb, newtop, posre_itp, itp, enmin, equil, npt, nonequil,name)
-    pmx_free_energy_reverse_unfolded(ions_pdb, newtop, posre_itp, itp, enmin, equil, npt, nonequil, name)
+    pmx_free_energy_forward_unfolded(ions_pdb, newtop, posre_itp, itp, f_enmin, f_equil, f_npt, f_nonequil, name)
+    pmx_free_energy_reverse_unfolded(ions_pdb, newtop, posre_itp, itp, r_enmin, r_equil, r_npt, r_nonequil, name)
     FREE_ENERGY_EST(pmx_free_energy_forward_unfolded.out.forward, pmx_free_energy_reverse_unfolded.out.reverse, "unfolded", pmx_free_energy_forward_unfolded.out.name)
 
     emit:
@@ -276,7 +284,7 @@ workflow {
         ions_pdb = PMX_PREP_MUTANT.output[6]
         posre_itp = PMX_PREP_MUTANT.output[7]
         mutation_name = PMX_PREP_MUTANT.output[8]
-        free_energy_folded(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp, mutation_name)
+        free_energy_folded(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp, mutation_name, params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
         
     }
     if (params.existing_tripeptide_files == true) {
@@ -289,7 +297,7 @@ workflow {
         files = READ_TRIPEPTIDE_FILES(tripep_dir)
         // files.view()
         prep_files = GRO_PREP_TRIPEPTIDE(files,params.genion_mdp,params.ff_name)
-        free_energy_unfolded(prep_files[5], prep_files[0], prep_files[6], prep_files[7], params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp, prep_files[8])
+        free_energy_unfolded(prep_files[5], prep_files[0], prep_files[6], prep_files[7], params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp, prep_files[8], params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
 
     }
 
@@ -302,7 +310,7 @@ workflow {
         ions_pdb = GRO_PREP_MUTANT.output[5]
         posre_itp = GRO_PREP_MUTANT.output[6]
         mutation_name = GRO_PREP_MUTANT.output[7]
-        free_energy_folded(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp,mutation_name)
+        free_energy_folded(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp,mutation_name,, params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
         
     }
 
@@ -316,7 +324,7 @@ workflow {
         ions_pdb = GRO_PREP_MUTANT.output[5]
         posre_itp = GRO_PREP_MUTANT.output[6]
         mutation_name = GRO_PREP_MUTANT.output[7]
-        free_energy_folded(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp,mutation_name)
+        free_energy_folded(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp,mutation_name,params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
     }
 
     if (params.maestro == true) {
