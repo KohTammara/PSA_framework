@@ -475,6 +475,9 @@ process GRO_PREP_TRIPEPTIDE {
 	publishDir "${params.pub_dir}/gro_preparation/tripeptide/${name}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	tag "${name}"
+	memory '100MB'
+	cpus '8'
+	time '5m'
 
 	input:
 	tuple path(posre_itp),	path(top), path(pdb), val(name), path(itp)
@@ -506,6 +509,9 @@ process GRO_PREP_TRIPEPTIDE {
 
 process READ_TRIPEPTIDE_FILES {
 	tag "${tripep_dir.baseName}"
+	memory '100MB'
+	cpus '8'
+	time '5m'
 
 	input:
 	path tripep_dir
@@ -544,6 +550,9 @@ process GRO_EQUILIBRIUM {
 	publishDir "${params.pub_dir}/gro_preparation/equilibrium/${name}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	tag "${name}"
+	memory '1GB'
+	cpus '32'
+	time '3d'
 
 	input:
 	path ions_pdb
@@ -576,6 +585,9 @@ process GRO_EQUILIBRIUM_UNFOLDED {
 	publishDir "${params.pub_dir}/gro_preparation/equilibrium_unfolded/${name}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	tag "${name}"
+	memory '1GB'
+	cpus '32'
+	time '3d'
 
 	input:
 	path ions_pdb
@@ -611,6 +623,9 @@ process GRO_NON_EQUILIBRIUM {
 	scratch 'scratch'
 	stageInMode 'copy'
 	tag "${name}"
+	memory '1GB'
+	cpus '32'
+	time '3d'
 
 	input:
 	path equil_trr

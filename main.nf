@@ -310,7 +310,7 @@ workflow {
         ions_pdb = GRO_PREP_MUTANT.output[5]
         posre_itp = GRO_PREP_MUTANT.output[6]
         mutation_name = GRO_PREP_MUTANT.output[7]
-        free_energy_folded(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp,mutation_name,, params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
+        free_energy_folded(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp,mutation_name, params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
         
     }
 

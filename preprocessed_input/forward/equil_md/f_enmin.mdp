@@ -7,7 +7,7 @@
 define                 = -DFLEXIBLE
 integrator             = steep
 nsteps                 = 10000
-emtol                  = 10
+emtol                  = 100
 emstep                 = 0.01
 nstcomm                = 100
 
