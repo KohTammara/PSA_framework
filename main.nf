@@ -53,9 +53,9 @@ include {
     GRO_EQUILIBRIUM as GRO_EQUILIBRIUM_FOR;
     GRO_EQUILIBRIUM as GRO_EQUILIBRIUM_REV;
     GRO_NON_EQUILIBRIUM as GRO_NON_EQUILIBRIUM_FOR;
-    GRO_NON_EQUILIBRIUM as GRO_NON_EQUILIBRIUM_FOR_UNF;
+    GRO_NON_EQUILIBRIUM_UNFOLDED as GRO_NON_EQUILIBRIUM_FOR_UNF;
     GRO_NON_EQUILIBRIUM as GRO_NON_EQUILIBRIUM_REV;
-    GRO_NON_EQUILIBRIUM as GRO_NON_EQUILIBRIUM_REV_UNF;
+    GRO_NON_EQUILIBRIUM_UNFOLDED as GRO_NON_EQUILIBRIUM_REV_UNF;
     FREE_ENERGY_EST;
     CREATE_TRIPEPTIDE;
     READ_TRIPEPTIDE_FILES;
@@ -170,7 +170,7 @@ workflow pmx_free_energy_forward_unfolded {
     equi_trr = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[0]
     equi_tpr = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[1]
     name = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[4]
-    GRO_NON_EQUILIBRIUM_FOR_UNF(equi_trr,equi_tpr,newtop, nonequil, name)
+    GRO_NON_EQUILIBRIUM_FOR_UNF(equi_trr,equi_tpr,newtop, posre_itp, itp nonequil, name)
 
     emit:
     forward = GRO_NON_EQUILIBRIUM_FOR_UNF.out[0].collect()
@@ -217,7 +217,7 @@ workflow pmx_free_energy_reverse_unfolded {
     GRO_EQUILIBRIUM_UNFOLDED_REV(ions_pdb, newtop, posre_itp, itp, enmin, equil, npt, name)
     equi_trr = GRO_EQUILIBRIUM_UNFOLDED_REV.output[0]
     equi_tpr = GRO_EQUILIBRIUM_UNFOLDED_REV.output[1]
-    GRO_NON_EQUILIBRIUM_REV_UNF(equi_trr,equi_tpr,newtop, nonequil, name)
+    GRO_NON_EQUILIBRIUM_REV_UNF(equi_trr,equi_tpr,newtop,posre_itp, itp, nonequil, name)
 
     emit:
     reverse =  GRO_NON_EQUILIBRIUM_REV_UNF.out[0].collect()

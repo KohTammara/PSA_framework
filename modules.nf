@@ -617,6 +617,49 @@ process GRO_EQUILIBRIUM_UNFOLDED {
 	"""
 }
 
+process GRO_NON_EQUILIBRIUM_UNFOLDED {
+	publishDir "${params.pub_dir}/gro_preparation/non_equilibrium/${name}", mode: 'copy', overwrite: false
+	container "${simgDir}/gro_pmx_2023.sif"
+	scratch 'scratch'
+	stageInMode 'copy'
+	tag "${name}"
+	memory '1GB'
+	cpus '32'
+	time '3d'
+
+	input:
+	path equil_trr
+	path equil_tpr
+	path topol
+	path posre_itp
+	path itp
+	path non_equil
+	val name
+
+	output:
+	path "dgdl*", emit: dgdlFiles
+
+	script:
+	//extract 50 snapshots from the 5ns equilibrium sim (1 per 100ps starting at 100ps)
+	"""
+	echo "System" | gmx_mpi trjconv -f ${equil_trr} -s ${equil_tpr} -sep -b 100 -o frame_.gro
+	for i in \$( seq 0 49 ); do
+		n=\$((i+1));
+		mkdir frame\$n;
+		mv frame_\$i.gro frame\$n/frame.gro;
+	done
+
+	for i in \$( seq 1 50 ); do
+		cd frame\$i;
+		gmx_mpi grompp -f ../${non_equil} -c frame.gro -p ../${topol} -o nonequil.tpr -maxwarn 1;
+		gmx_mpi mdrun -s nonequil.tpr -deffnm nonequil -dhdl dgdl\$i.xvg -v;
+		mv dgdl\$i.xvg ../;
+		cd ../;
+	done
+	"""
+
+}
+
 process GRO_NON_EQUILIBRIUM {
 	publishDir "${params.pub_dir}/gro_preparation/non_equilibrium/${name}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
