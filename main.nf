@@ -170,7 +170,7 @@ workflow pmx_free_energy_forward_unfolded {
     equi_trr = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[0]
     equi_tpr = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[1]
     name = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[4]
-    GRO_NON_EQUILIBRIUM_FOR_UNF(equi_trr,equi_tpr,newtop, posre_itp, itp nonequil, name)
+    GRO_NON_EQUILIBRIUM_FOR_UNF(equi_trr,equi_tpr,newtop, posre_itp, itp nonequil, name, "for")
 
     emit:
     forward = GRO_NON_EQUILIBRIUM_FOR_UNF.out[0].collect()
@@ -200,7 +200,6 @@ workflow pmx_free_energy_reverse {
     name = GRO_NON_EQUILIBRIUM_REV.out[1]
 }
 
-//workflow for reverse transformation for unfolded state to take into account the additional itp file
 workflow pmx_free_energy_reverse_unfolded {
     take:
     ions_pdb
@@ -217,7 +216,7 @@ workflow pmx_free_energy_reverse_unfolded {
     GRO_EQUILIBRIUM_UNFOLDED_REV(ions_pdb, newtop, posre_itp, itp, enmin, equil, npt, name)
     equi_trr = GRO_EQUILIBRIUM_UNFOLDED_REV.output[0]
     equi_tpr = GRO_EQUILIBRIUM_UNFOLDED_REV.output[1]
-    GRO_NON_EQUILIBRIUM_REV_UNF(equi_trr,equi_tpr,newtop,posre_itp, itp, nonequil, name)
+    GRO_NON_EQUILIBRIUM_REV_UNF(equi_trr,equi_tpr,newtop,posre_itp, itp, nonequil, name, "rev")
 
     emit:
     reverse =  GRO_NON_EQUILIBRIUM_REV_UNF.out[0].collect()

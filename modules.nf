@@ -635,6 +635,7 @@ process GRO_NON_EQUILIBRIUM_UNFOLDED {
 	path itp
 	path non_equil
 	val name
+	val type
 
 	output:
 	path "dgdl*", emit: dgdlFiles
@@ -652,8 +653,8 @@ process GRO_NON_EQUILIBRIUM_UNFOLDED {
 	for i in \$( seq 1 50 ); do
 		cd frame\$i;
 		gmx_mpi grompp -f ../${non_equil} -c frame.gro -p ../${topol} -o nonequil.tpr -maxwarn 1;
-		gmx_mpi mdrun -s nonequil.tpr -deffnm nonequil -dhdl dgdl\$i.xvg -v;
-		mv dgdl\$i.xvg ../;
+		gmx_mpi mdrun -s nonequil.tpr -deffnm nonequil -dhdl dgdl_${type}\$i.xvg -v;
+		mv dgdl_${type}\$i.xvg ../;
 		cd ../;
 	done
 	"""
