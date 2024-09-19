@@ -639,6 +639,7 @@ process GRO_NON_EQUILIBRIUM_UNFOLDED {
 
 	output:
 	path "dgdl*", emit: dgdlFiles
+	val "${name}"
 
 	script:
 	//extract 50 snapshots from the 5ns equilibrium sim (1 per 100ps starting at 100ps)
@@ -680,6 +681,7 @@ process GRO_NON_EQUILIBRIUM {
 
 	output:
 	path "dgdl*", emit: dgdlFiles
+	val "${name}"
 
 	script:
 	//extract 50 snapshots from the 5ns equilibrium sim (1 per 100ps starting at 100ps)
@@ -718,7 +720,7 @@ process FREE_ENERGY_EST {
 
 	script:
 	"""
-	pmx analyse -fA forward-fB reverse -t 298.15 -m bar -o ${type}_free_energy_est.txt
+	pmx analyse -fA forward -fB reverse -t 298.15 -m bar -o ${type}_free_energy_est.txt
 	"""
 
 }
