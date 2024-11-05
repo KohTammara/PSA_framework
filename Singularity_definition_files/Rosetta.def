@@ -1,0 +1,68 @@
+BootStrap: docker
+From: ubuntu:20.04
+stage: setup
+
+%labels
+    Author "Tammara Poa Siang Koh"
+    Version: 2023_35
+    Description: A Singularity container for Rosetta applications.
+
+
+%environment
+    # Set environment variables
+    export PATH="/usr/bin/env/python:/rosetta/Rosetta/main/source/bin:$PATH"
+    export TZ=Africa/Johannesburg
+    export CC=mpicc
+	export CXX=mpic++
+	export FC=mpif90
+    
+
+%post
+    # Update and install dependencies
+    apt-get update
+    apt-get install -y tzdata  
+    apt-get install -y curl
+    
+    # Set the timezone without interactive prompts
+    ln -fs /usr/share/zoneinfo/$TZ /etc/localtime
+    dpkg-reconfigure --frontend noninteractive tzdata
+    apt-get install -y libopenmpi-dev build-essential apt-utils cmake wget gfortran python-is-python2 python3 python3-pip
+    
+    
+    export PATH="/usr/bin/python:/usr/bin/python2.7:/usr/bin/env/python:/rosetta/Rosetta/main/source/bin:$PATH" 
+
+	
+    # Create a working directory
+    mkdir -p /rosetta
+    cd /rosetta
+
+    # Download and build Rosetta source code
+    curl -u "user_name":"password" -o /rosetta/rosetta.source.release-356.tar.bz2 https://www.rosettacommons.org/downloads/academic/2023/wk35/rosetta.source.release-356.tar.bz2
+    tar -xvf rosetta.source.release-356.tar.bz2
+    mv rosetta.source.release-356 Rosetta
+    wget http://prdownloads.sourceforge.net/scons/scons-local-4.5.2.tar.gz
+    tar -xvf scons-local-4.5.2.tar.gz
+    #git clone https://github.com/RosettaCommons/main.git Rosetta/main
+    cd Rosetta/main/source
+    /usr/bin/python3 ./scons.py -j $(nproc) mode=release extras=mpi bin
+    cd ../../
+
+BootStrap: docker
+From: ubuntu:20.04
+stage: final
+
+%environment
+	export PATH="/usr/bin/python:/usr/bin/python2.7:/usr/bin/env/python:/rosetta/Rosetta/main/source/bin:$PATH"
+	export LD_LIBRARY_PATH="/usr/lib/openmpi/lib:${LD_LIBRARY_PATH}"
+
+%post
+	apt-get update && apt-get install -y tzdata curl \
+        libopenmpi-dev build-essential apt-utils cmake wget gfortran python-is-python2 python3 python3-pip  
+	
+%files from setup
+	/rosetta/Rosetta/main/source/bin/*
+	/rosetta/Rosetta/main/source/build/*
+	/rosetta/Rosetta/main/source/tools/*
+
+%runscript
+    echo "Rosetta (2023_35) source project executables is available in this container. You can build and run Rosetta applications."

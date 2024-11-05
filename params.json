@@ -20,13 +20,13 @@
     "maestro" : false,
     "maestro_xml" : "/home/tammara/Documents/PSA_framework/work/maestro/maestro_template.xml",
     "mutationfile" : "/home/tammara/Documents/PSA_framework/work/test/meastro_mutations.txt",
-    "pdb_list_meastro" : "/home/tammara/Documents/PSA_framework/work/test/meastro_pdb.txt",
     "path_to_pdb" : "/home/tammara/Documents/PSA_framework/work/test",
     "effiles" : "/home/tammara/Downloads/MAESTRO_linux_x64 (1)/MAESTRO_linux_x64/effiles",
     "council" : "/home/tammara/Downloads/MAESTRO_linux_x64 (1)/MAESTRO_linux_x64/council",
     "prefix_maestro_out" : "pdb",
     "postfix_maestro_out" : ".ent.gz",
     "to_lower_maestro_out" : "true",
+    "to_upper_maestro_out" : "true",
     "bu_maestro" : "false",
 
     "gromacs" : false,
@@ -46,7 +46,6 @@
     "G9"    : "1",
 
     "pub_dir" :"/home/tammara/Documents/PSA_framework_results",
-    "bin_dir":"/home/tammara/Documents/PSA_framework/bin",
 
     "pmx": true,
     "ff_name":"charmm36m-mut",

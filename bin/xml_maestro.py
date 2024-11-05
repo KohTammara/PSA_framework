@@ -3,10 +3,11 @@ from string import Template
 import argparse
 
 parser = argparse.ArgumentParser(description='Creates an XML file making use of a template and parameters provided by user for Maestro')
-parser.add_argument("-pdb_path", type=str, default="")
+parser.add_argument("-pdb_path", type=str, required=True)
 parser.add_argument("-prefix", type=str, default="pdb")
 parser.add_argument("-postfix", type=str, default=".ent.gz")
 parser.add_argument("-tolower", type=str, default="true")
+parser.add_argument("-toupper", type=str, default="false")
 parser.add_argument("-bu", type=str, default="false")
 
 args = parser.parse_args()
@@ -15,12 +16,13 @@ pdb_path = args.pdb_path
 prefix = args.prefix
 postfix = args.postfix
 tolower = args.tolower
+toupper = args.toupper
 bu = args.bu
 
 xml_template = '''<?xml version="1.0"?>
 <sef>
     <evaluate>
-        <pdbhome dir="${pdb_path}" prefix="${prefix}" postfix="${postfix}" tolower="${tolower}" bu="${bu}"/>
+        <pdbhome dir="${pdb_path}" prefix="${prefix}" postfix="${postfix}" tolower="${tolower}" toupper="${toupper}" bu="${bu}"/>
         <!-- <pdbhome dir="/home/bill/biounits/" postfix=".pdb1.gz" tolower="true" bu="true"/> -->
     </evaluate>
     <!--  "Do not modify anything beyond this line unless you really know what you do"  -->

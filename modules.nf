@@ -1,9 +1,28 @@
-//create a collective gromacs process or see if it can be created otherwise split it at points where collective breaks
-//process for native and a process for mutant
-//check out generic gro processes for ff selection
+/*
+All processes used are defined here.
+Processes are called in main.nf for use independantly or within a workflow.
+Directories where results from processes are published can be changed by changing the path of publishDir in params.json.
+In the event that differing containers are used, the name of the sif file should be changed.
+	Containers are stored in the image directory of this project.
+	The name will following `container` directive. 
+Descriptions of each process given after process definition. 
+*/
+
 process GROMACS_MT_PMX {
+/*
+	Classical MD simulation of mutant folded structure (Structure mutated with pmx). 
+	Input : 
+		MDP files for energy minisation (em_mdp), ion generation (ions_mdp),
+		NVT (nvt_em), NPT (npt_em), production MD (md_mdp,
+		the structure file (pdb_file), and the various selections from input prompts 
+		(details of the selection options can be found in GROMACS_processes_info.txt in the dirrectory containing this file)
+	Output :
+		All processed output files such as .gro/.tpr/.top files created from gmx_mpi commands.
+		All xvg files (potential/temperature/density/rmsd/gyration)
+*/
 	publishDir "${params.pub_dir}/GROMACS_FBB_mutant", mode: 'copy', overwrite: false
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
+	tag "${pdb_file}"
 
 	input:
 	path pdb_file
@@ -30,6 +49,7 @@ process GROMACS_MT_PMX {
 	path '*_ions.tpr'
 	path '*_em.tpr'
 	path '*_nvt.tpr'
+	path '*.xvg'
 
 	script:
 	"""
@@ -60,8 +80,20 @@ process GROMACS_MT_PMX {
 }
 
 process GROMACS_MT_FBB {
+/*
+	Classical MD simulation of mutant folded structure (Structure mutated with Rosetta FBB). 
+	Input : 
+		MDP files for energy minisation (em_mdp), ion generation (ions_mdp),
+		NVT (nvt_em), NPT (npt_em), production MD (md_mdp,
+		the structure file (pdb_file), and the various selections from input prompts 
+		(details of the selection options can be found in GROMACS_processes_info.txt in the dirrectory containing this file)
+	Output :
+		All processed output files such as .gro/.tpr/.top files created from gmx_mpi commands.
+		All xvg files (potential/temperature/density/rmsd/gyration)
+*/
 	publishDir "${params.pub_dir}/GROMACS_FBB_mutant", mode: 'copy', overwrite: false
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
+	tag "${pdb_file}"
 
 	input:
 	path pdb_file
@@ -118,8 +150,20 @@ process GROMACS_MT_FBB {
 }
 
 process GROMACS_MT_THREADER {
+/*
+	Classical MD simulation of mutant folded structure (Threaded structure with mutated sequence using Rosetta simple threader mover). 
+	Input : 
+		MDP files for energy minisation (em_mdp), ion generation (ions_mdp),
+		NVT (nvt_em), NPT (npt_em), production MD (md_mdp,
+		the structure file (pdb_file), and the various selections from input prompts 
+		(details of the selection options can be found in GROMACS_processes_info.txt in the dirrectory containing this file)
+	Output :
+		All processed output files such as .gro/.tpr/.top files created from gmx_mpi commands.
+		All xvg files (potential/temperature/density/rmsd/gyration)
+*/
 	publishDir "${params.pub_dir}/GROMACS_THREADER_mutant", mode: 'copy', overwrite: false
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
+	tag "${pdb_file}"
 
 	input:
 	path pdb_file
@@ -176,6 +220,17 @@ process GROMACS_MT_THREADER {
 }
 
 process GROMACS_WT {
+/*
+	Classical MD simulation of Native folded structure. 
+	Input : 
+		MDP files for energy minisation (em_mdp), ion generation (ions_mdp),
+		NVT (nvt_em), NPT (npt_em), production MD (md_mdp,
+		the structure file (pdb_file), and the various selections from input prompts 
+		(details of the selection options can be found in GROMACS_processes_info.txt in the dirrectory containing this file)
+	Output :
+		All processed output files such as .gro/.tpr/.top files created from gmx_mpi commands.
+		All xvg files (potential/temperature/density/rmsd/gyration)
+*/
 	publishDir "${params.pub_dir}/GROMACS_wildtype/${pdb_file.baseName}", mode: 'copy', overwrite: false
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 
@@ -235,6 +290,15 @@ process GROMACS_WT {
 
 
 process MAESTRO_XML {
+/*
+	Process to create the Maestro XML configuration file through the use of a python script.
+	Input : 
+		Path to effiles and council directories required for maestro execution.
+		Path to the PDB file, prefix for output, postfix for output, switch for lowercase,
+		bu is a switch for if the directory contains biological assemblies.
+	Output :
+		Maestro configuration file.
+*/
 	input:
 	path effiles_dir
 	path council_dir
@@ -242,6 +306,7 @@ process MAESTRO_XML {
 	val prefix
 	val postfix
 	val to_lower
+	val to_upper
 	val bu
 
 	output:
@@ -249,11 +314,21 @@ process MAESTRO_XML {
 
 
 	"""
-	xml_maestro.py -pdb_path "${path_to_pdb}" -prefix "${prefix}" -postfix "${postfix}" -tolower "${to_lower}" -bu "${bu}" > config.xml
+	xml_maestro.py -pdb_path "${path_to_pdb}" -prefix "${prefix}" -postfix "${postfix}" -tolower "${to_lower}" -toupper "${to_upper}" -bu "${bu}" > config.xml
 	"""
 }
 
 process MAESTRO {
+/*
+	Evaluate mutants with Maestro which provides free energy values in the form of a CSV file as output.
+	Input : 
+		XML configuration file that is obtained from process MAESTRO_XML.
+		Path to effiles and council directories required for Maestro execution.
+		Path to file containing mutations to be evaluated using Maestro.
+	Output :
+		CSV containing mutant free energy and scores in format:
+		structure<TAB>seqlength<TAB>mutation<TAB>score<TAB>delta_score<TAB>ddG<TAB>ddG_confidence
+*/
 	publishDir "${params.pub_dir}/Maestro/out", mode: 'copy', overwrite: true, enabled: true
 	cpus 6
 	container "${simgDir}/maestro.sif"
@@ -277,6 +352,15 @@ process MAESTRO {
 }
 
 process CUTANDMUTATE {
+/*
+	Cut and insert mutation according to specified range and mutant given through the use of a Python script
+	Input : 
+		Path to file containing the sequence(Fasta file).
+		Path to file containing the mutation information.
+	Output :
+		Fasta file containing new cut and mutated sequence.
+		Start position of sequence taken from mutation information.
+*/
 	tag "${mutation_info}"
 
     input:
@@ -293,6 +377,17 @@ process CUTANDMUTATE {
 }
 
 process CREATEXML {
+/*
+	Makes use of a python script to create the XML file required as input for the Rosetta SImpleThreadingMover
+	Input : 
+		Name of threading process.
+		Path to sequence to be used in the threading process (Fasta File).
+		Pack_round, seq_mode, skip_unknown_mutant, scorefxn, start_pos, neighbor_dis, pack_neighbors, and weight are variables 
+		in the created XML file and description of these can be found in rosetta commons under SimpleThradingMover.
+		Path to template structure that the sequence is threaded onto.
+	Output :
+		XML file to execute the Rosetta SimpleThreadingMover 
+*/
 	conda 'env.yaml'
 
 	input:
@@ -319,6 +414,17 @@ process CREATEXML {
 }
 
 process ROSETTA_THREADER {
+/*
+	Process to execute the Rosetta SimpleThreadingMover
+	Input : 
+		Path to PDB file to be used as a template structure
+		XML file created from process CREATEXML
+		Path to file containing mutation information (Name of file is used as a tag for the process)
+	Output :
+		Path to PDB file containing the threaded structure.
+		Path to score file for threaded structure
+		Name of mutation taken from mutation file
+*/
 	publishDir "${params.pub_dir}/Rosetta_threader/${mutation.baseName}", mode: 'copy', overwrite: false
 	container "${simgDir}/rosetta_23_45_updated_03.sif"
 	tag "${mutation.baseName}"
@@ -359,6 +465,17 @@ process SPLITPDB {
 }
 
 process ROSETTA_FIXBB {
+/*
+	This process executes the rosetta FixedBackBone application
+	Input : 
+		Path to PDB file of structure to be mutated.
+		Residue file used by the rosetta FBB application (Describes mutations and state of backbone)
+	Output :
+		PDB file of mutated structure from Rosetta FBB
+		Score file from Rosetta FBB application
+		Text file containing a log of the Rosetta FBB process
+		Name of the residue file which is used to take the process and tag following processes
+*/
 	publishDir "${params.pub_dir}/Rosetta_FixBB/${res_file.baseName}", mode: 'copy', overwrite: false
 	container "${simgDir}/rosetta_23_45_updated_03.sif"
 	tag "${res_file.baseName}"
@@ -381,6 +498,26 @@ process ROSETTA_FIXBB {
 }
 
 process PMX_PREP_MUTANT {
+/*
+	This process selects the appropriate forcefield dependant on user input and makes use of PMX to mutate structures for ion generation,
+	placement of the protein in a box and solvation.
+	Input:
+		Path to pmx mutant PBD file
+		Tuple containing the index of residue to be mutated and mutant residue
+		forcefield to be used
+		Path to mdp file for ion generation (genion)
+	Output:
+		Mutant pdb file
+		updated topology file
+		topology file generated by pdb2gmx
+		pdb file of structure in a box
+		Solvated pdb 
+		tpr file from genion
+		ions.pdb is pdb file after neutralisation
+		posre.itp position restraints file
+		value containing index and mutant for naming further in the workflow
+
+*/
 	publishDir "${params.pub_dir}/pmx/preparation/${index}_${mutant}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	tag "${index}_${mutant}"
@@ -437,8 +574,26 @@ process PMX_PREP_MUTANT {
 	"""
 }
 
-//inficate in pubdir what rosetta process
 process GRO_PREP_MUTANT {
+/*
+	This process makes use of Rosetta mutated structures and prepares them for a classical simulation with ion generation,
+	placement of the protein in a box and solvation.
+	Input:
+		Path to pmx mutant PBD file
+		Tuple containing the index of residue to be mutated and mutant residue
+		forcefield to be used
+		Path to mdp file for ion generation (genion)
+	Output:
+		updated topology file
+		topology file generated by pdb2gmx
+		pdb file of structure in a box
+		Solvated pdb 
+		tpr file from genion
+		ions.pdb is pdb file after neutralisation
+		posre.itp position restraints file
+		value containing index and mutant for naming further in the workflow
+
+*/
 	publishDir "${params.pub_dir}/gro_preparation_rosetta/${index}_${mutant}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	tag "${index}_${mutant}"
@@ -472,6 +627,25 @@ process GRO_PREP_MUTANT {
 }
 
 process GRO_PREP_TRIPEPTIDE {
+/*
+	This process PMX tripeptide structures for ion generation,
+	placement of the protein in a box and solvation.
+	Input:
+		Path to tuple containing the tripeptide topology file, position restraints file (posre.itp), coordinate file (itp), and name of tripeptide.
+		Path to mdp file for ion generation (genion)
+		forcefield to be used (not exactly necessary in this case as ff is specified in topology)
+	Output:
+		updated topology file
+		pdb file for tripeptide
+		pdb file of structure in a box
+		Solvated pdb 
+		tpr file from genion
+		ions.pdb is pdb file after neutralisation
+		posre.itp position restraints file
+		coordinate file(itp)
+		name of tripeptide
+
+*/
 	publishDir "${params.pub_dir}/gro_preparation/tripeptide/${name}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	tag "${name}"
@@ -508,6 +682,13 @@ process GRO_PREP_TRIPEPTIDE {
 }
 
 process READ_TRIPEPTIDE_FILES {
+/*
+	This process obtains the files of a tripeptide gathered from the pmx tripeptide database. These files incude  the topology file, itp file and position restraints (itp) file.
+	Input:
+		Path to directory containing the folders for tripeptides.
+	Output:
+		Tuple containing the 3 files for each tripeptide. 
+*/
 	tag "${tripep_dir.baseName}"
 	memory '100MB'
 	cpus '8'
@@ -547,6 +728,23 @@ process READ_TRIPEPTIDE_FILES {
 }
 
 process GRO_EQUILIBRIUM {
+/*
+	Process executing energy minimisation, npt and equilibration of protein for free energy simulation. This process is for the folded structures (mutants).
+	Input:
+		Ions_pdb generated from preperation (genion neutralisation)
+		topol topology file
+		posre_itp position restraits file
+		energy minimisation mdp file
+		equilibration mdp file
+		npt mdp file
+		name of mutant
+	Output:
+		equilibration trajectory file
+		equilibration run input file
+		energy minimisation run input file
+		npt run input file
+		name of mutant
+*/
 	publishDir "${params.pub_dir}/gro_preparation/equilibrium/${name}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	tag "${name}"
@@ -582,6 +780,26 @@ process GRO_EQUILIBRIUM {
 }
 
 process GRO_EQUILIBRIUM_UNFOLDED {
+/*
+	Process executing energy minimisation, npt and equilibration of protein for free energy simulation. This process is for the unfolded structures (tripeptide).
+	Input:
+		Ions_pdb generated from preperation (genion neutralisation)
+		topol topology file
+		posre_itp position restraits file
+		energy minimisation mdp file
+		equilibration mdp file
+		npt mdp file
+		name of mutant
+	Output:
+		equilibration trajectory file
+		equilibration run input file
+		energy minimisation run input file
+		npt run input file
+		name of mutant
+		topol topology file
+		position restraint ipt file
+		itp file
+*/
 	publishDir "${params.pub_dir}/gro_preparation/equilibrium_unfolded/${name}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	tag "${name}"
@@ -605,6 +823,9 @@ process GRO_EQUILIBRIUM_UNFOLDED {
 	path "enmin.tpr"
 	path "npt.tpr"
 	val "${name}"
+	path "${topol}"
+	path "${posre_itp}"
+	path "${itp}"
 
 	script:
 	"""
@@ -618,6 +839,21 @@ process GRO_EQUILIBRIUM_UNFOLDED {
 }
 
 process GRO_NON_EQUILIBRIUM_UNFOLDED {
+/*
+	Process executing non-equilibrium simulation of protein for free energy simulations. This process is for the unfolded structures (tripeptides).
+	Input:
+		equilibration trajectory file
+		equilibration run input file
+		topol topology file
+		posre_itp position restraits file
+		itp file
+		non_equil mdp file
+		name of mutant
+		type of structure
+	Output:
+		dgdl xvg files
+		name of structure
+*/
 	publishDir "${params.pub_dir}/gro_preparation/non_equilibrium/${name}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	scratch 'scratch'
@@ -663,6 +899,18 @@ process GRO_NON_EQUILIBRIUM_UNFOLDED {
 }
 
 process GRO_NON_EQUILIBRIUM {
+/*
+	Process executing non-equilibrium simulation of protein for free energy simulations. This process is for the folded structures (mutant).
+	Input:
+		equilibration trajectory file
+		equilibration run input file
+		topol topology file
+		non_equil mdp file
+		name of mutant
+	Output:
+		dgdl xvg files
+		name of structure
+*/
 	publishDir "${params.pub_dir}/gro_preparation/non_equilibrium/${name}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	scratch 'scratch'
@@ -705,6 +953,18 @@ process GRO_NON_EQUILIBRIUM {
 }
 
 process FREE_ENERGY_EST {
+/*
+	Process executing analysis through pmx to provide a free energy estimate for folded/unfolded structure.
+	Input:
+		collection for forward transition dgdl xvg files
+		collection of reverse transition dgdl xvg files
+		type of structure (folded/unfolded)
+		name of structure
+	Output:
+		text file containing free energy
+		png of graoh produced from analysis
+		.dat file from analysis
+*/
 	publishDir "${params.pub_dir}/free_energy/${type}/${name}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	tag "${name}"
@@ -717,15 +977,26 @@ process FREE_ENERGY_EST {
 
 	output:
 	path "*.txt"
+	path "*.png"
+	path "*.dat"
 
 	script:
 	"""
-	pmx analyse -fA forward -fB reverse -t 298.15 -m bar -o ${type}_free_energy_est.txt
+	path_f=\$(dirname ${forward[0]})
+	path_r=\$(dirname ${reverse[0]})
+	pmx analyse -fA \$path_f/dgdl_for* -fB \$path_r/dgdl_rev* -t 298.15 -m bar -o ${type}_${name}_free_energy_est.txt
 	"""
 
 }
 
 process CREATE_TRIPEPTIDE {
+/*
+	Process that makes use of a Python script to create tripeptides.
+	Input:
+		Tuple containing the index of the mutation, the mutant residue and the native residue
+	Output:
+		Pdb file of created tripeptide
+*/
 	publishDir "${params.pub_dir}/created_tripeptides/${native_res}${native_res_index}${mutant}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	tag "native: ${native_res}, mutant: ${mutant}, index: ${index}"

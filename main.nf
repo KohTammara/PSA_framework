@@ -170,7 +170,10 @@ workflow pmx_free_energy_forward_unfolded {
     equi_trr = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[0]
     equi_tpr = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[1]
     name = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[4]
-    GRO_NON_EQUILIBRIUM_FOR_UNF(equi_trr,equi_tpr,newtop, posre_itp, itp nonequil, name, "for")
+    top = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[5]
+    n_posre_itp = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[6]
+    n_itp = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[7]
+    GRO_NON_EQUILIBRIUM_FOR_UNF(equi_trr, equi_tpr, top, n_posre_itp, n_itp nonequil, name, "for")
 
     emit:
     forward = GRO_NON_EQUILIBRIUM_FOR_UNF.out[0].collect()
@@ -216,7 +219,11 @@ workflow pmx_free_energy_reverse_unfolded {
     GRO_EQUILIBRIUM_UNFOLDED_REV(ions_pdb, newtop, posre_itp, itp, enmin, equil, npt, name)
     equi_trr = GRO_EQUILIBRIUM_UNFOLDED_REV.output[0]
     equi_tpr = GRO_EQUILIBRIUM_UNFOLDED_REV.output[1]
-    GRO_NON_EQUILIBRIUM_REV_UNF(equi_trr,equi_tpr,newtop,posre_itp, itp, nonequil, name, "rev")
+    name = GRO_EQUILIBRIUM_UNFOLDED_REV.output[4]
+    top = GRO_EQUILIBRIUM_UNFOLDED_REV.output[5]
+    n_posre_itp = GRO_EQUILIBRIUM_UNFOLDED_REV.output[6]
+    n_itp = GRO_EQUILIBRIUM_UNFOLDED_REV.output[7]
+    GRO_NON_EQUILIBRIUM_REV_UNF(equi_trr, equi_tpr, top, n_posre_itp, n_itp, nonequil, name, "rev")
 
     emit:
     reverse =  GRO_NON_EQUILIBRIUM_REV_UNF.out[0].collect()
@@ -294,7 +301,6 @@ workflow {
                 folder 
             }
         files = READ_TRIPEPTIDE_FILES(tripep_dir)
-        // files.view()
         prep_files = GRO_PREP_TRIPEPTIDE(files,params.genion_mdp,params.ff_name)
         free_energy_unfolded(prep_files[5], prep_files[0], prep_files[6], prep_files[7], params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp, prep_files[8], params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
 
@@ -327,7 +333,7 @@ workflow {
     }
 
     if (params.maestro == true) {
-        xml = MAESTRO_XML(params.effiles, params.council, params.path_to_pdb, params.prefix_maestro_out, params.postfix_maestro_out, params.to_lower_maestro_out, params.bu_maestro) 
+        xml = MAESTRO_XML(params.effiles, params.council, params.path_to_pdb, params.prefix_maestro_out, params.postfix_maestro_out, params.to_lower_maestro_out, params.to_upper_maestro_out, params.bu_maestro) 
         maestro(params.mutationfile, xml)
     }
 

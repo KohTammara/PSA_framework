@@ -1,0 +1,31 @@
+BootStrap: docker
+From: ubuntu:20.04
+
+%labels
+    Author: Your Name
+    Version: 1.0
+    Description: A Singularity container for Maestro, including only the executable.
+
+%post
+    # Update and install dependencies
+    apt-get update && apt-get install -y \
+        wget \
+        curl \
+        libglib2.0-0 \
+        libsm6 \
+        libxext6 \
+        libxrender1 \
+        libfontconfig1 \
+        && rm -rf /var/lib/apt/lists/*
+
+%file
+    # Copy the Maestro executable from the locally downloaded and extracted Meastro software
+    # First path should be changed to the location of the executable locally
+    /path/to/executable/maestro /usr/local/bin/maestro
+
+%environment
+    # Set up environment variables or paths needed for Maestro
+    export PATH=$PATH:/usr/local/bin
+
+%runscript
+    This container is for Meastro and contains the Maestro executable. Refer to Maestro README for usage.

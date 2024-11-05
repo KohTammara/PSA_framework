@@ -54,7 +54,7 @@ def mutate_and_cut(file_path, mutant_with_position, start_pos=1, end_pos=False):
 		end_file.write(str(cut_seq))
 		end_file.close()
 	else:
-		print('The position provided does not match the original amino acid that is to be mutated.', file=sys. stderr)
+		print('The position provided does not match the original amino acid that is to be mutated.', file=sys.stderr)
 		sys.exit(1)
 
 
