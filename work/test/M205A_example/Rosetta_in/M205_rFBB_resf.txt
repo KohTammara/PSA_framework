@@ -1,0 +1,5 @@
+#Allow only native amino acid - repack without design
+NATAA
+
+start
+205 A PIKAA A

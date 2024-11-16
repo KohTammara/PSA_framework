@@ -26,6 +26,8 @@ process GROMACS_MT_PMX {
 
 	input:
 	path pdb_file
+	path topol
+	path itp
 	path ions_mdp
 	path em_mdp
 	path nvt_mdp
@@ -40,6 +42,7 @@ process GROMACS_MT_PMX {
 	val G7
 	val G8
 	val G9
+	val G10
 
 	output:
 	path '*_processed.gro'
@@ -53,33 +56,28 @@ process GROMACS_MT_PMX {
 
 	script:
 	"""
-	grep -v HOH ${pdb_file} > ${pdb_file}_clean.pdb
-	echo ${G1} | gmx_mpi pdb2gmx -f ${pdb_file}_clean.pdb -o ${pdb_file}_processed.gro -water spce -ignh
-	gmx_mpi editconf -f ${pdb_file}_processed.gro -o ${pdb_file}_box.gro -c -d 1.0 -bt dodecahedron
-	gmx_mpi solvate -cp ${pdb_file}_box.gro -cs spc216.gro -o  ${pdb_file}_solve.gro -p topol.top
-	gmx_mpi grompp -f ${ions_mdp} -c ${pdb_file}_solve.gro -p topol.top -o ${pdb_file}_ions.tpr -maxwarn 1
-	echo ${G2} |gmx_mpi genion -s ${pdb_file}_ions.tpr -o ${pdb_file}_solve_ions.gro -p topol.top -pname NA -nname CL -neutral
-	gmx_mpi grompp -f ${em_mdp} -c ${pdb_file}_solve_ions.gro -p topol.top -o ${pdb_file}_em.tpr
+	gmx_mpi grompp -f ${em_mdp} -c ${pdb_file} -p ${topol} -o ${pdb_file}_em.tpr
 	gmx_mpi mdrun -v -deffnm ${pdb_file}_em
 	echo ${G3}|gmx_mpi energy -f ${pdb_file}_em.edr -o ${pdb_file}_potential.xvg
-	gmx_mpi grompp -f ${nvt_mdp} -c ${pdb_file}_em.gro -r ${pdb_file}_em.gro -p topol.top -o ${pdb_file}_nvt.tpr
+	gmx_mpi grompp -f ${nvt_mdp} -c ${pdb_file}_em.gro -r ${pdb_file}_em.gro -p ${topol} -o ${pdb_file}_nvt.tpr
 	gmx_mpi mdrun -deffnm ${pdb_file}_nvt
 	echo ${G4}|gmx_mpi energy -f ${pdb_file}_nvt.edr -o ${pdb_file}_temperature.xvg
-	gmx_mpi grompp -f ${npt_mdp} -c ${pdb_file}_nvt.gro -r ${pdb_file}_nvt.gro -t ${pdb_file}_nvt.cpt -p topol.top -o ${pdb_file}_npt.tpr
+	gmx_mpi grompp -f ${npt_mdp} -c ${pdb_file}_nvt.gro -r ${pdb_file}_nvt.gro -t ${pdb_file}_nvt.cpt -p ${topol} -o ${pdb_file}_npt.tpr
 	gmx_mpi mdrun -deffnm ${pdb_file}_npt
-	echo ${G5}|gmx_mpi energy -f ${pdb_file}_npt.edr -o ${pdb_file}_density.xvg
-	gmx_mpi grompp -f ${md_mdp} -c ${pdb_file}_npt.gro -t ${pdb_file}_npt.cpt -p topol.top -o ${pdb_file}_md_0_1.tpr
+	echo ${G5} | gmx_mpi energy -f ${pdb_file}_npt.edr -o ${pdb_file}_pressure.xvg
+	echo ${G6}|gmx_mpi energy -f ${pdb_file}_npt.edr -o ${pdb_file}_density.xvg
+	gmx_mpi grompp -f ${md_mdp} -c ${pdb_file}_npt.gro -t ${pdb_file}_npt.cpt -p ${topol} -o ${pdb_file}_md_0_1.tpr
 	gmx_mpi mdrun -deffnm ${pdb_file}_md_0_1
-	echo ${G6} |gmx_mpi trjconv -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1.xtc -o ${pdb_file}_md_0_1_noPBC.xtc -pbc mol -center
-	echo ${G7} |gmx_mpi rms -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_rmsd.xvg -tu ns
-	echo ${G8} |gmx_mpi rms -s ${pdb_file}_em.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_rmsd_xtal.xvg -tu ns
-	echo ${G9} |gmx_mpi gyrate -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_gyrate.xvg
+	echo ${G7} |gmx_mpi trjconv -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1.xtc -o ${pdb_file}_md_0_1_noPBC.xtc -pbc mol -center
+	echo ${G8} |gmx_mpi rms -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_rmsd.xvg -tu ns
+	echo ${G9} |gmx_mpi rms -s ${pdb_file}_em.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_rmsd_xtal.xvg -tu ns
+	echo ${G10} |gmx_mpi gyrate -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_gyrate.xvg
 	"""
 
 
 }
 
-process GROMACS_MT_FBB {
+process STANDARD_MD {
 /*
 	Classical MD simulation of mutant folded structure (Structure mutated with Rosetta FBB). 
 	Input : 
@@ -111,6 +109,7 @@ process GROMACS_MT_FBB {
 	val G7
 	val G8
 	val G9
+	val G10
 
 	output:
 	path '*_processed.gro'
@@ -137,13 +136,14 @@ process GROMACS_MT_FBB {
 	echo ${G4}|gmx_mpi energy -f ${pdb_file}_nvt.edr -o ${pdb_file}_temperature.xvg
 	gmx_mpi grompp -f ${npt_mdp} -c ${pdb_file}_nvt.gro -r ${pdb_file}_nvt.gro -t ${pdb_file}_nvt.cpt -p topol.top -o ${pdb_file}_npt.tpr
 	gmx_mpi mdrun -deffnm ${pdb_file}_npt
-	echo ${G5}|gmx_mpi energy -f ${pdb_file}_npt.edr -o ${pdb_file}_density.xvg
+	echo ${G5} | gmx_mpi energy -f ${pdb_file}_npt.edr -o ${pdb_file}_pressure.xvg
+	echo ${G6}|gmx_mpi energy -f ${pdb_file}_npt.edr -o ${pdb_file}_density.xvg
 	gmx_mpi grompp -f ${md_mdp} -c ${pdb_file}_npt.gro -t ${pdb_file}_npt.cpt -p topol.top -o ${pdb_file}_md_0_1.tpr
 	gmx_mpi mdrun -deffnm ${pdb_file}_md_0_1
-	echo ${G6} |gmx_mpi trjconv -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1.xtc -o ${pdb_file}_md_0_1_noPBC.xtc -pbc mol -center
-	echo ${G7} |gmx_mpi rms -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_rmsd.xvg -tu ns
-	echo ${G8} |gmx_mpi rms -s ${pdb_file}_em.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_rmsd_xtal.xvg -tu ns
-	echo ${G9} |gmx_mpi gyrate -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_gyrate.xvg
+	echo ${G7} |gmx_mpi trjconv -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1.xtc -o ${pdb_file}_md_0_1_noPBC.xtc -pbc mol -center
+	echo ${G8} |gmx_mpi rms -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_rmsd.xvg -tu ns
+	echo ${G9} |gmx_mpi rms -s ${pdb_file}_em.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_rmsd_xtal.xvg -tu ns
+	echo ${G10} |gmx_mpi gyrate -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_gyrate.xvg
 	"""
 
 
@@ -535,7 +535,7 @@ process PMX_PREP_MUTANT {
 	path "box.pdb"
 	path "water.pdb"
 	path "genion.tpr"
-	path "ions.pdb"
+	path "${index}_${mutant}_ions.pdb"
 	path "posre.itp"
 	val "${index}_${mutant}"
 
@@ -570,7 +570,7 @@ process PMX_PREP_MUTANT {
 	gmx_mpi editconf -f conf.pdb -o box.pdb -bt dodecahedron -d 1.0
 	gmx_mpi solvate -cp box -cs spc216 -p newtop -o water.pdb
 	gmx_mpi grompp -f ${genion} -c water.pdb -p newtop.top -o genion.tpr
-	echo "SOL" | gmx_mpi genion -s genion.tpr -p newtop.top -neutral -conc 0.15 -o ions.pdb
+	echo "SOL" | gmx_mpi genion -s genion.tpr -p newtop.top -neutral -conc 0.15 -o ${index}_${mutant}_ions.pdb
 	"""
 }
 
@@ -749,7 +749,7 @@ process GRO_EQUILIBRIUM {
 	container "${simgDir}/gro_pmx_2023.sif"
 	tag "${name}"
 	memory '1GB'
-	cpus '32'
+	cpus '12'
 	time '3d'
 
 	input:
@@ -804,7 +804,7 @@ process GRO_EQUILIBRIUM_UNFOLDED {
 	container "${simgDir}/gro_pmx_2023.sif"
 	tag "${name}"
 	memory '1GB'
-	cpus '32'
+	cpus '12'
 	time '3d'
 
 	input:
@@ -860,7 +860,7 @@ process GRO_NON_EQUILIBRIUM_UNFOLDED {
 	stageInMode 'copy'
 	tag "${name}"
 	memory '1GB'
-	cpus '32'
+	cpus '12'
 	time '3d'
 
 	input:
@@ -917,7 +917,7 @@ process GRO_NON_EQUILIBRIUM {
 	stageInMode 'copy'
 	tag "${name}"
 	memory '1GB'
-	cpus '32'
+	cpus '12'
 	time '3d'
 
 	input:

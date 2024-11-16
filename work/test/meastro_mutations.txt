@@ -1,0 +1,5 @@
+/home/tammara/Documents/PSA_framework/work/test/1kao.pdb	R2.A{A}
+/home/tammara/Documents/PSA_framework/work/test/1kao.pdb	T20.A{A}
+/home/tammara/Documents/PSA_framework/work/test/1qlx.pdb	M205.A{A}
+/home/tammara/Documents/PSA_framework/work/test/1qlx.pdb	M206.A{A}
+/home/tammara/Documents/PSA_framework/work/test/1qlx.pdb	M213.A{A}

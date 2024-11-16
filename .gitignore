@@ -3,6 +3,5 @@ images/*
 test.txt
 Q53YK7.txt
 output.xml
-work/*
 .nextflow*
 .nextflow/*

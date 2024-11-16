@@ -44,19 +44,30 @@ include {
     MAESTRO;
     CUTANDMUTATE;
     CREATEXML;
-    GROMACS_MT_FBB;
-    GROMACS_MT_THREADER;
+    STANDARD_MD as GROMACS_MT_FBB;
+    STANDARD_MD as GROMACS_MT_THREADER;
     GROMACS_MT_PMX;
-    GROMACS_WT;
+    STANDARD_MD as GROMACS_WT;
     PMX_PREP_MUTANT;
     GRO_PREP_MUTANT;
     GRO_EQUILIBRIUM as GRO_EQUILIBRIUM_FOR;
+    GRO_EQUILIBRIUM as GRO_EQUILIBRIUM_FOR_FBB;
+    GRO_EQUILIBRIUM as GRO_EQUILIBRIUM_FOR_THR;
     GRO_EQUILIBRIUM as GRO_EQUILIBRIUM_REV;
+    GRO_EQUILIBRIUM as GRO_EQUILIBRIUM_REV_FBB;
+    GRO_EQUILIBRIUM as GRO_EQUILIBRIUM_REV_THR;
     GRO_NON_EQUILIBRIUM as GRO_NON_EQUILIBRIUM_FOR;
+    GRO_NON_EQUILIBRIUM as GRO_NON_EQUILIBRIUM_FOR_FBB;
+    GRO_NON_EQUILIBRIUM as GRO_NON_EQUILIBRIUM_FOR_THR;
     GRO_NON_EQUILIBRIUM_UNFOLDED as GRO_NON_EQUILIBRIUM_FOR_UNF;
     GRO_NON_EQUILIBRIUM as GRO_NON_EQUILIBRIUM_REV;
+    GRO_NON_EQUILIBRIUM as GRO_NON_EQUILIBRIUM_REV_FBB;
+    GRO_NON_EQUILIBRIUM as GRO_NON_EQUILIBRIUM_REV_THR;
     GRO_NON_EQUILIBRIUM_UNFOLDED as GRO_NON_EQUILIBRIUM_REV_UNF;
-    FREE_ENERGY_EST;
+    FREE_ENERGY_EST as FEE_FBB;
+    FREE_ENERGY_EST as FEE_THR;
+    FREE_ENERGY_EST as FEE_PMX;
+    FREE_ENERGY_EST as FEE_PMX_UNF;
     CREATE_TRIPEPTIDE;
     READ_TRIPEPTIDE_FILES;
     GRO_PREP_TRIPEPTIDE;
@@ -72,6 +83,7 @@ workflow.onComplete {
     println "Execution status: ${ workflow.success ? 'OK' : 'failed' }"
 }
 
+//workflow to execute rosetta fbb
 workflow rosy_fbb {
     take:
     pdb
@@ -87,6 +99,7 @@ workflow rosy_fbb {
     mutation_name = ROSETTA_FIXBB.out[3]
 }
 
+//workflow to create input for threading with rosetta
 workflow rosy_threader_input {
     take:
     sequence
@@ -100,6 +113,7 @@ workflow rosy_threader_input {
     start_position = CUTANDMUTATE.out[1]
 }
 
+//workflow to execute rosetta threading
 workflow rosy_threader {
     take:
     pdb
@@ -117,6 +131,7 @@ workflow rosy_threader {
     mutation_name = ROSETTA_THREADER.out[2]
 }
 
+//workflow to execute maestro
 workflow maestro {
     take:
     mut
@@ -129,6 +144,7 @@ workflow maestro {
     results_csv = MAESTRO.out[0]
 }
 
+//workflow for free energy forward transition of the pmx mutated folded state
 workflow pmx_free_energy_forward {
     take:
     ions_pdb
@@ -152,7 +168,8 @@ workflow pmx_free_energy_forward {
     name = GRO_NON_EQUILIBRIUM_FOR.out[1]
 
 }
-//free energy forward for unfolded state to take into account the additional ito files required
+
+//workflow for free energy forward transition of the pmx unfolded state (tripeptide)
 workflow pmx_free_energy_forward_unfolded {
     take:
     ions_pdb
@@ -173,7 +190,7 @@ workflow pmx_free_energy_forward_unfolded {
     top = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[5]
     n_posre_itp = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[6]
     n_itp = GRO_EQUILIBRIUM_UNFOLDED_FOR.output[7]
-    GRO_NON_EQUILIBRIUM_FOR_UNF(equi_trr, equi_tpr, top, n_posre_itp, n_itp nonequil, name, "for")
+    GRO_NON_EQUILIBRIUM_FOR_UNF(equi_trr, equi_tpr, top, n_posre_itp, n_itp, nonequil, name, "for")
 
     emit:
     forward = GRO_NON_EQUILIBRIUM_FOR_UNF.out[0].collect()
@@ -181,6 +198,7 @@ workflow pmx_free_energy_forward_unfolded {
 
 }
 
+//workflow for free energy reverse transition of the pmx mutated folded state
 workflow pmx_free_energy_reverse {
     take:
     ions_pdb
@@ -203,6 +221,7 @@ workflow pmx_free_energy_reverse {
     name = GRO_NON_EQUILIBRIUM_REV.out[1]
 }
 
+//workflow for free energy reverse transition of the pmx unfolded state (tripeptide)
 workflow pmx_free_energy_reverse_unfolded {
     take:
     ions_pdb
@@ -230,7 +249,7 @@ workflow pmx_free_energy_reverse_unfolded {
     name = GRO_NON_EQUILIBRIUM_REV_UNF.out[1]
 }
 
-
+//workflow that executes the whole free energy estimation process for the pmx folded state
 workflow free_energy_folded {
     take:
     ions_pdb
@@ -249,12 +268,13 @@ workflow free_energy_folded {
     main:
     pmx_free_energy_forward(ions_pdb, newtop, posre_itp, f_enmin, f_equil, f_npt, f_nonequil, name)
     pmx_free_energy_reverse(ions_pdb, newtop, posre_itp, r_enmin, r_equil, r_npt, r_nonequil, name)
-    FREE_ENERGY_EST(pmx_free_energy_forward.out.forward, pmx_free_energy_reverse.out.reverse, "folded", pmx_free_energy_forward.out.name)
+    FEE_PMX(pmx_free_energy_forward.out.forward, pmx_free_energy_reverse.out.reverse, "folded", pmx_free_energy_forward.out.name)
 
     emit:
-    FREE_ENERGY_EST.out[0]
+    FEE_PMX.out[0]
 }
 
+//workflow that executes the whole free energy estimation process for the pmx unfolded state
 workflow free_energy_unfolded {
     take:
     ions_pdb
@@ -274,10 +294,156 @@ workflow free_energy_unfolded {
     main:
     pmx_free_energy_forward_unfolded(ions_pdb, newtop, posre_itp, itp, f_enmin, f_equil, f_npt, f_nonequil, name)
     pmx_free_energy_reverse_unfolded(ions_pdb, newtop, posre_itp, itp, r_enmin, r_equil, r_npt, r_nonequil, name)
-    FREE_ENERGY_EST(pmx_free_energy_forward_unfolded.out.forward, pmx_free_energy_reverse_unfolded.out.reverse, "unfolded", pmx_free_energy_forward_unfolded.out.name)
+    FEE_PMX_UNF(pmx_free_energy_forward_unfolded.out.forward, pmx_free_energy_reverse_unfolded.out.reverse, "unfolded", pmx_free_energy_forward_unfolded.out.name)
 
     emit:
-    FREE_ENERGY_EST.out[0]
+    FEE_PMX_UNF.out[0]
+}
+
+//workflow for free energy forward transition of the rosetta fbb mutated folded state
+workflow free_energy_forward_fbb {
+    take:
+    ions_pdb
+    newtop
+    posre_itp
+    enmin
+    equil
+    npt
+    nonequil
+    name
+
+    main:
+    GRO_EQUILIBRIUM_FOR_FBB(ions_pdb, newtop, posre_itp, enmin, equil, npt, name)
+    equi_trr = GRO_EQUILIBRIUM_FOR_FBB.output[0]
+    equi_tpr = GRO_EQUILIBRIUM_FOR_FBB.output[1]
+    name = GRO_EQUILIBRIUM_FOR_FBB.output[4]
+    GRO_NON_EQUILIBRIUM_FOR_FBB(equi_trr,equi_tpr,newtop, nonequil, name)
+
+    emit:
+    forward = GRO_NON_EQUILIBRIUM_FOR_FBB.out[0].collect()
+    name = GRO_NON_EQUILIBRIUM_FOR_FBB.out[1]
+
+}
+
+//workflow for free energy reverse transition of the rosetta fbb mutated folded state
+workflow free_energy_reverse_fbb {
+    take:
+    ions_pdb
+    newtop
+    posre_itp
+    enmin
+    equil
+    npt
+    nonequil
+    name
+
+    main:
+    GRO_EQUILIBRIUM_REV_FBB(ions_pdb, newtop, posre_itp, enmin, equil, npt, name)
+    equi_trr = GRO_EQUILIBRIUM_REV_FBB.output[0]
+    equi_tpr = GRO_EQUILIBRIUM_REV_FBB.output[1]
+    GRO_NON_EQUILIBRIUM_REV_FBB(equi_trr,equi_tpr,newtop, nonequil, name)
+
+    emit:
+    reverse =  GRO_NON_EQUILIBRIUM_REV_FBB.out[0].collect()
+    name = GRO_NON_EQUILIBRIUM_REV_FBB.out[1]
+}
+
+//workflow that executes the whole free energy estimation process for the rosetta fbb folded state
+workflow free_energy_folded_fbb {
+    take:
+    ions_pdb
+    newtop
+    posre_itp
+    f_enmin
+    f_equil
+    f_npt
+    f_nonequil
+    name
+    r_enmin
+    r_equil
+    r_npt
+    r_nonequil
+
+    main:
+    free_energy_forward_fbb(ions_pdb, newtop, posre_itp, f_enmin, f_equil, f_npt, f_nonequil, name)
+    pmx_free_energy_reverse_fbb(ions_pdb, newtop, posre_itp, r_enmin, r_equil, r_npt, r_nonequil, name)
+    FEE_FBB(pmx_free_energy_forward.out.forward, pmx_free_energy_reverse.out.reverse, "folded", pmx_free_energy_forward.out.name)
+
+    emit:
+    FEE_FBB.out[0]
+}
+
+//workflow for free energy forward transition of the rosetta threaded mutated folded state
+workflow free_energy_forward_thr {
+    take:
+    ions_pdb
+    newtop
+    posre_itp
+    enmin
+    equil
+    npt
+    nonequil
+    name
+
+    main:
+    GRO_EQUILIBRIUM_FOR_THR(ions_pdb, newtop, posre_itp, enmin, equil, npt, name)
+    equi_trr = GRO_EQUILIBRIUM_FOR_THR.output[0]
+    equi_tpr = GRO_EQUILIBRIUM_FOR_THR.output[1]
+    name = GRO_EQUILIBRIUM_FOR_THR.output[4]
+    GRO_NON_EQUILIBRIUM_FOR_THR(equi_trr,equi_tpr,newtop, nonequil, name)
+
+    emit:
+    forward = GRO_NON_EQUILIBRIUM_FOR_THR.out[0].collect()
+    name = GRO_NON_EQUILIBRIUM_FOR_THR.out[1]
+
+}
+
+//workflow for free energy reverse transition of the rosetta threaded mutated folded state
+workflow free_energy_reverse_thr {
+    take:
+    ions_pdb
+    newtop
+    posre_itp
+    enmin
+    equil
+    npt
+    nonequil
+    name
+
+    main:
+    GRO_EQUILIBRIUM_REV_THR(ions_pdb, newtop, posre_itp, enmin, equil, npt, name)
+    equi_trr = GRO_EQUILIBRIUM_REV_THR.output[0]
+    equi_tpr = GRO_EQUILIBRIUM_REV_THR.output[1]
+    GRO_NON_EQUILIBRIUM_REV_THR(equi_trr,equi_tpr,newtop, nonequil, name)
+
+    emit:
+    reverse =  GRO_NON_EQUILIBRIUM_REV_THR.out[0].collect()
+    name = GRO_NON_EQUILIBRIUM_REV_THR.out[1]
+}
+
+//workflow that executes the whole free energy estimation process for the rosetta threaded folded state
+workflow free_energy_folded_thr {
+    take:
+    ions_pdb
+    newtop
+    posre_itp
+    f_enmin
+    f_equil
+    f_npt
+    f_nonequil
+    name
+    r_enmin
+    r_equil
+    r_npt
+    r_nonequil
+
+    main:
+    free_energy_forward_thr(ions_pdb, newtop, posre_itp, f_enmin, f_equil, f_npt, f_nonequil, name)
+    pmx_free_energy_reverse(ions_pdb, newtop, posre_itp, r_enmin, r_equil, r_npt, r_nonequil, name)
+    FEE_THR(pmx_free_energy_forward.out.forward, pmx_free_energy_reverse.out.reverse, "folded", pmx_free_energy_forward.out.name)
+
+    emit:
+    FEE_THR.out[0]
 }
 
 
@@ -315,7 +481,7 @@ workflow {
         ions_pdb = GRO_PREP_MUTANT.output[5]
         posre_itp = GRO_PREP_MUTANT.output[6]
         mutation_name = GRO_PREP_MUTANT.output[7]
-        free_energy_folded(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp,mutation_name, params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
+        free_energy_folded_fbb(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp,mutation_name, params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
         
     }
 
@@ -329,7 +495,7 @@ workflow {
         ions_pdb = GRO_PREP_MUTANT.output[5]
         posre_itp = GRO_PREP_MUTANT.output[6]
         mutation_name = GRO_PREP_MUTANT.output[7]
-        free_energy_folded(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp,mutation_name,params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
+        free_energy_folded_thr(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp,mutation_name,params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
     }
 
     if (params.maestro == true) {
@@ -339,18 +505,18 @@ workflow {
 
     if (params.gromacs == true) {
         if (params.rosetta_fbb == true) {
-            GROMACS_MT_FBB(rosy_fbb.out.pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
-            GROMACS_WT(params.pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
+            GROMACS_MT_FBB(rosy_fbb.out.pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9, params.G10)
+            GROMACS_WT(params.pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9, params.G10)
         }
         if (params.rosetta_threader == true) {
-            GROMACS_MT_THREADER(rosy_threader.out.pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
-            GROMACS_WT(params.pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
+            GROMACS_MT_THREADER(rosy_threader.out.pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9, params.G10)
+            GROMACS_WT(params.pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9, params.G10)
         }
         if ((params.rosetta_threader == false && params.rosetta_threader == false)||(params.rosetta_threader == true || params.rosetta_threader == true)) {
-            GROMACS_WT(params.pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
+            GROMACS_WT(params.pdb, params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9, params.G10)
         }
         if (params.pmx == true) {
-            GROMACS_MT_PMX(PMX_PREP_MUTANT.output[6], params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9)
+            GROMACS_MT_PMX(PMX_PREP_MUTANT.output[6],PMX_PREP_MUTANT.output[1],PMX_PREP_MUTANT.output[7], params.ions_mdp, params.em_mdp, params.nvt_mdp, params.npt_mdp, params.md_mdp, params.G1, params.G2, params.G3, params.G4, params.G5, params.G6,params.G7, params.G8, params.G9, params.G10)
         }
     }
 

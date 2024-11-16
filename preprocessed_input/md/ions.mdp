@@ -21,3 +21,4 @@ constraints 		= h-bonds
 cutoff-scheme 		= Verlet	;Generate a pair list with buffering.The buffer size is automatically set based on verlet-buffer-tolerance, unless this is set to -1, in which case rlist will be used.
 rlist 			= 1.2		;(1) [nm] Cut-off distance for the short-range neighbor list
 
+
