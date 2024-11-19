@@ -76,5 +76,5 @@ xml_template = '''<?xml version="1.0"?>
     </ddg_council>
 </sef>'''
 template = Template(xml_template)
-xml = template.substitute(pdb_path = pdb_path, prefix = prefix, postfix = postfix, tolower = tolower, bu = bu)
+xml = template.substitute(pdb_path = pdb_path, prefix = prefix, postfix = postfix, tolower = tolower, toupper = toupper, bu = bu)
 print(xml)

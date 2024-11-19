@@ -45,8 +45,9 @@ process GROMACS_MT_PMX {
 	val G10
 
 	output:
-	path '*_processed.gro'
-	path '*.top'
+	path '*.gro'
+	path '*.tpr'
+	path "${topol}"
 	path '*_box.gro'
 	path '*_solve.gro'
 	path '*_ions.tpr'
@@ -594,14 +595,14 @@ process GRO_PREP_MUTANT {
 		value containing index and mutant for naming further in the workflow
 
 */
-	publishDir "${params.pub_dir}/gro_preparation_rosetta/${index}_${mutant}", mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/gro_preparation_rosetta/${mutation}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
-	tag "${index}_${mutant}"
+	tag "${mutation}"
 
 
 	input:
 	path pdb
-	tuple val(index), val(mutant)
+	val mutation
 	val ff_name
 	path genion
 
@@ -613,11 +614,11 @@ process GRO_PREP_MUTANT {
 	path "genion.tpr"
 	path "ions.pdb"
 	path "posre.itp"
-	val "${index}_${mutant}"
+	val "${mutation}"
 
 	script:
 	"""
-	gmx_mpi pdb2gmx -f ${pdb} -o conf.pdb -p topol.top -ff ${ff_name} -water tip3p
+	gmx_mpi pdb2gmx -f ${pdb} -o conf.pdb -p topol.top -ff ${ff_name} -water tip3p -ignh
 	gmx_mpi editconf -f conf.pdb -o box.pdb -bt dodecahedron -d 1.0
 	gmx_mpi solvate -cp box -cs spc216 -p topol -o water.pdb
 	gmx_mpi grompp -f ${genion} -c water.pdb -p topol.top -o genion.tpr
@@ -748,7 +749,7 @@ process GRO_EQUILIBRIUM {
 	publishDir "${params.pub_dir}/gro_preparation/equilibrium/${name}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	tag "${name}"
-	memory '1GB'
+	memory '12GB'
 	cpus '12'
 	time '3d'
 
@@ -803,7 +804,7 @@ process GRO_EQUILIBRIUM_UNFOLDED {
 	publishDir "${params.pub_dir}/gro_preparation/equilibrium_unfolded/${name}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	tag "${name}"
-	memory '1GB'
+	memory '32GB'
 	cpus '12'
 	time '3d'
 
@@ -859,7 +860,7 @@ process GRO_NON_EQUILIBRIUM_UNFOLDED {
 	scratch 'scratch'
 	stageInMode 'copy'
 	tag "${name}"
-	memory '1GB'
+	memory '12GB'
 	cpus '12'
 	time '3d'
 
@@ -916,7 +917,7 @@ process GRO_NON_EQUILIBRIUM {
 	scratch 'scratch'
 	stageInMode 'copy'
 	tag "${name}"
-	memory '1GB'
+	memory '12GB'
 	cpus '12'
 	time '3d'
 
@@ -926,6 +927,7 @@ process GRO_NON_EQUILIBRIUM {
 	path topol
 	path non_equil
 	val name
+	val type
 
 	output:
 	path "dgdl*", emit: dgdlFiles
@@ -944,8 +946,8 @@ process GRO_NON_EQUILIBRIUM {
 	for i in \$( seq 1 50 ); do
 		cd frame\$i;
 		gmx_mpi grompp -f ../${non_equil} -c frame.gro -p ../${topol} -o nonequil.tpr -maxwarn 1;
-		gmx_mpi mdrun -s nonequil.tpr -deffnm nonequil -dhdl dgdl\$i.xvg -v;
-		mv dgdl\$i.xvg ../;
+		gmx_mpi mdrun -s nonequil.tpr -deffnm nonequil -dhdl dgdl_${type}\$i.xvg -v;
+		mv dgdl_${type}\$i.xvg ../;
 		cd ../;
 	done
 	"""

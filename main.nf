@@ -123,7 +123,7 @@ workflow rosy_threader {
     mutation
 
     main:
-    xml = CREATEXML(params.name, cut_sequence, params.sequence_mode, params.pack_round, params.skip_unknown_mutant, params.scorefxn, start_position, params.neighbor_dis, params.pack_neighbors, params.weights, params.template)
+    xml = CREATEXML(params.name, cut_sequence, params.pack_round, params.sequence_mode, params.skip_unknown_mutant, params.scorefxn, start_position, params.neighbor_dis, params.pack_neighbors, params.weights, params.template)
     ROSETTA_THREADER(pdb, xml, mutation)
 
     emit:
@@ -162,7 +162,7 @@ workflow pmx_free_energy_forward {
     equi_trr = GRO_EQUILIBRIUM_FOR.output[0]
     equi_tpr = GRO_EQUILIBRIUM_FOR.output[1]
     name = GRO_EQUILIBRIUM_FOR.output[4]
-    GRO_NON_EQUILIBRIUM_FOR(equi_trr,equi_tpr,newtop, nonequil, name)
+    GRO_NON_EQUILIBRIUM_FOR(equi_trr,equi_tpr,newtop, nonequil, name, "for")
 
     emit:
     forward = GRO_NON_EQUILIBRIUM_FOR.out[0].collect()
@@ -215,7 +215,7 @@ workflow pmx_free_energy_reverse {
     GRO_EQUILIBRIUM_REV(ions_pdb, newtop, posre_itp, enmin, equil, npt, name)
     equi_trr = GRO_EQUILIBRIUM_REV.output[0]
     equi_tpr = GRO_EQUILIBRIUM_REV.output[1]
-    GRO_NON_EQUILIBRIUM_REV(equi_trr,equi_tpr,newtop, nonequil, name)
+    GRO_NON_EQUILIBRIUM_REV(equi_trr,equi_tpr,newtop, nonequil, name, "rev")
 
     emit:
     reverse =  GRO_NON_EQUILIBRIUM_REV.out[0].collect()
@@ -318,7 +318,7 @@ workflow free_energy_forward_fbb {
     equi_trr = GRO_EQUILIBRIUM_FOR_FBB.output[0]
     equi_tpr = GRO_EQUILIBRIUM_FOR_FBB.output[1]
     name = GRO_EQUILIBRIUM_FOR_FBB.output[4]
-    GRO_NON_EQUILIBRIUM_FOR_FBB(equi_trr,equi_tpr,newtop, nonequil, name)
+    GRO_NON_EQUILIBRIUM_FOR_FBB(equi_trr,equi_tpr,newtop, nonequil, name, "for")
 
     emit:
     forward = GRO_NON_EQUILIBRIUM_FOR_FBB.out[0].collect()
@@ -342,7 +342,7 @@ workflow free_energy_reverse_fbb {
     GRO_EQUILIBRIUM_REV_FBB(ions_pdb, newtop, posre_itp, enmin, equil, npt, name)
     equi_trr = GRO_EQUILIBRIUM_REV_FBB.output[0]
     equi_tpr = GRO_EQUILIBRIUM_REV_FBB.output[1]
-    GRO_NON_EQUILIBRIUM_REV_FBB(equi_trr,equi_tpr,newtop, nonequil, name)
+    GRO_NON_EQUILIBRIUM_REV_FBB(equi_trr,equi_tpr,newtop, nonequil, name, "rev")
 
     emit:
     reverse =  GRO_NON_EQUILIBRIUM_REV_FBB.out[0].collect()
@@ -391,7 +391,7 @@ workflow free_energy_forward_thr {
     equi_trr = GRO_EQUILIBRIUM_FOR_THR.output[0]
     equi_tpr = GRO_EQUILIBRIUM_FOR_THR.output[1]
     name = GRO_EQUILIBRIUM_FOR_THR.output[4]
-    GRO_NON_EQUILIBRIUM_FOR_THR(equi_trr,equi_tpr,newtop, nonequil, name)
+    GRO_NON_EQUILIBRIUM_FOR_THR(equi_trr,equi_tpr,newtop, nonequil, name, "for")
 
     emit:
     forward = GRO_NON_EQUILIBRIUM_FOR_THR.out[0].collect()
@@ -415,7 +415,7 @@ workflow free_energy_reverse_thr {
     GRO_EQUILIBRIUM_REV_THR(ions_pdb, newtop, posre_itp, enmin, equil, npt, name)
     equi_trr = GRO_EQUILIBRIUM_REV_THR.output[0]
     equi_tpr = GRO_EQUILIBRIUM_REV_THR.output[1]
-    GRO_NON_EQUILIBRIUM_REV_THR(equi_trr,equi_tpr,newtop, nonequil, name)
+    GRO_NON_EQUILIBRIUM_REV_THR(equi_trr,equi_tpr,newtop, nonequil, name, "rev")
 
     emit:
     reverse =  GRO_NON_EQUILIBRIUM_REV_THR.out[0].collect()
@@ -482,7 +482,7 @@ workflow {
         ions_pdb = GRO_PREP_MUTANT_FBB.output[5]
         posre_itp = GRO_PREP_MUTANT_FBB.output[6]
         mutation_name = GRO_PREP_MUTANT_FBB.output[7]
-        free_energy_folded_fbb(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp,mutation_name, params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
+        free_energy_folded_fbb(ions_pdb, topol, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp,mutation_name, params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
         
     }
 
@@ -491,12 +491,12 @@ workflow {
         rosy_threader_input(params.sequence, mutation)
         rosy_threader(params.list_of_structs,rosy_threader_input.out.cut_seq,rosy_threader_input.out.start_position, mutation)
 
-        GRO_PREP_MUTANT_THR(rosy_threader.out.pdb, rosy_threader.out.mutation_name)
+        GRO_PREP_MUTANT_THR(rosy_threader.out.pdb, rosy_threader.out.mutation_name, params.ff_name, params.genion_mdp)
         topol = GRO_PREP_MUTANT_THR.output[0]
         ions_pdb = GRO_PREP_MUTANT_THR.output[5]
         posre_itp = GRO_PREP_MUTANT_THR.output[6]
         mutation_name = GRO_PREP_MUTANT_THR.output[7]
-        free_energy_folded_thr(ions_pdb, newtop, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp,mutation_name,params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
+        free_energy_folded_thr(ions_pdb, topol, posre_itp, params.f_enmin_mdp, params.f_equil_mdp, params.f_npt_mdp, params.f_nonequil_mdp,mutation_name,params.r_enmin_mdp, params.r_equil_mdp, params.r_npt_mdp, params.r_nonequil_mdp)
     }
 
     if (params.maestro == true) {

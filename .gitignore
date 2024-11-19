@@ -5,3 +5,6 @@ Q53YK7.txt
 output.xml
 .nextflow*
 .nextflow/*
+work/conda
+work/maestro
+work/singularity
