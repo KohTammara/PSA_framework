@@ -11,7 +11,7 @@ Instructions on installing Nextflow and its dependancies can be found [here](htt
 *Note* This framework makes use of Nextflow versions 23.10.1 and up.
 
 ### Applications (Rosetta, Maestro, pmx, GROMACS)
-All applications are containerised and used within the framework. The containerisation recipes can be found in the *Singularity_definition_files* directory. 
+All applications are containerised and used within the framework. The containerisation recipes can be found in the *Singularity_definition_files* directory. The dependancies of each application is installed within the definition files.
 *Note* Rosettas suite download can only occur after obtaining a license. See [here](https://docs.rosettacommons.org/demos/latest/tutorials/install_build/install_build) for more information.
 
 SingularityCE was used to build the containers, however [Apptainer](https://apptainer.org/docs/user/main/introduction.html) can also be used for the creation and execution of these containers.
@@ -42,5 +42,5 @@ sudo apt-get install -y \
    zlib1g-dev
 ```
 GO is also required as a dependancie and the latest version can be downloaded through their [official website](https://golang.org/dl/).
-A [script](GO_Singularityce_latest_2023_10_18) was created for the purpose of installing both GO and singularity, the versions on this script can be changed to later versions.
+A [script](PSA_framework/GO_Singularityce_latest_2023_10_18) was created for the purpose of installing both GO and singularity, the versions on this script can be changed to later versions.
 More information on installing Singularity can be found on their [official website](https://docs.sylabs.io/guides/main/user-guide/quick_start.html#quick-installation-steps).
