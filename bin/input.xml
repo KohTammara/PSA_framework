@@ -1,8 +1,0 @@
-<InputData>
-    <MOVERS>
-        <SimpleThreadingMover name="threader" pack_neighbors="false" start_position="1" thread_sequence="PKTNMKHMAGAAAAGAVVGGLGGYMLGSAMSRPIIHFGSDYEDRYYRENMHRYPNQVYYRPMDEYSNQNNFVHDCVNITIKQHTVTTTTKGENFTETDVKMAERVVEQMCITQYERESQAYYQRG" scorefxn="r15_cart"/>
-    </MOVERS>	
-    <SCOREFXNS>
-        <ScoreFunction name="r15_cart" weights="ref2015"> </ScoreFunction>
-    </SCOREFXNS>
-</InputData>
