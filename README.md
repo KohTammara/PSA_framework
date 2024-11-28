@@ -71,7 +71,8 @@ The [nextflow configuration](nextflow.config) file will have to be edited to sui
 #### GROMACS
 
 GROMACS requires a protein structure file as well as the molecular dynamics parameter (MDP) files. The PDB file can be obtained from the Protein Data Bank, and the MDP files can be found in the preproccessed_input firectory. The MDP files for free energy simulations are found in the preprocessed_input/folded_md, which consists of MDP files for the forwards and reverse transitions. The preprocessed_input/md directory houses the MDP files used for a standard MD simulation. The file structure of the MDP directories and files can be seen below:
-**Note** The MDP file used for ion generation for the free energy simulations is simply foound within the preprocessed_input directory as the file is used for both folded and unfolded free energy simulations.
+
+**Note** The MDP file used for ion generation for the free energy simulations is simply found within the preprocessed_input directory as the file is used for both folded and unfolded free energy simulations. The MDP parameters provided in these files are also specifically for the CHARMM36m forcefield.
 
 ```bash
 preprocessed_input/
@@ -124,6 +125,7 @@ Mutant  index
 <mutant residue>    <index of native residue relative to stucture>
 ```
 
+The indexing for the PDB structure 1QLX as well as the available forcefield names can be found in [pmx_info.txt](pmx_info.txt)
 #### Rosetta
 
 Specific input files are required for each Rosetta application. The same PDB file is used for both applications and is supplied through the parameter `list_of_structs` in [params.json](params.json).
@@ -156,3 +158,9 @@ E.g M205.A{A}
 
 The output of the individual applications are used for free energy simulations to estimate a ddG value in order to assess the effect on stability a mutation has.
 Thus the final output from the framework, consists of the output of each application as well as a text file containing the differences in free energies produced by the free energy simulation.
+
+### Limitations
+
+The capabilities of this framework is limited to that of the applications used, to that effect, pmx is limited to mutations that are not charged and does not include Proline, Glycine and Cysteine.
+
+Alongside that, the GROMACS command, `genion`, cannot neutralise both states of the tripeptides obtained from the pmx tripeptide database, which causes errors along the simulation process. 
