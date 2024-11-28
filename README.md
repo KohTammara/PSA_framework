@@ -62,6 +62,8 @@ The command to execute the framework is as follows:
 Various input files are required for executing this framework depending on the applications used. Each application has its own set of input files.
 This framework also makes use of a configuration file as well as a paramete file to provide Nextflow with the required input files.
 
+An example set of input files is available for the mutant M205A for the human Prion protein at ~/test/MUTANTS/M205A_example.
+
 #### Nextflow
 
 The [nextflow configuration](nextflow.config) file will have to be edited to suit the paths of your system, i.e. parts of the absolute paths defined with the nextflow.config file will have to be changed to suit the paths within the host executing the framework. The [params.json](params.json) file would also need to be populated according to the location as well as name of the input files used for the applications within the framework.
@@ -124,8 +126,33 @@ Mutant  index
 
 #### Rosetta
 
-Specific input files are required for each Rosetta application.
+Specific input files are required for each Rosetta application. The same PDB file is used for both applications and is supplied through the parameter `list_of_structs` in [params.json](params.json).
+**Note** The PDB file used for rosetta applications does not require preprocessing for forcefield like in the case of pmx.
 
 ##### Fixed Backbone application
 
+This application requires a textfile in the format of Rosettas resfile. More information on the syntax and commands for the resfile can be found in the [Rosetta Documentation](https://docs.rosettacommons.org/docs/latest/rosetta_basics/file_types/resfiles).
 
+To understand how this application works, one can have a look at the [demo](https://docs.rosettacommons.org/demos/latest/public/fixbb_design/README) for Rosettas fixed backbone application and more information about the application itself and how it works can be found [here](https://docs.rosettacommons.org/docs/latest/application_documentation/design/fixbb).
+
+**Note** The usage of this application within this framework has been tested for the simplest usage of mutating a single structure.
+
+##### Simple Threading Mover
+
+This threading application makes use of Rosettas [Movers](https://docs.rosettacommons.org/docs/latest/rosetta_basics/structural_concepts/Mover), and threads a mutated sequence into a template structure.
+A JSON file is required as input for this application, and it contains the mutant, a start and end position. The positions indicate what portion of the given sequence will be threaded.
+
+#### Meastro
+
+Meastro requires as input a text file which provides the path to the PDB file that will be used as well as the mutation in the following format:
+
+```
+<native amino acid><index of native residue>.<chain><{mutant amino acid}>
+```
+
+E.g M205.A{A}
+
+### Output
+
+The output of the individual applications are used for free energy simulations to estimate a ddG value in order to assess the effect on stability a mutation has.
+Thus the final output from the framework, consists of the output of each application as well as a text file containing the differences in free energies produced by the free energy simulation.
