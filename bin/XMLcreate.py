@@ -29,7 +29,7 @@ if args.sequence != "NONE":
     sequence = 'thread_sequence="'+ args.sequence +'" ' 
     mover = mover+sequence
 if args.start_pos != "NONE":
-    name = 'start_position="'+ args.name +'" ' 
+    name = 'start_position="'+ args.start_pos +'" ' 
     mover = mover+name
 if args.pack_neighbors != "NONE":
     pack_neighbors = 'pack_neighbors="'+ args.pack_neighbors +'" ' 
@@ -57,6 +57,8 @@ if args.weight != "NONE":
     score_name = 'name="'+args.scorefxn +'" ' 
     score = score + score_name + weight + '/>'
 
+protocol = '<Add mover_name="'+args.name+'"/>'
+
 #using lxml instead of xml preserved the comments
 #adding the encoding when the file is opened and written is needed to avoid a charmap error
 with open(args.template, encoding="utf8") as f:
@@ -66,6 +68,7 @@ with open(args.template, encoding="utf8") as f:
     try:
       elem.text = elem.text.replace('threader', mover)
       elem.text = elem.text.replace('score_input', score)
+      elem.text = elem.text.replace('protocol_input', protocol)
     except AttributeError:
       pass
 # Serialize the XML tree to a string without escaping special characters
