@@ -2,4 +2,4 @@
 NATAA
 
 start
-205 A PIKAA A
+127 A PIKAA V

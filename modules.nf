@@ -20,9 +20,11 @@ process GROMACS_MT_PMX {
 		All processed output files such as .gro/.tpr/.top files created from gmx_mpi commands.
 		All xvg files (potential/temperature/density/rmsd/gyration)
 */
-	publishDir "${params.pub_dir}/GROMACS_FBB_mutant", mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/GROMACS_pmx_mutant", mode: 'copy', overwrite: false
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 	tag "${pdb_file}"
+	memory '8GB'
+	cpus '8'
 
 	input:
 	path pdb_file
@@ -90,7 +92,7 @@ process STANDARD_MD {
 		All processed output files such as .gro/.tpr/.top files created from gmx_mpi commands.
 		All xvg files (potential/temperature/density/rmsd/gyration)
 */
-	publishDir "${params.pub_dir}/GROMACS_FBB_mutant", mode: 'copy', overwrite: false
+	publishDir "${params.pub_dir}/GROMACS_STD_mutant/", mode: 'copy', overwrite: false
 	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
 	tag "${pdb_file}"
 
@@ -150,145 +152,6 @@ process STANDARD_MD {
 
 }
 
-process GROMACS_MT_THREADER {
-/*
-	Classical MD simulation of mutant folded structure (Threaded structure with mutated sequence using Rosetta simple threader mover). 
-	Input : 
-		MDP files for energy minisation (em_mdp), ion generation (ions_mdp),
-		NVT (nvt_em), NPT (npt_em), production MD (md_mdp,
-		the structure file (pdb_file), and the various selections from input prompts 
-		(details of the selection options can be found in GROMACS_processes_info.txt in the dirrectory containing this file)
-	Output :
-		All processed output files such as .gro/.tpr/.top files created from gmx_mpi commands.
-		All xvg files (potential/temperature/density/rmsd/gyration)
-*/
-	publishDir "${params.pub_dir}/GROMACS_THREADER_mutant", mode: 'copy', overwrite: false
-	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
-	tag "${pdb_file}"
-
-	input:
-	path pdb_file
-	path ions_mdp
-	path em_mdp
-	path nvt_mdp
-	path npt_mdp
-	path md_mdp
-	val G1
-	val G2
-	val G3
-	val G4
-	val G5
-	val G6
-	val G7
-	val G8
-	val G9
-
-	output:
-	path '*_processed.gro'
-	path '*.top'
-	path '*_box.gro'
-	path '*_solve.gro'
-	path '*_ions.tpr'
-	path '*_em.tpr'
-	path '*_nvt.tpr'
-
-	script:
-	"""
-	grep -v HOH ${pdb_file} > ${pdb_file}_clean.pdb
-	echo ${G1} | gmx_mpi pdb2gmx -f ${pdb_file}_clean.pdb -o ${pdb_file}_processed.gro -water spce -ignh
-	gmx_mpi editconf -f ${pdb_file}_processed.gro -o ${pdb_file}_box.gro -c -d 1.0 -bt dodecahedron
-	gmx_mpi solvate -cp ${pdb_file}_box.gro -cs spc216.gro -o  ${pdb_file}_solve.gro -p topol.top
-	gmx_mpi grompp -f ${ions_mdp} -c ${pdb_file}_solve.gro -p topol.top -o ${pdb_file}_ions.tpr -maxwarn 1
-	echo ${G2} |gmx_mpi genion -s ${pdb_file}_ions.tpr -o ${pdb_file}_solve_ions.gro -p topol.top -pname SOD -nname CLA -neutral
-	gmx_mpi grompp -f ${em_mdp} -c ${pdb_file}_solve_ions.gro -p topol.top -o ${pdb_file}_em.tpr
-	gmx_mpi mdrun -v -deffnm ${pdb_file}_em
-	echo ${G3}|gmx_mpi energy -f ${pdb_file}_em.edr -o ${pdb_file}_potential.xvg
-	gmx_mpi grompp -f ${nvt_mdp} -c ${pdb_file}_em.gro -r ${pdb_file}_em.gro -p topol.top -o ${pdb_file}_nvt.tpr
-	gmx_mpi mdrun -deffnm ${pdb_file}_nvt
-	echo ${G4}|gmx_mpi energy -f ${pdb_file}_nvt.edr -o ${pdb_file}_temperature.xvg
-	gmx_mpi grompp -f ${npt_mdp} -c ${pdb_file}_nvt.gro -r ${pdb_file}_nvt.gro -t ${pdb_file}_nvt.cpt -p topol.top -o ${pdb_file}_npt.tpr
-	gmx_mpi mdrun -deffnm ${pdb_file}_npt
-	echo ${G5}|gmx_mpi energy -f ${pdb_file}_npt.edr -o ${pdb_file}_density.xvg
-	gmx_mpi grompp -f ${md_mdp} -c ${pdb_file}_npt.gro -t ${pdb_file}_npt.cpt -p topol.top -o ${pdb_file}_md_0_1.tpr
-	gmx_mpi mdrun -deffnm ${pdb_file}_md_0_1
-	echo ${G6} |gmx_mpi trjconv -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1.xtc -o ${pdb_file}_md_0_1_noPBC.xtc -pbc mol -center
-	echo ${G7} |gmx_mpi rms -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_rmsd.xvg -tu ns
-	echo ${G8} |gmx_mpi rms -s ${pdb_file}_em.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_rmsd_xtal.xvg -tu ns
-	echo ${G9} |gmx_mpi gyrate -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_gyrate.xvg
-	"""
-
-
-}
-
-process GROMACS_WT {
-/*
-	Classical MD simulation of Native folded structure. 
-	Input : 
-		MDP files for energy minisation (em_mdp), ion generation (ions_mdp),
-		NVT (nvt_em), NPT (npt_em), production MD (md_mdp,
-		the structure file (pdb_file), and the various selections from input prompts 
-		(details of the selection options can be found in GROMACS_processes_info.txt in the dirrectory containing this file)
-	Output :
-		All processed output files such as .gro/.tpr/.top files created from gmx_mpi commands.
-		All xvg files (potential/temperature/density/rmsd/gyration)
-*/
-	publishDir "${params.pub_dir}/GROMACS_wildtype/${pdb_file.baseName}", mode: 'copy', overwrite: false
-	container "${simgDir}/gromacs2023_2_mpi_charmm36m.sif"
-
-	input:
-	path pdb_file
-	path ions_mdp
-	path em_mdp
-	path nvt_mdp
-	path npt_mdp
-	path md_mdp
-	val G1
-	val G2
-	val G3
-	val G4
-	val G5
-	val G6
-	val G7
-	val G8
-	val G9
-
-	output:
-	path '*_processed.gro'
-	path '*.top'
-	path '*_box.gro'
-	path '*_solve.gro'
-	path '*_ions.tpr'
-	path '*_em.tpr'
-	path '*_nvt.tpr'
-
-	script:
-	"""
-	grep -v HOH ${pdb_file} > ${pdb_file}_clean.pdb
-	echo ${G1} | gmx_mpi pdb2gmx -f ${pdb_file}_clean.pdb -o ${pdb_file}_processed.gro -water spce -ignh
-	gmx_mpi editconf -f ${pdb_file}_processed.gro -o ${pdb_file}_box.gro -c -d 1.0 -bt dodecahedron
-	gmx_mpi solvate -cp ${pdb_file}_box.gro -cs spc216.gro -o  ${pdb_file}_solve.gro -p topol.top
-	gmx_mpi grompp -f ${ions_mdp} -c ${pdb_file}_solve.gro -p topol.top -o ${pdb_file}_ions.tpr -maxwarn 1
-	echo ${G2} |gmx_mpi genion -s ${pdb_file}_ions.tpr -o ${pdb_file}_solve_ions.gro -p topol.top -pname NA -nname CL -neutral
-	gmx_mpi grompp -f ${em_mdp} -c ${pdb_file}_solve_ions.gro -p topol.top -o ${pdb_file}_em.tpr
-	gmx_mpi mdrun -v -deffnm ${pdb_file}_em
-	echo ${G3}|gmx_mpi energy -f ${pdb_file}_em.edr -o ${pdb_file}_potential.xvg
-	gmx_mpi grompp -f ${nvt_mdp} -c ${pdb_file}_em.gro -r ${pdb_file}_em.gro -p topol.top -o ${pdb_file}_nvt.tpr
-	gmx_mpi mdrun -deffnm ${pdb_file}_nvt
-	echo ${G4}|gmx_mpi energy -f ${pdb_file}_nvt.edr -o ${pdb_file}_temperature.xvg
-	gmx_mpi grompp -f ${npt_mdp} -c ${pdb_file}_nvt.gro -r ${pdb_file}_nvt.gro -t ${pdb_file}_nvt.cpt -p topol.top -o ${pdb_file}_npt.tpr
-	gmx_mpi mdrun -deffnm ${pdb_file}_npt
-	echo ${G5}|gmx_mpi energy -f ${pdb_file}_npt.edr -o ${pdb_file}_density.xvg
-	gmx_mpi grompp -f ${md_mdp} -c ${pdb_file}_npt.gro -t ${pdb_file}_npt.cpt -p topol.top -o ${pdb_file}_md_0_1.tpr
-	gmx_mpi mdrun -deffnm ${pdb_file}_md_0_1
-	echo ${G6} |gmx_mpi trjconv -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1.xtc -o ${pdb_file}_md_0_1_noPBC.xtc -pbc mol -center
-	echo ${G7} |gmx_mpi rms -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_rmsd.xvg -tu ns
-	echo ${G8} |gmx_mpi rms -s ${pdb_file}_em.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_rmsd_xtal.xvg -tu ns
-	echo ${G9} |gmx_mpi gyrate -s ${pdb_file}_md_0_1.tpr -f ${pdb_file}_md_0_1_noPBC.xtc -o ${pdb_file}_gyrate.xvg
-	"""
-
-
-}
-
 
 process MAESTRO_XML {
 /*
@@ -300,6 +163,10 @@ process MAESTRO_XML {
 	Output :
 		Maestro configuration file.
 */
+	publishDir "${params.pub_dir}/Maestro_xml", mode: 'copy', overwrite: false
+	memory '100MB'
+	cpus '4'
+
 	input:
 	path effiles_dir
 	path council_dir
@@ -330,8 +197,8 @@ process MAESTRO {
 		CSV containing mutant free energy and scores in format:
 		structure<TAB>seqlength<TAB>mutation<TAB>score<TAB>delta_score<TAB>ddG<TAB>ddG_confidence
 */
-	publishDir "${params.pub_dir}/Maestro/out", mode: 'copy', overwrite: true, enabled: true
-	cpus 6
+	publishDir "${params.pub_dir}/Maestro/out", mode: 'copy', overwrite: false
+	cpus '4'
 	container "${simgDir}/maestro.sif"
 	tag "${mutation}"
 
@@ -362,6 +229,9 @@ process CUTANDMUTATE {
 		Fasta file containing new cut and mutated sequence.
 		Start position of sequence taken from mutation information.
 */
+	publishDir "${params.pub_dir}/cut_and_mutate_sequence", mode: 'copy', overwrite: false
+	memory '100MB'
+	cpus '4'
 	tag "${mutation_info}"
 
     input:
@@ -370,10 +240,10 @@ process CUTANDMUTATE {
  
     output:
     path 'new_seq.fasta'
-	val 'start_position.txt'
+	val '1'
  
     """
-    mutateAndCut.py -seq "${sequence}" -mutation "${mutation_info}" > start_position.txt
+    mutateAndCut.py -seq "${sequence}" -mutation "${mutation_info}" 
     """
 }
 
@@ -389,7 +259,16 @@ process CREATEXML {
 	Output :
 		XML file to execute the Rosetta SimpleThreadingMover 
 */
+	publishDir "${params.pub_dir}/Rosetta_threader_xml", mode: 'copy', overwrite: false
+	memory '100MB'
+	cpus '4'
 	conda 'env.yaml'
+	// beforeScript "/apps2/mambaforge/bin/conda env create --file /home/21616019/git_projects/v5/PSA_framework/env.yaml"
+	// beforeScript "/apps2/mambaforge/bin/conda init"
+	// beforeScript "/apps2/mambaforge/bin/conda activate my-env-1"
+	// beforeScript 'alias python=/apps2/mambaforge/envs/my-env-1/bin/python3'
+	// afterScript "/apps2/mambaforge/bin/conda deactivate"
+
 
 	input:
 	val name
@@ -398,7 +277,7 @@ process CREATEXML {
 	val seq_mode
 	val skip_unknown_mutant
 	val scorefxn
-	val start_pos
+	path start_pos
 	val neighbor_dis
 	val pack_neighbors
 	val weight
@@ -409,7 +288,6 @@ process CREATEXML {
 
 	"""
 	sequence_content=\$(cat ${sequence})
-
 	XMLcreate.py -name ${name} -sequence "\${sequence_content}" -start_pos ${start_pos} -pack_neighbors ${pack_neighbors} -neighbor_dis ${neighbor_dis} -scorefxn ${scorefxn} -skip_unknown_mutant ${skip_unknown_mutant} -pack_rounds ${pack_round} -sequence_mode ${seq_mode} -weight ${weight} -template ${template}
 	"""
 }
@@ -428,6 +306,8 @@ process ROSETTA_THREADER {
 */
 	publishDir "${params.pub_dir}/Rosetta_threader/${mutation.baseName}", mode: 'copy', overwrite: false
 	container "${simgDir}/rosetta_23_45_updated_03.sif"
+	memory '1GB'
+	cpus '8'
 	tag "${mutation.baseName}"
 
 	input:
@@ -446,24 +326,6 @@ process ROSETTA_THREADER {
 	"""
 }
 
-process SPLITPDB {
-    input:
-    path list_of_structs
-
-    output:
-    path "split_chunks/*"
-
-    script:
-    """
-    # Create a directory to store split chunks
-    mkdir -p split_chunks
-    
-    # Read each line from the input file and split into individual chunks
-    cat ${list_of_structs} | awk '{print > "split_chunks/chunk_" NR}'
-    """
-    
-    
-}
 
 process ROSETTA_FIXBB {
 /*
@@ -480,6 +342,8 @@ process ROSETTA_FIXBB {
 	publishDir "${params.pub_dir}/Rosetta_FixBB/${res_file.baseName}", mode: 'copy', overwrite: false
 	container "${simgDir}/rosetta_23_45_updated_03.sif"
 	tag "${res_file.baseName}"
+	memory '1GB'
+	cpus '8'
 	
 	input:
 	path pdb_file
@@ -522,6 +386,8 @@ process PMX_PREP_MUTANT {
 	publishDir "${params.pub_dir}/pmx/preparation/${index}_${mutant}", mode: 'copy', overwrite: false
 	container "${simgDir}/gro_pmx_2023.sif"
 	tag "${index}_${mutant}"
+	memory '1GB'
+	cpus '8'
 
 	input:
 	path pdb
@@ -768,6 +634,7 @@ process GRO_EQUILIBRIUM {
 	path "enmin.tpr"
 	path "npt.tpr"
 	val "${name}"
+	path "${topol}"
 
 	script:
 	"""

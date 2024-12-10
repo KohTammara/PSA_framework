@@ -162,7 +162,8 @@ workflow pmx_free_energy_forward {
     equi_trr = GRO_EQUILIBRIUM_FOR.output[0]
     equi_tpr = GRO_EQUILIBRIUM_FOR.output[1]
     name = GRO_EQUILIBRIUM_FOR.output[4]
-    GRO_NON_EQUILIBRIUM_FOR(equi_trr,equi_tpr,newtop, nonequil, name, "for")
+    topol = GRO_EQUILIBRIUM_FOR.output[5]
+    GRO_NON_EQUILIBRIUM_FOR(equi_trr, equi_tpr, topol, nonequil, name, "for")
 
     emit:
     forward = GRO_NON_EQUILIBRIUM_FOR.out[0].collect()
@@ -215,7 +216,9 @@ workflow pmx_free_energy_reverse {
     GRO_EQUILIBRIUM_REV(ions_pdb, newtop, posre_itp, enmin, equil, npt, name)
     equi_trr = GRO_EQUILIBRIUM_REV.output[0]
     equi_tpr = GRO_EQUILIBRIUM_REV.output[1]
-    GRO_NON_EQUILIBRIUM_REV(equi_trr,equi_tpr,newtop, nonequil, name, "rev")
+    name = GRO_EQUILIBRIUM_REV.output[4]
+    topol = GRO_EQUILIBRIUM_REV.output[5]
+    GRO_NON_EQUILIBRIUM_REV(equi_trr, equi_tpr, topol, nonequil, name, "rev")
 
     emit:
     reverse =  GRO_NON_EQUILIBRIUM_REV.out[0].collect()
@@ -318,7 +321,8 @@ workflow free_energy_forward_fbb {
     equi_trr = GRO_EQUILIBRIUM_FOR_FBB.output[0]
     equi_tpr = GRO_EQUILIBRIUM_FOR_FBB.output[1]
     name = GRO_EQUILIBRIUM_FOR_FBB.output[4]
-    GRO_NON_EQUILIBRIUM_FOR_FBB(equi_trr,equi_tpr,newtop, nonequil, name, "for")
+    topol = GRO_EQUILIBRIUM_FOR_FBB.output[5]
+    GRO_NON_EQUILIBRIUM_FOR_FBB(equi_trr, equi_tpr, topol, nonequil, name, "for")
 
     emit:
     forward = GRO_NON_EQUILIBRIUM_FOR_FBB.out[0].collect()
@@ -342,7 +346,9 @@ workflow free_energy_reverse_fbb {
     GRO_EQUILIBRIUM_REV_FBB(ions_pdb, newtop, posre_itp, enmin, equil, npt, name)
     equi_trr = GRO_EQUILIBRIUM_REV_FBB.output[0]
     equi_tpr = GRO_EQUILIBRIUM_REV_FBB.output[1]
-    GRO_NON_EQUILIBRIUM_REV_FBB(equi_trr,equi_tpr,newtop, nonequil, name, "rev")
+    name = GRO_EQUILIBRIUM_REV_FBB.output[4]
+    topol = GRO_EQUILIBRIUM_REV_FBB.output[5]
+    GRO_NON_EQUILIBRIUM_REV_FBB(equi_trr, equi_tpr, topol, nonequil, name, "rev")
 
     emit:
     reverse =  GRO_NON_EQUILIBRIUM_REV_FBB.out[0].collect()
@@ -391,7 +397,8 @@ workflow free_energy_forward_thr {
     equi_trr = GRO_EQUILIBRIUM_FOR_THR.output[0]
     equi_tpr = GRO_EQUILIBRIUM_FOR_THR.output[1]
     name = GRO_EQUILIBRIUM_FOR_THR.output[4]
-    GRO_NON_EQUILIBRIUM_FOR_THR(equi_trr,equi_tpr,newtop, nonequil, name, "for")
+    topol = GRO_EQUILIBRIUM_FOR_THR.output[5]
+    GRO_NON_EQUILIBRIUM_FOR_THR(equi_trr, equi_tpr, topol nonequil, name, "for")
 
     emit:
     forward = GRO_NON_EQUILIBRIUM_FOR_THR.out[0].collect()
@@ -415,7 +422,9 @@ workflow free_energy_reverse_thr {
     GRO_EQUILIBRIUM_REV_THR(ions_pdb, newtop, posre_itp, enmin, equil, npt, name)
     equi_trr = GRO_EQUILIBRIUM_REV_THR.output[0]
     equi_tpr = GRO_EQUILIBRIUM_REV_THR.output[1]
-    GRO_NON_EQUILIBRIUM_REV_THR(equi_trr,equi_tpr,newtop, nonequil, name, "rev")
+    name = GRO_EQUILIBRIUM_REV_THR.output[4]
+    topol = GRO_EQUILIBRIUM_REV_THR.output[5]
+    GRO_NON_EQUILIBRIUM_REV_THR(equi_trr, equi_tpr, topol, nonequil, name, "rev")
 
     emit:
     reverse =  GRO_NON_EQUILIBRIUM_REV_THR.out[0].collect()

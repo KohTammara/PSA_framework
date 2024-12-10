@@ -45,6 +45,27 @@ GO is also required as a dependancy and the latest version can be downloaded thr
 A [script](GO_Singularityce_latest_2023_10_18.sh) was created for the purpose of installing both GO and singularity, the versions on this script can be changed to later versions.
 More information on installing Singularity can be found on the [SingularityCE official website](https://docs.sylabs.io/guides/main/user-guide/quick_start.html#quick-installation-steps).
 
+### Helper scripts
+
+A few python scripts were created for the purpose of preprocessing, i.e. handling input and creating additional required input files such as the XML files required for Maestro and Rosetta fixed backbone.
+These files can be found in the [bin](bin) directory and in the case of XMLcreate.py requires conda to create environments. Thus conda should be available on the host system. In the case of server execution, one can initialise conda within the .bashrc of a profile or call conda explicitly within the CREATEXML process with [modules.nf](modules.nf), the code required for this is already present within the XMLCREATE process and is commented out if not required. The code that explicitly calls conda is below:
+
+**Ensure that the path to conda is changed to where conda is available on the system that the framework is executed as well as the path tp env.yaml**
+
+```
+beforeScript "/apps2/mambaforge/bin/conda env create --file /home/21616019/git_projects/v5/PSA_framework/env.yaml"
+beforeScript "/apps2/mambaforge/bin/conda init"
+beforeScript "/apps2/mambaforge/bin/conda activate my-env-1"
+beforeScript 'alias python=/apps2/mambaforge/envs/my-env-1/bin/python3'
+afterScript "/apps2/mambaforge/bin/conda deactivate"
+```
+
+If the above code is used one should comment out the following line, vice versa:
+
+```
+conda 'env.yaml'
+```
+
 ## Usage
 
 ### Executing the framework
@@ -70,27 +91,20 @@ The [nextflow configuration](nextflow.config) file will have to be edited to sui
 
 #### GROMACS
 
-GROMACS requires a protein structure file as well as the molecular dynamics parameter (MDP) files. The PDB file can be obtained from the Protein Data Bank, and the MDP files can be found in the preproccessed_input firectory. The MDP files for free energy simulations are found in the preprocessed_input/folded_md, which consists of MDP files for the forwards and reverse transitions. The preprocessed_input/md directory houses the MDP files used for a standard MD simulation. The file structure of the MDP directories and files can be seen below:
+GROMACS requires a protein structure file as well as the molecular dynamics parameter (MDP) files. The PDB file can be obtained from the Protein Data Bank, and the MDP files can be found in the preproccessed_input firectory. The MDP files for free energy simulations of both the folded and unfolded states state are found in the ~/PSA_framework/preprocessed_input/ directory, which consists of MDP files for the forwards and reverse transformations. The file structure of the MDP directories and files can be seen below:
 
-**Note** The MDP file used for ion generation for the free energy simulations is simply found within the preprocessed_input directory as the file is used for both folded and unfolded free energy simulations. The MDP parameters provided in these files are also specifically for the CHARMM36m forcefield.
+**Note** The MDP parameters provided in these files are also specifically for the CHARMM36m forcefield.
 
 ```bash
 preprocessed_input/
-├── folded_md
-│   ├── forward
-│   │   ├── equil_md
-│   │   │   ├── f_enmin.mdp
-│   │   │   ├── f_equil.mdp
-│   │   │   └── f_npt.mdp
-│   │   └── nonequil_md
-│   │       └── f_nonequil.mdp
-│   └── reverse
-│       ├── equil_md
-│       │   ├── r_enmin.mdp
-│       │   ├── r_equil.mdp
-│       │   └── r_npt.mdp
-│       └── nonequil_md
-│           └── r_nonequil.mdp
+├── 1qlx_charmm.pdb
+├── forward
+│   ├── equil_md
+│   │   ├── f_enmin.mdp
+│   │   ├── f_equil.mdp
+│   │   └── f_npt.mdp
+│   └── nonequil_md
+│       └── f_nonequil.mdp
 ├── genion.mdp
 ├── md
 │   ├── em.mdp
@@ -99,21 +113,13 @@ preprocessed_input/
 │   ├── npt.mdp
 │   └── nvt.mdp
 ├── readme.txt
-└── unfolded_md
-    ├── forward
-    │   ├── equil_md
-    │   │   ├── f_enmin.mdp
-    │   │   ├── f_equil.mdp
-    │   │   └── f_npt.mdp
-    │   └── nonequil_md
-    │       └── f_nonequil.mdp
-    └── reverse
-        ├── equil_md
-        │   ├── r_enmin.mdp
-        │   ├── r_equil.mdp
-        │   └── r_npt.mdp
-        └── nonequil_md
-            └── r_nonequil.mdp
+└── reverse
+    ├── equil_md
+    │   ├── r_enmin.mdp
+    │   ├── r_equil.mdp
+    │   └── r_npt.mdp
+    └── nonequil_md
+        └── r_nonequil.mdp
 ```
 
 #### pmx
@@ -156,11 +162,25 @@ E.g M205.A{A}
 
 ### Output
 
-The output of the individual applications are used for free energy simulations to estimate a ddG value in order to assess the effect on stability a mutation has.
-Thus the final output from the framework, consists of the output of each application as well as a text file containing the differences in free energies produced by the free energy simulation.
+#### Rosettaa
+
+The mutant structures produced by the Rosetta applications cannot be used for the free energy simulations, due to that it is commented out within main.nf. However, the Rosetta applications produce a score file, `score.sc`, which provide a energy score in Rosetta energy units as well as a breakdown of that total score into weighted terms.
+
+#### Maestro
+
+Maestro provides as output a CSV file containing a predicted ddG for a mutant, a confidance score, and a delta energy value. More information on Maestros output can be found within its READ me upon [download](https://pbwww.services.came.sbg.ac.at/?page_id=477).
+
+#### GROMACS
+
+The standard GROMACS produces various files, such as topology files, trajectory files, run input files, etc. However, the main files in terms of assessing results from these simulations, are the XVG files for checking if the system is energy minimized and equilibrated (potential, temperature, pressure, density) as well as those from the production run which give insight into the dynamics of the protein (RSMD, gyration).
+
+#### Free energy simulation
+
+The final output of the free energy simulation is a text file containing a ddG value along with error estimate, .dat files for forward and reverse integration and a plot of the forward and reverse transformation. 
+
 
 ### Limitations
 
-The capabilities of this framework is limited to that of the applications used, to that effect, pmx is limited to mutations that are not charged and does not include Proline, Glycine and Cysteine.
+The capabilities of this framework is limited to that of the applications used, to that effect, pmx is limited to mutations that are not charged and does not include Proline, Glycine and Cysteine. Refer to [pmx amino acid sections within the instructions](http://pmx.mpibpc.mpg.de/instructions.html).
 
 Alongside that, the GROMACS command, `genion`, cannot neutralise both states of the tripeptides obtained from the pmx tripeptide database, which causes errors along the simulation process. 

@@ -35,4 +35,3 @@ Enter residue number: 81
 
 Select new amino acid for 81-MET: 
 Three- or one-letter code (or four-letter for ff specific residues): 
-nextflow -c nextflow.config run main.nf -params-file params.json
