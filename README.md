@@ -168,7 +168,7 @@ The mutant structures produced by the Rosetta applications cannot be used for th
 
 #### Maestro
 
-Maestro provides as output a CSV file containing a predicted ddG for a mutant, a confidance score, and a delta energy value. More information on Maestros output can be found within its READ me upon [download](https://pbwww.services.came.sbg.ac.at/?page_id=477).
+Maestro provides as output a CSV file containing a predicted ddG for a mutant, a confidance score, and a delta energy value. More information on Maestros output can be found within its README upon [download](https://pbwww.services.came.sbg.ac.at/?page_id=477).
 
 #### GROMACS
 
