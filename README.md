@@ -45,6 +45,11 @@ GO is also required as a dependancy and the latest version can be downloaded thr
 A [script](GO_Singularityce_latest_2023_10_18.sh) was created for the purpose of installing both GO and singularity, the versions on this script can be changed to later versions.
 More information on installing Singularity can be found on the [SingularityCE official website](https://docs.sylabs.io/guides/main/user-guide/quick_start.html#quick-installation-steps).
 
+### Conda
+
+Conda is required to create the environment for a helper script used with Rosettas SimpleThreading mover. Thus, it should be installed and available on the host system before execution.
+Installation instructions can be found on [Condas documentation] (https://docs.conda.io/projects/conda/en/stable/user-guide/install/linux.html)
+
 ### Helper scripts
 
 A few python scripts were created for the purpose of preprocessing, i.e. handling input and creating additional required input files such as the XML files required for Maestro and Rosetta fixed backbone.
@@ -77,6 +82,17 @@ The command to execute the framework is as follows:
 `-c` specifies the configuration file
 
 `-params-file` specifies the parameter file
+
+
+One can also execute using the profiles available, however the details of the cluster profiles would need to be adjusted to suit the cluster you are using.
+
+The profiles available are:
+- standard (Usually for local execution. e.g. laptop, desktop)
+- cluster_PBS (PBSPro cluster)
+- cluster_SLURM
+
+The option `- profile` can be used to select the profile.
+
 
 ### Input files
 
